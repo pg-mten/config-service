@@ -109,6 +109,6 @@ model InternalFee {
   merchantProviderFee   MerchantProviderFee @relation(fields: [merchantProviderFeeId], references: [id])
 
   percentageInternal Decimal
-
+  @@unique([merchantProviderFeeId])
   @@schema("config")
 }

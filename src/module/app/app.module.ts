@@ -1,7 +1,6 @@
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PrismaModule } from 'nestjs-prisma';
 import { ConfigModule } from '@nestjs/config';
 import {
   APP_FILTER,
@@ -16,6 +15,8 @@ import { ResponseExceptionFilter } from 'src/filter/response.exception.filter';
 import { InvalidRequestExceptionFilter } from 'src/filter/invalid-request.exception.filter';
 import { ResponseInterceptor } from 'src/interceptor/response.interceptor';
 import { AllExceptionsFilter } from 'src/filter/all.exceptions.filter';
+import { PrismaModule } from '../prisma/prisma.module';
+import { MerchantModule } from '../merchant/merchant.module';
 
 @Module({
   imports: [
@@ -25,6 +26,8 @@ import { AllExceptionsFilter } from 'src/filter/all.exceptions.filter';
       isGlobal: true,
       envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
     }),
+
+    MerchantModule,
   ],
   controllers: [AppController],
   providers: [
