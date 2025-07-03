@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema", "typedSql"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["config"]
+}
+
+model AgentFee {
+  id      Int @id @default(autoincrement())
+  agentId Int @unique
+
+  name String
+  // bank          String
+  // accountNumber String
+  // an            String
+
+  MerchantAgentFee MerchantAgentFee[]
+
+  @@schema("config")
+}
+
+model MerchantAgentFee {
+  id            Int         @id @default(autoincrement())
+  agentFeeId    Int
+  agentFee      AgentFee    @relation(fields: [agentFeeId], references: [id])
+  merchantFeeId Int
+  merchantFee   MerchantFee @relation(fields: [merchantFeeId], references: [id])
+
+  percentagePerAgent Decimal
+
+  @@unique([agentFeeId, merchantFeeId])
+  @@schema("config")
+}
+
+model MerchantFee {
+  id         Int @id @default(autoincrement())
+  merchantId Int @unique
+
+  name               String
+  percentageForAgent Decimal
+
+  MerchantAgentFee    MerchantAgentFee[]
+  MerchantProviderFee MerchantProviderFee[]
+
+  @@schema("config")
+}
+
+model MerchantProviderFee {
+  id                         Int                      @id @default(autoincrement())
+  merchantId                 Int
+  merchant                   MerchantFee              @relation(fields: [merchantId], references: [merchantId])
+  providerPaymentMethodFeeId Int
+  providerPaymentMethodFee   ProviderPaymentMethodFee @relation(fields: [providerPaymentMethodFeeId], references: [id])
+
+  InternalFee InternalFee[]
+
+  @@unique([merchantId, providerPaymentMethodFeeId])
+  @@schema("config")
+}
+
+model Provider {
+  id Int @id @default(autoincrement())
+
+  name String
+
+  ProviderPaymentMethodFee ProviderPaymentMethodFee[]
+
+  @@schema("config")
+}
+
+model ProviderPaymentMethodFee {
+  id              Int           @id @default(autoincrement())
+  providerId      Int
+  provider        Provider      @relation(fields: [providerId], references: [id])
+  paymentMethodId Int
+  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+
+  percentageProvider Decimal
+
+  MerchantProviderFee MerchantProviderFee[]
+
+  @@unique([providerId, paymentMethodId])
+  @@schema("config")
+}
+
+model PaymentMethod {
+  id Int @id @default(autoincrement())
+
+  name String
+
+  ProviderPaymentMethodFee ProviderPaymentMethodFee[]
+
+  @@schema("config")
+}
+
+model InternalFee {
+  id                    Int                 @id @default(autoincrement())
+  merchantProviderFeeId Int
+  merchantProviderFee   MerchantProviderFee @relation(fields: [merchantProviderFeeId], references: [id])
+
+  percentageInternal Decimal
+
+  @@schema("config")
+}

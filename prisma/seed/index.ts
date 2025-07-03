@@ -1,0 +1,206 @@
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+// function getRandomPercentage(): number {
+//   const minCeil = Math.ceil(0);
+//   const maxFloor = Math.floor(100);
+//   return Math.floor(Math.random() * (maxFloor - minCeil + 1)) + minCeil;
+// }
+
+// Returns a random integer between min and max (inclusive) that is a multiple of 5.
+export function getRandomPercentage(): number {
+  const min = 1;
+  const max = 50;
+  const minCeil = Math.ceil(min / 5);
+  const maxFloor = Math.floor(max / 5);
+  const multiplier =
+    Math.floor(Math.random() * (maxFloor - minCeil + 1)) + minCeil;
+  return multiplier * 5;
+}
+
+async function main() {
+  const agentFee = await Promise.all([
+    prisma.agentFee.create({ data: { agentId: 1, name: 'agent 1' } }),
+    prisma.agentFee.create({ data: { agentId: 2, name: 'agent 2' } }),
+    prisma.agentFee.create({ data: { agentId: 3, name: 'agent 3' } }),
+    prisma.agentFee.create({ data: { agentId: 4, name: 'agent 4' } }),
+    prisma.agentFee.create({ data: { agentId: 5, name: 'agent 5' } }),
+  ]);
+  console.log({ agentFee });
+
+  const merchantFee = await Promise.all([
+    prisma.merchantFee.create({
+      data: { merchantId: 1, name: 'merchant 1', percentageForAgent: 5 },
+    }),
+    prisma.merchantFee.create({
+      data: { merchantId: 2, name: 'merchant 2', percentageForAgent: 10 },
+    }),
+    prisma.merchantFee.create({
+      data: { merchantId: 3, name: 'merchant 3', percentageForAgent: 15 },
+    }),
+    prisma.merchantFee.create({
+      data: { merchantId: 4, name: 'merchant 4', percentageForAgent: 20 },
+    }),
+    prisma.merchantFee.create({
+      data: { merchantId: 5, name: 'merchant 5', percentageForAgent: 25 },
+    }),
+  ]);
+  console.log({ merchantFee });
+
+  const provider = await Promise.all([
+    prisma.provider.create({ data: { name: 'BCA' } }),
+    prisma.provider.create({ data: { name: 'Mandiri' } }),
+  ]);
+  console.log({ provider });
+
+  const paymentMethod = await Promise.all([
+    prisma.paymentMethod.create({ data: { name: 'QRIS' } }),
+    prisma.paymentMethod.create({ data: { name: 'Debit' } }),
+    prisma.paymentMethod.create({ data: { name: 'Credit' } }),
+  ]);
+  console.log({ paymentMethod });
+
+  /// Merchant 1 -> agent 1 (60%) dan agent 2 (40%)
+  /// Merchant 2 -> agent 2 (30%), agent 3 (50%) dan agent 4 (20%)
+  const merchantAgentFee = await Promise.all([
+    /// Merchant 1
+    prisma.merchantAgentFee.create({
+      data: { merchantFeeId: 1, agentFeeId: 1, percentagePerAgent: 60 },
+    }),
+    prisma.merchantAgentFee.create({
+      data: { merchantFeeId: 1, agentFeeId: 2, percentagePerAgent: 40 },
+    }),
+
+    /// Merchant 2
+    prisma.merchantAgentFee.create({
+      data: { merchantFeeId: 2, agentFeeId: 2, percentagePerAgent: 30 },
+    }),
+    prisma.merchantAgentFee.create({
+      data: { merchantFeeId: 2, agentFeeId: 3, percentagePerAgent: 50 },
+    }),
+    prisma.merchantAgentFee.create({
+      data: { merchantFeeId: 2, agentFeeId: 4, percentagePerAgent: 20 },
+    }),
+  ]);
+  console.log({ merchantAgentFee });
+
+  /// BCA -> QRIS, Debit, Credit
+  /// Mandiri -> QRIS, Debit
+  const providerPaymentMethodFee = await Promise.all([
+    /// BCA
+    prisma.providerPaymentMethodFee.create({
+      data: {
+        providerId: 1,
+        paymentMethodId: 1,
+        percentageProvider: 5,
+      },
+    }),
+    prisma.providerPaymentMethodFee.create({
+      data: {
+        providerId: 1,
+        paymentMethodId: 2,
+        percentageProvider: 10,
+      },
+    }),
+    prisma.providerPaymentMethodFee.create({
+      data: {
+        providerId: 1,
+        paymentMethodId: 3,
+        percentageProvider: 15,
+      },
+    }),
+
+    /// Mandiri
+    prisma.providerPaymentMethodFee.create({
+      data: {
+        providerId: 2,
+        paymentMethodId: 1,
+        percentageProvider: 10,
+      },
+    }),
+    prisma.providerPaymentMethodFee.create({
+      data: {
+        providerId: 2,
+        paymentMethodId: 2,
+        percentageProvider: 15,
+      },
+    }),
+  ]);
+  console.log({ providerPaymentMethodFee });
+
+  /// Merchant memilih provider dan jenis pembayarannya
+  const merchantProviderFee = await Promise.all([
+    /// Merchant 1:
+    /// BCA QRIS
+    prisma.merchantProviderFee.create({
+      data: {
+        merchantId: 1,
+        providerPaymentMethodFeeId: 1,
+      },
+    }),
+    /// BCA Debit
+    prisma.merchantProviderFee.create({
+      data: {
+        merchantId: 1,
+        providerPaymentMethodFeeId: 2,
+      },
+    }),
+    /// BCA Credit
+    prisma.merchantProviderFee.create({
+      data: {
+        merchantId: 1,
+        providerPaymentMethodFeeId: 3,
+      },
+    }),
+    /// Mandiri QRIS
+    prisma.merchantProviderFee.create({
+      data: {
+        merchantId: 1,
+        providerPaymentMethodFeeId: 4,
+      },
+    }),
+
+    /// Merchant 2
+    /// BCA QRIS
+    prisma.merchantProviderFee.create({
+      data: {
+        merchantId: 2,
+        providerPaymentMethodFeeId: 1,
+      },
+    }),
+    /// Mandiri QRIS
+    prisma.merchantProviderFee.create({
+      data: {
+        merchantId: 2,
+        providerPaymentMethodFeeId: 4,
+      },
+    }),
+  ]);
+  console.log({ merchantProviderFee });
+
+  const merchantProviderFeeMany = await prisma.merchantProviderFee.findMany();
+  const internalFee = await Promise.all(
+    merchantProviderFeeMany.map((merchantProviderFee) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return prisma.internalFee.create({
+        data: {
+          merchantProviderFeeId: merchantProviderFee.id,
+          percentageInternal: getRandomPercentage(),
+        },
+      });
+    }),
+  );
+  console.log({ internalFee });
+
+  return;
+}
+
+main()
+  .catch((e) => {
+    console.error('❌ Error while seeding:', e);
+    process.exit(1);
+  })
+  .finally(() => {
+    prisma.$disconnect();
+  });
