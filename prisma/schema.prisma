@@ -67,7 +67,7 @@ model MerchantProviderFee {
 }
 
 model Provider {
-  id Int @id @default(autoincrement())
+  id Int @id
 
   name String
 
@@ -92,7 +92,7 @@ model ProviderPaymentMethodFee {
 }
 
 model PaymentMethod {
-  id Int @id @default(autoincrement())
+  id Int @id
 
   name String
 
@@ -109,5 +109,15 @@ model InternalFee {
   percentageInternal Decimal
 
   @@unique([merchantProviderFeeId])
+  @@schema("config")
+}
+
+model Common {
+  id       Int     @id @default(autoincrement())
+  div      String
+  value    String
+  isActive Boolean @default(true)
+  explain  String
+
   @@schema("config")
 }
