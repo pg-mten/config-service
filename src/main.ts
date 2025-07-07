@@ -35,7 +35,7 @@ async function bootstrap() {
   }
 
   await app.listen(PORT, () => {
-    console.log(`Auth service started listening: ${PORT}`);
+    console.log(`Config service started listening: ${PORT}`);
   });
 }
 

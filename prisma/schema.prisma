@@ -15,9 +15,8 @@ datasource db {
   schemas  = ["config"]
 }
 
-model AgentFee {
-  id      Int @id @default(autoincrement())
-  agentId Int @unique
+model Agent {
+  id Int @id
 
   name String
   // bank          String
@@ -30,21 +29,20 @@ model AgentFee {
 }
 
 model MerchantAgentFee {
-  id            Int         @id @default(autoincrement())
-  agentFeeId    Int
-  agentFee      AgentFee    @relation(fields: [agentFeeId], references: [id])
-  merchantFeeId Int
-  merchantFee   MerchantFee @relation(fields: [merchantFeeId], references: [id])
+  id         Int      @id @default(autoincrement())
+  agentId    Int
+  agent      Agent    @relation(fields: [agentId], references: [id])
+  merchantId Int
+  merchant   Merchant @relation(fields: [merchantId], references: [id])
 
   percentagePerAgent Decimal
 
-  @@unique([agentFeeId, merchantFeeId])
+  @@unique([agentId, merchantId])
   @@schema("config")
 }
 
-model MerchantFee {
-  id         Int @id @default(autoincrement())
-  merchantId Int @unique
+model Merchant {
+  id Int @id
 
   name               String
   percentageForAgent Decimal
@@ -58,7 +56,7 @@ model MerchantFee {
 model MerchantProviderFee {
   id                         Int                      @id @default(autoincrement())
   merchantId                 Int
-  merchant                   MerchantFee              @relation(fields: [merchantId], references: [merchantId])
+  merchant                   Merchant                 @relation(fields: [merchantId], references: [id])
   providerPaymentMethodFeeId Int
   providerPaymentMethodFee   ProviderPaymentMethodFee @relation(fields: [providerPaymentMethodFeeId], references: [id])
 
@@ -109,6 +107,7 @@ model InternalFee {
   merchantProviderFee   MerchantProviderFee @relation(fields: [merchantProviderFeeId], references: [id])
 
   percentageInternal Decimal
+
   @@unique([merchantProviderFeeId])
   @@schema("config")
 }

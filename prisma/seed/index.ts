@@ -20,58 +20,53 @@ export function getRandomPercentage(): number {
 }
 
 async function main() {
-  const agentFee = await Promise.all([
-    prisma.agentFee.create({ data: { id: 1, agentId: 1, name: 'agent 1' } }),
-    prisma.agentFee.create({ data: { id: 2, agentId: 2, name: 'agent 2' } }),
-    prisma.agentFee.create({ data: { id: 3, agentId: 3, name: 'agent 3' } }),
-    prisma.agentFee.create({ data: { id: 4, agentId: 4, name: 'agent 4' } }),
-    prisma.agentFee.create({ data: { id: 5, agentId: 5, name: 'agent 5' } }),
+  const agent = await Promise.all([
+    prisma.agent.create({ data: { id: 1, name: 'agent 1' } }),
+    prisma.agent.create({ data: { id: 2, name: 'agent 2' } }),
+    prisma.agent.create({ data: { id: 3, name: 'agent 3' } }),
+    prisma.agent.create({ data: { id: 4, name: 'agent 4' } }),
+    prisma.agent.create({ data: { id: 5, name: 'agent 5' } }),
   ]);
-  console.log({ agentFee });
+  console.log({ agent });
 
-  const merchantFee = await Promise.all([
-    prisma.merchantFee.create({
+  const merchant = await Promise.all([
+    prisma.merchant.create({
       data: {
         id: 1,
-        merchantId: 1,
         name: 'merchant 1',
         percentageForAgent: 10,
       },
     }),
-    prisma.merchantFee.create({
+    prisma.merchant.create({
       data: {
         id: 2,
-        merchantId: 2,
         name: 'merchant 2',
         percentageForAgent: 10,
       },
     }),
-    prisma.merchantFee.create({
+    prisma.merchant.create({
       data: {
         id: 3,
-        merchantId: 3,
         name: 'merchant 3',
         percentageForAgent: 15,
       },
     }),
-    prisma.merchantFee.create({
+    prisma.merchant.create({
       data: {
         id: 4,
-        merchantId: 4,
         name: 'merchant 4',
         percentageForAgent: 20,
       },
     }),
-    prisma.merchantFee.create({
+    prisma.merchant.create({
       data: {
         id: 5,
-        merchantId: 5,
         name: 'merchant 5',
         percentageForAgent: 25,
       },
     }),
   ]);
-  console.log({ merchantFee });
+  console.log({ merchant });
 
   const provider = await Promise.all([
     prisma.provider.create({ data: { id: 1, name: 'BCA' } }),
@@ -91,21 +86,21 @@ async function main() {
   const merchantAgentFee = await Promise.all([
     /// Merchant 1
     prisma.merchantAgentFee.create({
-      data: { id: 1, merchantFeeId: 1, agentFeeId: 1, percentagePerAgent: 60 },
+      data: { id: 1, merchantId: 1, agentId: 1, percentagePerAgent: 60 },
     }),
     prisma.merchantAgentFee.create({
-      data: { id: 2, merchantFeeId: 1, agentFeeId: 2, percentagePerAgent: 40 },
+      data: { id: 2, merchantId: 1, agentId: 2, percentagePerAgent: 40 },
     }),
 
     /// Merchant 2
     prisma.merchantAgentFee.create({
-      data: { id: 3, merchantFeeId: 2, agentFeeId: 2, percentagePerAgent: 30 },
+      data: { id: 3, merchantId: 2, agentId: 2, percentagePerAgent: 30 },
     }),
     prisma.merchantAgentFee.create({
-      data: { id: 4, merchantFeeId: 2, agentFeeId: 3, percentagePerAgent: 50 },
+      data: { id: 4, merchantId: 2, agentId: 3, percentagePerAgent: 50 },
     }),
     prisma.merchantAgentFee.create({
-      data: { id: 5, merchantFeeId: 2, agentFeeId: 4, percentagePerAgent: 20 },
+      data: { id: 5, merchantId: 2, agentId: 4, percentagePerAgent: 20 },
     }),
   ]);
   console.log({ merchantAgentFee });

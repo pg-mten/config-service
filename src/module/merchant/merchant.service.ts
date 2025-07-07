@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Decimal } from 'decimal.js';
+import { MerchantFeeDto } from './dto/merchant-fee.dto';
+import { AgentFeeDto } from '../agent/dto/agent-fee.dto';
 
 @Injectable()
 export class MerchantService {
@@ -13,15 +15,14 @@ export class MerchantService {
     const nominal: Decimal = new Decimal(100);
 
     /// Find how many agent and its percentage each
-    const merchant = await this.prisma.merchantFee.findUniqueOrThrow({
-      where: { merchantId },
+    const merchant = await this.prisma.merchant.findUniqueOrThrow({
+      where: { id: merchantId },
     });
 
     const merchantAgentMany = await this.prisma.merchantAgentFee.findMany({
-      where: { merchantFeeId: merchant.id },
-      include: { agentFee: true },
+      where: { merchantId: merchantId },
+      include: { agent: true },
     });
-    console.log({ merchantAgentMany });
 
     /// Calculate agent fee
     const agentFeeTotal = nominal.mul(
@@ -30,7 +31,8 @@ export class MerchantService {
 
     const agentFees = merchantAgentMany.map((merchantAgentMany) => {
       return {
-        name: merchantAgentMany.agentFee.name,
+        id: merchantAgentMany.agent.id,
+        name: merchantAgentMany.agent.name,
         nominal: agentFeeTotal.mul(
           merchantAgentMany.percentagePerAgent.dividedBy(100),
         ),
@@ -80,15 +82,19 @@ export class MerchantService {
       .sub(internalFee);
 
     const obj = {
-      nominal: nominal.toString(),
-      merchantNetAmount: merchantNetAmount.toString(),
-      agentFeeTotal: agentFeeTotal.toString(),
-      agentFees: agentFees,
-      providerFee: providerFee.toString(),
-      internalFee: internalFee.toString(),
+      nominal,
+      merchantNetAmount,
+      agentFeeTotal,
+      agentFees: agentFees.map((e) => new AgentFeeDto(e)),
+      providerFee,
+      internalFee,
     };
+
     console.log(obj);
 
-    return obj;
+    const merchantFeeDto = new MerchantFeeDto(obj);
+
+    console.log({ merchantFeeDto });
+    return merchantFeeDto;
   }
 }
