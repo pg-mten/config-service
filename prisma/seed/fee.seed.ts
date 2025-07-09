@@ -88,28 +88,28 @@ export async function feeSeed(prisma: PrismaClient) {
 
   /// Merchant 1 -> agent 1 (60%) dan agent 2 (40%)
   /// Merchant 2 -> agent 2 (30%), agent 3 (50%) dan agent 4 (20%)
-  const merchantAgentShareholders = await Promise.all([
+  const agentShareholders = await Promise.all([
     /// Merchant 1
-    prisma.merchantAgentShareholder.create({
+    prisma.agentShareholder.create({
       data: { id: 1, merchantId: 1, agentId: 1, percentagePerAgent: 60 },
     }),
-    prisma.merchantAgentShareholder.create({
+    prisma.agentShareholder.create({
       data: { id: 2, merchantId: 1, agentId: 2, percentagePerAgent: 40 },
     }),
 
     /// Merchant 2
-    prisma.merchantAgentShareholder.create({
+    prisma.agentShareholder.create({
       data: { id: 3, merchantId: 2, agentId: 2, percentagePerAgent: 30 },
     }),
-    prisma.merchantAgentShareholder.create({
+    prisma.agentShareholder.create({
       data: { id: 4, merchantId: 2, agentId: 3, percentagePerAgent: 50 },
     }),
-    prisma.merchantAgentShareholder.create({
+    prisma.agentShareholder.create({
       data: { id: 5, merchantId: 2, agentId: 4, percentagePerAgent: 20 },
     }),
   ]);
 
-  console.log({ merchantAgentShareholders });
+  console.log({ agentShareholders });
 
   // const providers = ['NETZME', 'DANA', 'ALIPAY', 'STICPAY'];
   // const paymentMethods = ['QRIS', 'GOPAY', 'OVO', 'BCA', 'MANDIRI', 'BRI'];
