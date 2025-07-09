@@ -8,7 +8,7 @@ export class CustomValidationPipe extends ValidationPipe {
   constructor() {
     super({
       whitelist: true,
-      // forbidNonWhitelisted: true,
+      forbidNonWhitelisted: true,
       transform: true,
       exceptionFactory: (validationErrors: ValidationError[]) => {
         console.log('CustomValidationPipe');

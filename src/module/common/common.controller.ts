@@ -9,14 +9,13 @@ import {
 import { CommonDto } from './dto/common.dto';
 import { QueryCommonDto } from './dto/query-common.dto';
 
-@Controller('/common')
+@Controller('common')
 @ApiTags('Common')
 export class CommonController {
   constructor(private readonly commonService: CommonService) {}
 
-  @Get()
+  @Get('div')
   @ApiOperation({ summary: 'Find common by div' })
-  @ApiQuery({ name: 'div' })
   @ApiOkResponse({ type: CommonDto, isArray: true })
   async findManyByDiv(@Query() query: QueryCommonDto) {
     console.log({ query });

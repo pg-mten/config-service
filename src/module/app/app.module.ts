@@ -18,6 +18,7 @@ import { AllExceptionsFilter } from 'src/filter/all.exceptions.filter';
 import { PrismaModule } from '../prisma/prisma.module';
 import { MerchantModule } from '../merchant/merchant.module';
 import { CommonModule } from '../common/common.module';
+import { FeeModule } from '../fee/fee.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { CommonModule } from '../common/common.module';
 
     MerchantModule,
     CommonModule,
+    FeeModule,
   ],
   controllers: [AppController],
   providers: [

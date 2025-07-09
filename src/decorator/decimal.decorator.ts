@@ -5,13 +5,13 @@ import Decimal from 'decimal.js';
  * Transform a value into Decimal
  * @returns Decimal
  */
-export function TransformDecimal() {
+export function ToDecimal() {
   return Transform(({ value }) => {
     if (value instanceof Decimal) return value;
     try {
       return new Decimal(value);
     } catch {
-      throw new Error('Invalid decimal value: ${value}');
+      throw new Error(`Invalid decimal value: ${value}`);
     }
   });
 }
