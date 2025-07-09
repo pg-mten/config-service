@@ -23,12 +23,12 @@ model Agent {
   // accountNumber String
   // an            String
 
-  MerchantAgentFee MerchantAgentFee[]
+  MerchantAgentShareholders MerchantAgentShareholder[]
 
   @@schema("config")
 }
 
-model MerchantAgentFee {
+model MerchantAgentShareholder {
   id         Int      @id @default(autoincrement())
   agentId    Int
   agent      Agent    @relation(fields: [agentId], references: [id])
@@ -41,74 +41,73 @@ model MerchantAgentFee {
   @@schema("config")
 }
 
-model Merchant {
-  id Int @id
+// Addon Modal (ALL)
+model AgentFee {
+  id            Int         @id @default(autoincrement())
+  merchantId    Int
+  merchant      Merchant    @relation(fields: [merchantId], references: [id])
+  internalFeeId Int
+  internalFee   InternalFee @relation(fields: [internalFeeId], references: [id])
 
-  name               String
   percentageForAgent Decimal
 
-  MerchantAgentFee    MerchantAgentFee[]
-  MerchantProviderFee MerchantProviderFee[]
-
+  @@unique([merchantId, internalFeeId])
   @@schema("config")
 }
 
-model MerchantProviderFee {
-  id                         Int                      @id @default(autoincrement())
-  merchantId                 Int
-  merchant                   Merchant                 @relation(fields: [merchantId], references: [id])
-  providerPaymentMethodFeeId Int
-  providerPaymentMethodFee   ProviderPaymentMethodFee @relation(fields: [providerPaymentMethodFeeId], references: [id])
+model Merchant {
+  id Int @id
 
-  InternalFee InternalFee[]
+  name String
 
-  @@unique([merchantId, providerPaymentMethodFeeId])
+  MerchantAgentShareholders MerchantAgentShareholder[]
+  AgentFee                  AgentFee[]
+
   @@schema("config")
 }
 
 model Provider {
-  id Int @id
+  name String @id
 
-  name String
-
-  ProviderPaymentMethodFee ProviderPaymentMethodFee[]
+  ProviderFee ProviderFee[]
 
   @@schema("config")
 }
 
-model ProviderPaymentMethodFee {
-  id              Int           @id @default(autoincrement())
-  providerId      Int
-  provider        Provider      @relation(fields: [providerId], references: [id])
-  paymentMethodId Int
-  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+// Modal
+model ProviderFee {
+  id                Int           @id @default(autoincrement())
+  providerName      String
+  provider          Provider      @relation(fields: [providerName], references: [name])
+  paymentMethodName String
+  paymentMethod     PaymentMethod @relation(fields: [paymentMethodName], references: [name])
 
   percentageProvider Decimal
 
-  MerchantProviderFee MerchantProviderFee[]
+  InternalFee InternalFee[]
 
-  @@unique([providerId, paymentMethodId])
+  @@unique([providerName, paymentMethodName])
   @@schema("config")
 }
 
 model PaymentMethod {
-  id Int @id
+  name String @id
 
-  name String
-
-  ProviderPaymentMethodFee ProviderPaymentMethodFee[]
+  ProviderFee ProviderFee[]
 
   @@schema("config")
 }
 
+// Margin PG
 model InternalFee {
-  id                    Int                 @id @default(autoincrement())
-  merchantProviderFeeId Int
-  merchantProviderFee   MerchantProviderFee @relation(fields: [merchantProviderFeeId], references: [id])
+  id            Int         @id @default(autoincrement())
+  providerFeeId Int         @unique
+  providerFee   ProviderFee @relation(fields: [providerFeeId], references: [id])
 
   percentageInternal Decimal
 
-  @@unique([merchantProviderFeeId])
+  AgentFee AgentFee[]
+
   @@schema("config")
 }
 
