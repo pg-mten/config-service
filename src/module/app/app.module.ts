@@ -17,6 +17,7 @@ import { ResponseInterceptor } from 'src/interceptor/response.interceptor';
 import { AllExceptionsFilter } from 'src/filter/all.exceptions.filter';
 import { PrismaModule } from '../prisma/prisma.module';
 import { MerchantModule } from '../merchant/merchant.module';
+import { CommonModule } from '../common/common.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { MerchantModule } from '../merchant/merchant.module';
     }),
 
     MerchantModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [

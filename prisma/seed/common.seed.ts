@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 export async function commonSeed(prisma: PrismaClient) {
   let commons = [];
 
-  const providers = ['NETZME', 'DANA', 'ALIPAY', 'STIKPAY'];
+  const providers = ['NETZME', 'DANA', 'ALIPAY', 'STICPAY'];
 
   for (const provider of providers) {
     const common = await prisma.common.create({
