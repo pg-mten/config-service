@@ -64,7 +64,7 @@ export class FeeService {
       agentFee.percentageForAgent.dividedBy(100),
     );
     // Find agent shareholders
-    const shareholders = await this.prisma.merchantAgentShareholder.findMany({
+    const shareholders = await this.prisma.agentShareholder.findMany({
       where: {
         merchantId: merchantId,
       },

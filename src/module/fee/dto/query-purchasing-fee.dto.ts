@@ -1,11 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsNumber,
-  IsNumberString,
-  IsString,
-  ValidateIf,
-} from 'class-validator';
+import { IsNumber, IsString, ValidateIf } from 'class-validator';
 import Decimal from 'decimal.js';
 import { ToDecimal } from 'src/decorator/decimal.decorator';
 import { PaymentMethodExist } from 'src/module/common/validator/payment-method-exist.validator';
@@ -30,6 +25,6 @@ export class QueryPurchasingFeeDto {
   @ToDecimal()
   @Type(() => Decimal)
   @ValidateIf((o) => o.nominal !== undefined)
-  @ApiProperty({ type: String, example: '12' })
+  @ApiProperty({ type: String, example: '100' })
   nominal: Decimal;
 }

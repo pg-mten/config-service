@@ -16,22 +16,22 @@ import { InvalidRequestExceptionFilter } from 'src/filter/invalid-request.except
 import { ResponseInterceptor } from 'src/interceptor/response.interceptor';
 import { AllExceptionsFilter } from 'src/filter/all.exceptions.filter';
 import { PrismaModule } from '../prisma/prisma.module';
-import { MerchantModule } from '../merchant/merchant.module';
 import { CommonModule } from '../common/common.module';
 import { FeeModule } from '../fee/fee.module';
+import { MerchantModule } from '../merchant/merchant.module';
 
 @Module({
   imports: [
-    PrismaModule,
     /// System Configuration
+    PrismaModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
     }),
 
-    MerchantModule,
     CommonModule,
     FeeModule,
+    MerchantModule,
   ],
   controllers: [AppController],
   providers: [

@@ -12,7 +12,6 @@ export class FeeController {
   @ApiOperation({ summary: 'Calculate purchasing fee' })
   @ApiOkResponse({ type: PurchasingFeeDto })
   async purchasing(@Query() query: QueryPurchasingFeeDto) {
-    // return query;
     const purchasingFeeDto = await this.feeService.calculatePuchasingFee(query);
     return purchasingFeeDto;
   }
