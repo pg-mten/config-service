@@ -8,6 +8,7 @@ import { InternalFeeDto } from './dto/internal-fee.dto';
 import { ProviderFeeDto } from './dto/provider-fee.dto';
 import { MerchantFeeDto } from './dto/merchant-fee.dto';
 import { PurchasingFeeDto } from './dto/purchashing-fee.dto';
+import { FeeConfigDto } from './dto/fee-config.dto';
 
 @Injectable()
 export class FeeService {
@@ -133,6 +134,22 @@ export class FeeService {
       internal: internalFeeDto,
       agent: agentFeeDto,
       merchant: merchantFeeDto,
+    });
+  }
+
+  async findAllConfig() {
+    const internalFees = await this.prisma.internalFee.findMany({
+      include: { providerFee: true },
+    });
+
+    return internalFees.map((internalFee) => {
+      return new FeeConfigDto({
+        internalFeeId: internalFee.id,
+        internalPercentage: internalFee.percentageInternal,
+        providerName: internalFee.providerFee.providerName,
+        paymentMethodName: internalFee.providerFee.paymentMethodName,
+        providerPercentage: internalFee.providerFee.percentageProvider,
+      });
     });
   }
 }
