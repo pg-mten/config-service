@@ -49,7 +49,7 @@ model AgentFee {
   internalFeeId Int
   internalFee   InternalFee @relation(fields: [internalFeeId], references: [id])
 
-  percentageForAgent Decimal
+  percentageForAgent Decimal?
 
   @@unique([merchantId, internalFeeId])
   @@schema("config")

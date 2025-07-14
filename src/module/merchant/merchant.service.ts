@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { QueryMerchantConfigDto } from './dto/query-merchant-config.dto';
 import { MerchantConfigDto } from './dto/merchant-config.dto';
+import { CreateMerchantFeeDto } from './dto/create-merchant-fee.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MerchantService {
@@ -15,13 +16,11 @@ export class MerchantService {
     });
   }
 
-  async findAllConfig(query: QueryMerchantConfigDto) {
-    const { merchantId } = query;
+  async findAllConfig(merchantId: number) {
     /**
      * Agent
      * Provider
      * Payment Method
-     *
      */
     const agentFees = await this.prisma.agentFee.findMany({
       where: { merchantId: merchantId },
@@ -37,15 +36,28 @@ export class MerchantService {
       const providerFee = internalFee.providerFee;
       providers.push(
         new MerchantConfigDto({
+          internalFeeId: internalFee.id,
+          internalPercentage: internalFee.percentageInternal,
           provider: providerFee.providerName,
           paymentMethod: providerFee.paymentMethodName,
           providerPercentage: providerFee.percentageProvider,
-          internalPercentage: internalFee.percentageInternal,
           agentPercentage: agentFee.percentageForAgent,
         }),
       );
     }
     providers.sort((a, b) => a.provider.localeCompare(b.provider));
     return providers;
+  }
+
+  create(merchantId: number, body: CreateMerchantFeeDto[]) {
+    this.prisma.agentFee.createManyAndReturn({
+      data: body.map((data) => {
+        return {
+          internalFeeId: data.internalFeeId,
+          merchantId: merchantId,
+          percentageForAgent: data.percentageForAgent,
+        } as Prisma.AgentFeeCreateManyInput;
+      }),
+    });
   }
 }

@@ -6,8 +6,8 @@ import { CommonDto } from './dto/common.dto';
 export class CommonService {
   constructor(private readonly prisma: PrismaService) {}
 
-  findByDivAndValue(div: string, value: string) {
-    return this.prisma.common.findFirst({
+  findByDivAndValueThrow(div: string, value: string) {
+    return this.prisma.common.findFirstOrThrow({
       where: { div, value },
     });
   }
@@ -17,5 +17,16 @@ export class CommonService {
       where: { div, isActive: true },
     });
     return commons.map((common) => new CommonDto(common));
+  }
+
+  divAndValueIsExist(div: string, values: string[]) {
+    return this.prisma.common.findMany({
+      where: {
+        div: div,
+        value: {
+          in: values,
+        },
+      },
+    });
   }
 }

@@ -8,6 +8,13 @@ export class MerchantConfigDto {
   }
 
   @ApiProperty()
+  internalFeeId: number;
+
+  @ToDecimalFixed()
+  @ApiProperty({ type: Decimal })
+  internalPercentage: Decimal;
+
+  @ApiProperty()
   provider: string;
 
   @ApiProperty()
@@ -16,10 +23,6 @@ export class MerchantConfigDto {
   @ToDecimalFixed()
   @ApiProperty({ type: Decimal })
   providerPercentage: Decimal;
-
-  @ToDecimalFixed()
-  @ApiProperty({ type: Decimal })
-  internalPercentage: Decimal;
 
   @ToDecimalFixed()
   @ApiProperty({ type: Decimal })

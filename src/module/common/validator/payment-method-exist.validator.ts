@@ -22,9 +22,12 @@ export class PaymentMethodExistValidator
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     validationArguments?: ValidationArguments,
   ): Promise<boolean> {
-    const common = await this.commonService.findByDivAndValue(this.div, value);
-    if (!common) return false;
-    return true;
+    try {
+      await this.commonService.findByDivAndValueThrow(this.div, value);
+      return true;
+    } catch {
+      return false;
+    }
   }
   defaultMessage?(validationArguments?: ValidationArguments): string {
     return `Common ${this.div} with value ${validationArguments?.value} not exist`;

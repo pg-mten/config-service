@@ -2,6 +2,22 @@ import { Transform } from 'class-transformer';
 import Decimal from 'decimal.js';
 
 /**
+ * Transform a value into Decimal Nullable
+ * @returns Decimal
+ */
+export function ToDecimalNullable() {
+  return Transform(({ value }) => {
+    if (!value) return null;
+    if (value instanceof Decimal) return value;
+    try {
+      return new Decimal(value);
+    } catch {
+      throw new Error(`Invalid decimal value: ${value}`);
+    }
+  });
+}
+
+/**
  * Transform a value into Decimal
  * @returns Decimal
  */
