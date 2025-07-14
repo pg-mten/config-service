@@ -174,7 +174,6 @@ export async function feeSeed(prisma: PrismaClient) {
     internalFees.map((internalFee) => {
       return Promise.all(
         merchantIds.map((id) => {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return prisma.agentFee.create({
             data: {
               internalFeeId: internalFee.id,
@@ -237,3 +236,13 @@ export async function feeSeed(prisma: PrismaClient) {
   //   }),
   // );
 }
+
+// {
+//   errorMessage: 'Table or view not found.',
+//   statusCode: 400,
+//   error: {
+//     modelName: 'AgentShareholder',
+//     table: 'config.AgentShareholder',
+//     P2021: 'Invalid `this.prisma.agentShareholder.findMany()` invocation inC:\\prelion\\pg\\config-service\\src\\module\\fee\\fee.service.ts:68:61  65   agentFee.percentageForAgent.dividedBy(100),  66 );  67 // Find agent shareholders→ 68 const shareholders = await this.prisma.agentShareholder.findMany(The table `config.AgentShareholder` does not exist in the current database.'
+//   }
+// }

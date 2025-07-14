@@ -61,9 +61,11 @@ export class FeeService {
       },
     });
     // Calculate Total
-    const agentFeeTotal = nominal.mul(
-      agentFee.percentageForAgent.dividedBy(100),
-    );
+    const agentFeeTotal =
+      agentFee.percentageForAgent == null
+        ? new Decimal(0)
+        : nominal.mul(agentFee.percentageForAgent.dividedBy(100));
+
     // Find agent shareholders
     const shareholders = await this.prisma.agentShareholder.findMany({
       where: {
@@ -100,7 +102,7 @@ export class FeeService {
     const merchantPercentage = new Decimal(100)
       .sub(providerFee.percentageProvider)
       .sub(internalFee.percentageInternal)
-      .sub(agentFee.percentageForAgent);
+      .sub(agentFee.percentageForAgent ?? 0);
 
     /**
      * DTO
@@ -118,7 +120,7 @@ export class FeeService {
     });
     const agentFeeDto = new AgentFeeDto({
       nominal: agentFeeTotal,
-      percentage: agentFee.percentageForAgent,
+      percentage: agentFee.percentageForAgent ?? new Decimal(0),
       agents: agentDtos,
     });
     const merchantFeeDto = new MerchantFeeDto({

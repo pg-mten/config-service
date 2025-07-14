@@ -13,6 +13,7 @@ export class ResponseInterceptor<T>
     return next.handle().pipe(
       map((response) => {
         console.log('ResponseInterceptor');
+        console.log({ response });
         if (response instanceof ResponseDto) {
           console.log('LeRucco response instanceof ResponseDto');
           return response;

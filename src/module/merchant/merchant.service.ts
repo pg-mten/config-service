@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { MerchantConfigDto } from './dto/merchant-config.dto';
 import { CreateMerchantFeeDto } from './dto/create-merchant-fee.dto';
 import { Prisma } from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class MerchantService {
@@ -41,7 +42,7 @@ export class MerchantService {
           provider: providerFee.providerName,
           paymentMethod: providerFee.paymentMethodName,
           providerPercentage: providerFee.percentageProvider,
-          agentPercentage: agentFee.percentageForAgent,
+          agentPercentage: agentFee.percentageForAgent ?? new Decimal(0),
         }),
       );
     }

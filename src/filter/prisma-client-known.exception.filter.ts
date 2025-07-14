@@ -382,6 +382,8 @@ export class PrismaClientKnownExceptionFilter implements ExceptionFilter {
         break;
     }
 
+    console.log({ errorMessage, statusCode, error });
+
     response.status(statusCode).json(
       new ResponseDto<null>({
         message: errorMessage,
