@@ -31,30 +31,35 @@ export async function feeSeed(prisma: PrismaClient) {
       data: {
         id: 1,
         name: 'merchant 1',
+        settlementInterval: 30,
       },
     }),
     prisma.merchant.create({
       data: {
         id: 2,
         name: 'merchant 2',
+        settlementInterval: 60,
       },
     }),
     prisma.merchant.create({
       data: {
         id: 3,
         name: 'merchant 3',
+        settlementInterval: 90,
       },
     }),
     prisma.merchant.create({
       data: {
         id: 4,
         name: 'merchant 4',
+        settlementInterval: 120,
       },
     }),
     prisma.merchant.create({
       data: {
         id: 5,
         name: 'merchant 5',
+        settlementInterval: 120,
       },
     }),
   ]);
@@ -68,7 +73,9 @@ export async function feeSeed(prisma: PrismaClient) {
 
   const providers = await Promise.all(
     providersCommon.map((e) => {
-      return prisma.provider.create({ data: { name: e.value } });
+      return prisma.provider.create({
+        data: { name: e.value, reconciliationTime: '02:00' },
+      });
     }),
   );
   console.log({ providers });

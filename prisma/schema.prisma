@@ -58,10 +58,12 @@ model AgentFee {
 model Merchant {
   id Int @id
 
-  name String
+  name               String
+  settlementInterval Int       @default(120) // in minutes like 30, 60, 120 or 0 for bypass interval 30
+  lastSettlementAt   DateTime?
 
   AgentShareholders AgentShareholder[]
-  AgentFee                  AgentFee[]
+  AgentFee          AgentFee[]
 
   @@schema("config")
 }
@@ -69,7 +71,9 @@ model Merchant {
 model Provider {
   name String @id
 
-  ProviderFee ProviderFee[]
+  ProviderFee          ProviderFee[]
+  reconciliationTime   String //format: '02:00' (HH:mm)
+  lastReconciliationAt DateTime?
 
   @@schema("config")
 }
