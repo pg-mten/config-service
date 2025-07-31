@@ -23,7 +23,7 @@ export class SettlementService {
     await this.runForInterval(60);
   }
 
-  @Cron(CronExpression.EVERY_90_MINUTES)
+  @Cron('0 */90 * * * *')
   async runEvery90Minutes() {
     await this.runForInterval(90);
   }
