@@ -15,10 +15,13 @@ import { ResponseExceptionFilter } from 'src/filter/response.exception.filter';
 import { InvalidRequestExceptionFilter } from 'src/filter/invalid-request.exception.filter';
 import { ResponseInterceptor } from 'src/interceptor/response.interceptor';
 import { AllExceptionsFilter } from 'src/filter/all.exceptions.filter';
+import { ScheduleModule } from '@nestjs/schedule';
 import { PrismaModule } from '../prisma/prisma.module';
 import { CommonModule } from '../common/common.module';
 import { FeeModule } from '../fee/fee.module';
 import { MerchantModule } from '../merchant/merchant.module';
+import { SettlementModule } from '../settlement/settlement.module';
+import { ReconciliationModule } from '../reconciliation/reconciliation.module';
 
 @Module({
   imports: [
@@ -28,10 +31,13 @@ import { MerchantModule } from '../merchant/merchant.module';
       isGlobal: true,
       envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
     }),
+    ScheduleModule.forRoot(),
 
     CommonModule,
     FeeModule,
     MerchantModule,
+    SettlementModule,
+    ReconciliationModule,
   ],
   controllers: [AppController],
   providers: [
