@@ -19,9 +19,6 @@ model Agent {
   id Int @id
 
   name String
-  // bank          String
-  // accountNumber String
-  // an            String
 
   AgentShareholders AgentShareholder[]
 

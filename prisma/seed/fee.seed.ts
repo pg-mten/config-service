@@ -8,62 +8,62 @@ import { PrismaClient } from '@prisma/client';
 
 function getRandomPercentage(): number {
   const min = 1;
-  const max = 20;
+  const max = 10;
   const minCeil = Math.ceil(min / 5);
   const maxFloor = Math.floor(max / 5);
   const multiplier =
     Math.floor(Math.random() * (maxFloor - minCeil + 1)) + minCeil;
-  return multiplier * 5;
+  return multiplier * 2;
 }
 
 export async function feeSeed(prisma: PrismaClient) {
-  const agents = await Promise.all([
-    prisma.agent.create({ data: { id: 1, name: 'agent 1' } }),
-    prisma.agent.create({ data: { id: 2, name: 'agent 2' } }),
-    prisma.agent.create({ data: { id: 3, name: 'agent 3' } }),
-    prisma.agent.create({ data: { id: 4, name: 'agent 4' } }),
-    prisma.agent.create({ data: { id: 5, name: 'agent 5' } }),
-  ]);
-  console.log({ agents });
+  // const agents = await Promise.all([
+  //   prisma.agent.create({ data: { id: 1, name: 'agent 1' } }),
+  //   prisma.agent.create({ data: { id: 2, name: 'agent 2' } }),
+  //   prisma.agent.create({ data: { id: 3, name: 'agent 3' } }),
+  //   prisma.agent.create({ data: { id: 4, name: 'agent 4' } }),
+  //   prisma.agent.create({ data: { id: 5, name: 'agent 5' } }),
+  // ]);
+  // console.log({ agents });
 
-  const merchants = await Promise.all([
-    prisma.merchant.create({
-      data: {
-        id: 1,
-        name: 'merchant 1',
-        settlementInterval: 30,
-      },
-    }),
-    prisma.merchant.create({
-      data: {
-        id: 2,
-        name: 'merchant 2',
-        settlementInterval: 60,
-      },
-    }),
-    prisma.merchant.create({
-      data: {
-        id: 3,
-        name: 'merchant 3',
-        settlementInterval: 90,
-      },
-    }),
-    prisma.merchant.create({
-      data: {
-        id: 4,
-        name: 'merchant 4',
-        settlementInterval: 120,
-      },
-    }),
-    prisma.merchant.create({
-      data: {
-        id: 5,
-        name: 'merchant 5',
-        settlementInterval: 120,
-      },
-    }),
-  ]);
-  console.log({ merchants });
+  // const merchants = await Promise.all([
+  //   prisma.merchant.create({
+  //     data: {
+  //       id: 1,
+  //       name: 'merchant 1',
+  //       settlementInterval: 30,
+  //     },
+  //   }),
+  //   prisma.merchant.create({
+  //     data: {
+  //       id: 2,
+  //       name: 'merchant 2',
+  //       settlementInterval: 60,
+  //     },
+  //   }),
+  //   prisma.merchant.create({
+  //     data: {
+  //       id: 3,
+  //       name: 'merchant 3',
+  //       settlementInterval: 90,
+  //     },
+  //   }),
+  //   prisma.merchant.create({
+  //     data: {
+  //       id: 4,
+  //       name: 'merchant 4',
+  //       settlementInterval: 120,
+  //     },
+  //   }),
+  //   prisma.merchant.create({
+  //     data: {
+  //       id: 5,
+  //       name: 'merchant 5',
+  //       settlementInterval: 120,
+  //     },
+  //   }),
+  // ]);
+  // console.log({ merchants });
 
   const providersCommon = await prisma.common.findMany({
     where: {
@@ -95,35 +95,35 @@ export async function feeSeed(prisma: PrismaClient) {
 
   /// Merchant 1 -> agent 1 (60%) dan agent 2 (40%)
   /// Merchant 2 -> agent 2 (30%), agent 3 (50%) dan agent 4 (20%)
-  const agentShareholders = await Promise.all([
-    /// Merchant 1
-    prisma.agentShareholder.create({
-      data: { id: 1, merchantId: 1, agentId: 1, percentagePerAgent: 60 },
-    }),
-    prisma.agentShareholder.create({
-      data: { id: 2, merchantId: 1, agentId: 2, percentagePerAgent: 40 },
-    }),
+  // const agentShareholders = await Promise.all([
+  //   /// Merchant 1
+  //   prisma.agentShareholder.create({
+  //     data: { id: 1, merchantId: 1, agentId: 1, percentagePerAgent: 60 },
+  //   }),
+  //   prisma.agentShareholder.create({
+  //     data: { id: 2, merchantId: 1, agentId: 2, percentagePerAgent: 40 },
+  //   }),
 
-    /// Merchant 2
-    prisma.agentShareholder.create({
-      data: { id: 3, merchantId: 2, agentId: 2, percentagePerAgent: 30 },
-    }),
-    prisma.agentShareholder.create({
-      data: { id: 4, merchantId: 2, agentId: 3, percentagePerAgent: 50 },
-    }),
-    prisma.agentShareholder.create({
-      data: { id: 5, merchantId: 2, agentId: 4, percentagePerAgent: 20 },
-    }),
-  ]);
+  //   /// Merchant 2
+  //   prisma.agentShareholder.create({
+  //     data: { id: 3, merchantId: 2, agentId: 2, percentagePerAgent: 30 },
+  //   }),
+  //   prisma.agentShareholder.create({
+  //     data: { id: 4, merchantId: 2, agentId: 3, percentagePerAgent: 50 },
+  //   }),
+  //   prisma.agentShareholder.create({
+  //     data: { id: 5, merchantId: 2, agentId: 4, percentagePerAgent: 20 },
+  //   }),
+  // ]);
 
-  console.log({ agentShareholders });
+  // console.log({ agentShareholders });
 
   // const providers = ['NETZME', 'DANA', 'ALIPAY', 'STICPAY'];
   // const paymentMethods = ['QRIS', 'GOPAY', 'OVO', 'BCA', 'MANDIRI', 'BRI'];
   /// NETZME -> QRIS, GOPAY, OVO
   /// ALIPAY -> QRIS, GOPAY
   const providerFees = await Promise.all([
-    /// BCA
+    /// NETZME
     prisma.providerFee.create({
       data: {
         providerName: 'NETZME',
@@ -142,11 +142,11 @@ export async function feeSeed(prisma: PrismaClient) {
       data: {
         providerName: 'NETZME',
         paymentMethodName: 'OVO',
-        percentageProvider: 15,
+        percentageProvider: 7,
       },
     }),
 
-    /// Mandiri
+    /// ALIPAY
     prisma.providerFee.create({
       data: {
         providerName: 'ALIPAY',
@@ -158,7 +158,30 @@ export async function feeSeed(prisma: PrismaClient) {
       data: {
         providerName: 'ALIPAY',
         paymentMethodName: 'GOPAY',
-        percentageProvider: 15,
+        percentageProvider: 6,
+      },
+    }),
+
+    /// DANA
+    prisma.providerFee.create({
+      data: {
+        providerName: 'DANA',
+        paymentMethodName: 'QRIS',
+        percentageProvider: 4,
+      },
+    }),
+    prisma.providerFee.create({
+      data: {
+        providerName: 'DANA',
+        paymentMethodName: 'OVO',
+        percentageProvider: 3,
+      },
+    }),
+    prisma.providerFee.create({
+      data: {
+        providerName: 'DANA',
+        paymentMethodName: 'MANDIRI',
+        percentageProvider: 10,
       },
     }),
   ]);
@@ -174,26 +197,27 @@ export async function feeSeed(prisma: PrismaClient) {
       });
     }),
   );
+  console.log({ internalFees });
 
-  const merchantIds = merchants.map((merchant) => merchant.id);
+  // const merchantIds = merchants.map((merchant) => merchant.id);
 
-  const agentFees = await Promise.all(
-    internalFees.map((internalFee) => {
-      return Promise.all(
-        merchantIds.map((id) => {
-          return prisma.agentFee.create({
-            data: {
-              internalFeeId: internalFee.id,
-              merchantId: id,
-              percentageForAgent: getRandomPercentage(),
-            },
-          });
-        }),
-      );
-    }),
-  );
+  // const agentFees = await Promise.all(
+  //   internalFees.map((internalFee) => {
+  //     return Promise.all(
+  //       merchantIds.map((id) => {
+  //         return prisma.agentFee.create({
+  //           data: {
+  //             internalFeeId: internalFee.id,
+  //             merchantId: id,
+  //             percentageForAgent: getRandomPercentage(),
+  //           },
+  //         });
+  //       }),
+  //     );
+  //   }),
+  // );
 
-  console.log({ agentFees });
+  // console.log({ agentFees });
 
   // /// Merchant memilih provider dan jenis pembayarannya
   // const merchantProviderFee = await Promise.all([

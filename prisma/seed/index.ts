@@ -5,7 +5,8 @@ import { commonSeed } from './common.seed';
 const prisma = new PrismaClient();
 
 async function main() {
-  return Promise.all([feeSeed(prisma), commonSeed(prisma)]);
+  await commonSeed(prisma);
+  await feeSeed(prisma);
 }
 
 main()

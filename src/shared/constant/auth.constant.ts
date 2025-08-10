@@ -8,16 +8,3 @@ export const JWT = {
     expireIn: 3600 * 24, // 24 Hour Dev
   },
 };
-
-export enum Role {
-  admin = 'admin',
-  user = 'user',
-}
-
-export enum Action {
-  manage = 'manage',
-  create = 'create',
-  read = 'read',
-  update = 'update',
-  delete = 'delete',
-}
