@@ -67,7 +67,7 @@ export class MerchantController {
   }
 
   @Patch(':merchantId/agent-shareholder')
-  @ApiOperation({ summary: 'Create Agent shareholder' })
+  @ApiOperation({ summary: 'Update Agent shareholder' })
   @ApiBody({ type: UpdateMerchantAgentShareholderDto, isArray: true })
   async updateAgentShareholder(
     @Param('merchantId', ParseIntPipe) merchantId: number,
