@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './module/app/app.module';
 import {
   API_PREFIX,
+  APP_NAME,
   IS_DEVELOPMENT,
   PORT,
   VERSION,
@@ -15,23 +16,24 @@ async function bootstrap() {
   app.setGlobalPrefix(API_PREFIX);
   useContainer(app.select(AppModule), { fallbackOnErrors: true }); // class-validator ngikut DI Nest
 
+  // TODO jangan sampai production, origin set true demi development dan testing
   app.enableCors({
-    origin: '*',
+    origin: true,
     methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS',
-    allowedHeaders: 'Content-Type, Authorization',
+    // allowedHeaders: 'Content-Type, Authorization',
     credentials: true,
   });
 
   if (IS_DEVELOPMENT) {
     const options = new DocumentBuilder()
-      .setTitle('Auth Service')
-      .setDescription('Auth Service API Description')
+      .setTitle(`${APP_NAME} Service`)
+      .setDescription(`${APP_NAME} Service API Description`)
       .setVersion(VERSION)
       .addBearerAuth()
       .build();
 
     const document = SwaggerModule.createDocument(app, options);
-    SwaggerModule.setup('api', app, document);
+    SwaggerModule.setup(API_PREFIX, app, document);
   }
 
   await app.listen(PORT, () => {

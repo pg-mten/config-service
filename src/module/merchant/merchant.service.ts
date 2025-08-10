@@ -7,10 +7,75 @@ import { Decimal } from '@prisma/client/runtime/library';
 import { UpdateMerchantAgentFeeDto } from './dto/update-merchant-agent-fee';
 import { CreateMerchantAgentShareholderDto } from './dto/create-merchant-agent-shareholder.dto';
 import { ResponseException } from 'src/exception/response.exception';
+import { firstValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { URL_AUTH } from 'src/shared/constant/webclient';
+import { ResponseDto } from 'src/shared/response.dto';
+import { MerchantDto } from './dto/merchant.dto';
+import { AgentDto } from './dto/agent.dto';
+import { MerchantAgentDto } from './dto/merchant-agent.dto';
 
 @Injectable()
 export class MerchantService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly httpService: HttpService,
+  ) {}
+
+  async findAll() {
+    const result = await this.prisma.$queryRawUnsafe<
+      {
+        merchantId: number;
+        agentIds: number[];
+      }[]
+    >(`
+  SELECT
+    "merchantId",
+    array_agg("agentId") AS "agentIds"
+  FROM "config"."AgentShareholder"
+  GROUP BY "merchantId"
+  ORDER BY "merchantId"
+`);
+
+    const agentIds = (
+      await this.prisma.agentShareholder.findMany({
+        distinct: ['agentId'],
+        select: { agentId: true },
+      })
+    )
+      .map((a) => a.agentId)
+      .join(',');
+
+    const merchantIds = (
+      await this.prisma.agentShareholder.findMany({
+        distinct: ['merchantId'],
+        select: { merchantId: true },
+      })
+    )
+      .map((a) => a.merchantId)
+      .join(',');
+
+    console.log({ agentIds, merchantIds, result });
+
+    const res = await firstValueFrom(
+      this.httpService.get<
+        ResponseDto<{ merchants: MerchantDto[]; agents: AgentDto[] }>
+      >(`${URL_AUTH}/user/internal/merchants-and-agents-by-ids`, {
+        params: { merchantIds: merchantIds, agentIds: agentIds },
+      }),
+    );
+
+    const { merchants, agents } = res.data.data!;
+
+    return result.map((data) => {
+      return new MerchantAgentDto({
+        merchant: merchants.find((a) => a.merchantId === data.merchantId)!,
+        agents: data.agentIds.map((agentId) => {
+          return agents.find((a) => a.agentId === agentId)!;
+        }),
+      });
+    });
+  }
 
   findById(merchantId: number) {
     return this.prisma.merchant.findUnique({

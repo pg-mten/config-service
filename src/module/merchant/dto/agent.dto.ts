@@ -1,0 +1,43 @@
+import { ApiProperty } from '@nestjs/swagger';
+import Decimal from 'decimal.js';
+import { ToDecimalFixed } from 'src/decorator/decimal.decorator';
+import { DtoHelper } from 'src/shared/helper/dto.helper';
+
+export class AgentDto {
+  constructor(data: AgentDto) {
+    DtoHelper.assign(this, data);
+  }
+  @ApiProperty({ type: Number })
+  agentId: number;
+
+  @ApiProperty({ type: Number })
+  userId: number;
+
+  @ApiProperty({ type: String })
+  username: string;
+
+  @ApiProperty({ type: String })
+  email: string;
+
+  @ApiProperty({ type: String })
+  fullname: string;
+
+  @ApiProperty({ type: String })
+  address: string;
+
+  @ApiProperty({ type: String })
+  phone: string;
+
+  @ApiProperty({ type: String })
+  bankName: string;
+
+  @ApiProperty({ type: String })
+  accountNumber: string;
+
+  @ApiProperty({ type: String })
+  accountHolderName: string;
+
+  @ToDecimalFixed()
+  @ApiProperty({ type: String })
+  balance: Decimal;
+}

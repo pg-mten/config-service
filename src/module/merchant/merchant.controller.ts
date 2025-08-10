@@ -16,14 +16,22 @@ import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
 import { UpdateMerchantAgentFeeDto } from './dto/update-merchant-agent-fee';
 import { CreateMerchantAgentShareholderDto } from './dto/create-merchant-agent-shareholder.dto';
 import { UpdateMerchantAgentShareholderDto } from './dto/update-merchant-agent-shareholder.dto';
+import { MerchantAgentDto } from './dto/merchant-agent.dto';
 
 @Controller('merchant')
 @ApiTags('Merchant')
 export class MerchantController {
   constructor(private readonly merchantService: MerchantService) {}
 
+  @Get()
+  @ApiOperation({ summary: 'Merchant List with Agent detail' })
+  @ApiOkResponse({ type: MerchantAgentDto, isArray: true })
+  findAll() {
+    return this.merchantService.findAll();
+  }
+
   @Get(':merchantId/config')
-  @ApiOperation({ summary: 'Merchant fee config information' })
+  @ApiOperation({ summary: 'Merchant config information' })
   @ApiOkResponse({ type: MerchantConfigDto, isArray: true })
   findAllConfig(@Param('merchantId', ParseIntPipe) merchantId: number) {
     return this.merchantService.findAllConfig(merchantId);
