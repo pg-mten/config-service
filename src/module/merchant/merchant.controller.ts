@@ -66,7 +66,7 @@ export class MerchantController {
     return new ResponseDto({ status: ResponseStatus.CREATED });
   }
 
-  @Post(':merchantId/agent-shareholder')
+  @Patch(':merchantId/agent-shareholder')
   @ApiOperation({ summary: 'Create Agent shareholder' })
   @ApiBody({ type: UpdateMerchantAgentShareholderDto, isArray: true })
   async updateAgentShareholder(
