@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MerchantConfigDto } from './dto/merchant-config.dto';
-import { CreateMerchantFeeDto } from './dto/create-merchant-fee.dto';
+import { CreateMerchantAgentFeeDto } from './dto/create-merchant-agent-fee.dto';
 import { Prisma } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
+import { UpdateMerchantAgentFeeDto } from './dto/update-merchant-agent-fee';
+import { CreateMerchantAgentShareholderDto } from './dto/create-merchant-agent-shareholder.dto';
+import { ResponseException } from 'src/exception/response.exception';
 
 @Injectable()
 export class MerchantService {
@@ -50,15 +53,96 @@ export class MerchantService {
     return providers;
   }
 
-  create(merchantId: number, body: CreateMerchantFeeDto[]) {
-    this.prisma.agentFee.createManyAndReturn({
-      data: body.map((data) => {
-        return {
-          internalFeeId: data.internalFeeId,
-          merchantId: merchantId,
-          percentageForAgent: data.percentageForAgent,
-        } as Prisma.AgentFeeCreateManyInput;
-      }),
+  createProvider(merchantId: number, body: CreateMerchantAgentFeeDto[]) {
+    return this.prisma.$transaction(async (tx) => {
+      await tx.agentFee.createManyAndReturn({
+        data: body.map((data) => {
+          return {
+            internalFeeId: data.internalFeeId,
+            merchantId: merchantId,
+            percentageForAgent: data.percentageForAgent,
+          } as Prisma.AgentFeeCreateManyInput;
+        }),
+      });
     });
+  }
+
+  updateProvider(merchantId: number, body: UpdateMerchantAgentFeeDto[]) {
+    return this.prisma.$transaction(async (tx) => {
+      for (const agentFee of body) {
+        await tx.agentFee.update({
+          where: {
+            merchantId_internalFeeId: {
+              merchantId: merchantId,
+              internalFeeId: agentFee.internalFeeId,
+            },
+          },
+          data: { percentageForAgent: agentFee.percentageForAgent },
+        });
+      }
+    });
+  }
+
+  createAgentShareholder(
+    merchantId: number,
+    body: CreateMerchantAgentShareholderDto[],
+  ) {
+    this.agentShareholderValidity(
+      body.map((e) => e.percentagePerAgent as Decimal),
+    );
+    return this.prisma.$transaction(async (tx) => {
+      await tx.agentShareholder.createManyAndReturn({
+        data: body.map((data) => {
+          return {
+            agentId: data.agentId,
+            merchantId: merchantId,
+            percentagePerAgent: data.percentagePerAgent,
+          } as Prisma.AgentShareholderCreateManyInput;
+        }),
+      });
+    });
+  }
+
+  updateAgentShareholder(
+    merchantId: number,
+    body: CreateMerchantAgentShareholderDto[],
+  ) {
+    this.agentShareholderValidity(
+      body.map((e) => e.percentagePerAgent as Decimal),
+    );
+    return this.prisma.$transaction(async (tx) => {
+      for (const agentShareholder of body) {
+        await tx.agentShareholder.update({
+          where: {
+            agentId_merchantId: {
+              agentId: agentShareholder.agentId,
+              merchantId: merchantId,
+            },
+          },
+          data: {
+            percentagePerAgent: agentShareholder.percentagePerAgent,
+          },
+        });
+      }
+    });
+  }
+
+  private agentShareholderValidity(percentages: Decimal[]) {
+    /// Agent Shareholder Percentage sum must be 100%
+    const totalPercentage: Decimal = percentages.reduce<Decimal>(
+      (prev, curr) => {
+        return prev.plus(curr);
+      },
+      new Decimal(0),
+    );
+
+    if (totalPercentage.equals(new Decimal(100))) {
+      throw ResponseException.fromHttpExecption(
+        new UnprocessableEntityException(`Sum of fee percentage must be 100%`),
+        {
+          logic: `Current Sum of fee percentage [${totalPercentage.toFixed(2)}]`,
+        },
+      );
+    }
   }
 }

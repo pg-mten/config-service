@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InvalidRequestException } from 'src/exception/invalid-request.exception';
 import { CommonService } from 'src/module/common/common.service';
-import { CreateMerchantFeeDto } from 'src/module/merchant/dto/create-merchant-fee.dto';
+import { CreateMerchantAgentFeeDto } from 'src/module/merchant/dto/create-merchant-agent-fee.dto';
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
 
 @Injectable()
@@ -22,17 +22,17 @@ export class CreateMerchantFeePipe implements PipeTransform {
     });
     if (!Array.isArray(value)) {
       responseDto.error = {
-        all: 'Must be an array CreateMerchantFeeDto',
+        all: 'Must be an array CreateMerchantAgentFeeDto',
       };
       throw new InvalidRequestException(responseDto);
     }
 
-    // const createMerchantFeeDtos = value as CreateMerchantFeeDto[];
+    // const CreateMerchantFeeAgentDtos = value as CreateMerchantAgentFeeDto[];
     // const uniqueProviders = [
-    //   ...new Set(createMerchantFeeDtos.map((e) => e.)),
+    //   ...new Set(CreateMerchantFeeAgentDtos.map((e) => e.)),
     // ];
     // const uniquePaymentMethods = [
-    //   ...new Set(createMerchantFeeDtos.map((e) => e.paymentMethodName)),
+    //   ...new Set(CreateMerchantFeeAgentDtos.map((e) => e.paymentMethodName)),
     // ];
 
     // const commonProviders = await this.commonService.divAndValueIsExist(
@@ -48,7 +48,7 @@ export class CreateMerchantFeePipe implements PipeTransform {
     //   uniqueProviders.length + uniquePaymentMethods.length ===
     //   commonProviders.length + commonPaymentMethods.length
     // )
-    //   return createMerchantFeeDtos; // Continue to controller
+    //   return CreateMerchantFeeAgentDtos; // Continue to controller
 
     // responseDto.error = {
     //   all: 'There are invalid provider name or payment method name',
