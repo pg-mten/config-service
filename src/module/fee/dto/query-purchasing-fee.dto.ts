@@ -25,6 +25,6 @@ export class QueryPurchasingFeeDto {
   @ToDecimal()
   @Type(() => Decimal)
   @ValidateIf((o) => o.nominal !== undefined)
-  @ApiProperty({ type: String, example: '100' })
+  @ApiProperty({ type: Decimal, example: '100' })
   nominal: Decimal;
 }

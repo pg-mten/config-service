@@ -7,6 +7,6 @@ export class DateHelper {
   }
 
   static nowDate(): Date {
-    return this.now().toJSDate();
+    return DateTime.now().setZone(TIMEZONE).toJSDate();
   }
 }

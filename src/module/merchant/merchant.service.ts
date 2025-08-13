@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { MerchantConfigDto } from './dto/merchant-config.dto';
 import { CreateMerchantAgentFeeDto } from './dto/create-merchant-agent-fee.dto';
 import { Prisma } from '@prisma/client';
-import { Decimal } from '@prisma/client/runtime/library';
+import { Decimal } from 'decimal.js';
 import { UpdateMerchantAgentFeeDto } from './dto/update-merchant-agent-fee';
 import { CreateMerchantAgentShareholderDto } from './dto/create-merchant-agent-shareholder.dto';
 import { ResponseException } from 'src/exception/response.exception';
@@ -120,6 +120,9 @@ export class MerchantService {
 
   createProvider(merchantId: number, body: CreateMerchantAgentFeeDto[]) {
     return this.prisma.$transaction(async (tx) => {
+      await tx.merchant.create({
+        data: { id: merchantId, name: `Merchant ${merchantId}` },
+      });
       await tx.agentFee.createManyAndReturn({
         data: body.map((data) => {
           return {
@@ -152,9 +155,7 @@ export class MerchantService {
     merchantId: number,
     body: CreateMerchantAgentShareholderDto[],
   ) {
-    this.agentShareholderValidity(
-      body.map((e) => e.percentagePerAgent as Decimal),
-    );
+    this.agentShareholderValidity(body.map((e) => e.percentagePerAgent));
     return this.prisma.$transaction(async (tx) => {
       await tx.agentShareholder.createManyAndReturn({
         data: body.map((data) => {
@@ -172,9 +173,7 @@ export class MerchantService {
     merchantId: number,
     body: CreateMerchantAgentShareholderDto[],
   ) {
-    this.agentShareholderValidity(
-      body.map((e) => e.percentagePerAgent as Decimal),
-    );
+    this.agentShareholderValidity(body.map((e) => e.percentagePerAgent));
     return this.prisma.$transaction(async (tx) => {
       for (const agentShareholder of body) {
         await tx.agentShareholder.update({
@@ -200,8 +199,7 @@ export class MerchantService {
       },
       new Decimal(0),
     );
-
-    if (totalPercentage.equals(new Decimal(100))) {
+    if (!totalPercentage.eq(new Decimal(100))) {
       throw ResponseException.fromHttpExecption(
         new UnprocessableEntityException(`Sum of fee percentage must be 100%`),
         {

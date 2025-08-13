@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseArrayPipe,
   ParseIntPipe,
   Patch,
   Post,
@@ -11,7 +12,6 @@ import { MerchantService } from './merchant.service';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MerchantConfigDto } from './dto/merchant-config.dto';
 import { CreateMerchantAgentFeeDto } from './dto/create-merchant-agent-fee.dto';
-import { CreateMerchantFeePipe } from './pipe/create-merchant-fee.pipe';
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
 import { UpdateMerchantAgentFeeDto } from './dto/update-merchant-agent-fee';
 import { CreateMerchantAgentShareholderDto } from './dto/create-merchant-agent-shareholder.dto';
@@ -44,7 +44,8 @@ export class MerchantController {
   @ApiBody({ type: CreateMerchantAgentFeeDto, isArray: true })
   async createProvider(
     @Param('merchantId', ParseIntPipe) merchantId: number,
-    @Body(CreateMerchantFeePipe) body: CreateMerchantAgentFeeDto[],
+    @Body(new ParseArrayPipe({ items: CreateMerchantAgentFeeDto }))
+    body: CreateMerchantAgentFeeDto[],
   ) {
     await this.merchantService.createProvider(merchantId, body);
     return new ResponseDto({ status: ResponseStatus.CREATED });
@@ -57,8 +58,10 @@ export class MerchantController {
   @ApiBody({ type: UpdateMerchantAgentFeeDto, isArray: true })
   async updateProvider(
     @Param('merchantId', ParseIntPipe) merchantId: number,
-    @Body(CreateMerchantFeePipe) body: UpdateMerchantAgentFeeDto[],
+    @Body(new ParseArrayPipe({ items: UpdateMerchantAgentFeeDto }))
+    body: UpdateMerchantAgentFeeDto[],
   ) {
+    console.log({ merchantId, body });
     await this.merchantService.updateProvider(merchantId, body);
     return new ResponseDto({ status: ResponseStatus.UPDATED });
   }
@@ -68,7 +71,8 @@ export class MerchantController {
   @ApiBody({ type: CreateMerchantAgentShareholderDto, isArray: true })
   async createAgentShareholder(
     @Param('merchantId', ParseIntPipe) merchantId: number,
-    @Body(CreateMerchantFeePipe) body: CreateMerchantAgentShareholderDto[],
+    @Body(new ParseArrayPipe({ items: CreateMerchantAgentShareholderDto }))
+    body: CreateMerchantAgentShareholderDto[],
   ) {
     await this.merchantService.createAgentShareholder(merchantId, body);
     return new ResponseDto({ status: ResponseStatus.CREATED });
@@ -79,7 +83,8 @@ export class MerchantController {
   @ApiBody({ type: UpdateMerchantAgentShareholderDto, isArray: true })
   async updateAgentShareholder(
     @Param('merchantId', ParseIntPipe) merchantId: number,
-    @Body(CreateMerchantFeePipe) body: UpdateMerchantAgentShareholderDto[],
+    @Body(new ParseArrayPipe({ items: UpdateMerchantAgentShareholderDto }))
+    body: UpdateMerchantAgentShareholderDto[],
   ) {
     await this.merchantService.updateAgentShareholder(merchantId, body);
     return new ResponseDto({ status: ResponseStatus.UPDATED });

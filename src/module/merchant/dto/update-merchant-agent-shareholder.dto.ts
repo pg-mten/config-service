@@ -7,6 +7,6 @@ export class UpdateMerchantAgentShareholderDto {
   agentId: number;
 
   @ToDecimal()
-  @ApiProperty()
+  @ApiProperty({ type: Decimal })
   percentagePerAgent: Decimal;
 }

@@ -41,27 +41,27 @@ export async function feeSeed(prisma: PrismaClient) {
         settlementInterval: 60,
       },
     }),
-    prisma.merchant.create({
-      data: {
-        id: 3,
-        name: 'merchant 3',
-        settlementInterval: 90,
-      },
-    }),
-    prisma.merchant.create({
-      data: {
-        id: 4,
-        name: 'merchant 4',
-        settlementInterval: 120,
-      },
-    }),
-    prisma.merchant.create({
-      data: {
-        id: 5,
-        name: 'merchant 5',
-        settlementInterval: 120,
-      },
-    }),
+    // prisma.merchant.create({
+    //   data: {
+    //     id: 3,
+    //     name: 'merchant 3',
+    //     settlementInterval: 90,
+    //   },
+    // }),
+    // prisma.merchant.create({
+    //   data: {
+    //     id: 4,
+    //     name: 'merchant 4',
+    //     settlementInterval: 120,
+    //   },
+    // }),
+    // prisma.merchant.create({
+    //   data: {
+    //     id: 5,
+    //     name: 'merchant 5',
+    //     settlementInterval: 120,
+    //   },
+    // }),
   ]);
   console.log({ merchants });
 

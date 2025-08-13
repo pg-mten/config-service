@@ -7,6 +7,6 @@ export class CreateMerchantAgentFeeDto {
   internalFeeId: number;
 
   @ToDecimalNullable()
-  @ApiProperty()
+  @ApiProperty({ type: Decimal, required: false })
   percentageForAgent: Decimal | null;
 }

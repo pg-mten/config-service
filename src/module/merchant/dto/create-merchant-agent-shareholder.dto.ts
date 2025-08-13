@@ -6,7 +6,7 @@ export class CreateMerchantAgentShareholderDto {
   @ApiProperty()
   agentId: number;
 
+  @ApiProperty({ type: Decimal })
   @ToDecimal()
-  @ApiProperty()
   percentagePerAgent: Decimal;
 }

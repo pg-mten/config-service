@@ -38,6 +38,6 @@ export class MerchantDto {
   accountHolderName: string;
 
   @ToDecimalFixed()
-  @ApiProperty({ type: String })
+  @ApiProperty({ type: Decimal })
   balance: Decimal;
 }
