@@ -70,9 +70,7 @@ export class SettlementService {
     for (const merchant of merchants) {
       try {
         // TODO: Gantikan dengan logika settlement kamu
-        this.logger.log(
-          `▶ Settlement merchant ${merchant.id} [${merchant.name}]`,
-        );
+        this.logger.log(`▶ Settlement merchant ${merchant.id}`);
 
         // Simulasikan proses settlement
         // await this.settlementService.process(merchant.id);

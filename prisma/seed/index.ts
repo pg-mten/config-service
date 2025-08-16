@@ -195,13 +195,13 @@ async function main() {
   const merchantA = await prisma.merchant.upsert({
     where: { id: 1 },
     update: {},
-    create: { name: 'Merchant A', settlementInterval: 120 },
+    create: { settlementInterval: 120 },
   });
 
   const merchantB = await prisma.merchant.upsert({
     where: { id: 2 },
     update: {},
-    create: { name: 'Merchant B', settlementInterval: 60 },
+    create: { settlementInterval: 60 },
   });
   console.log({ merchantA, merchantB });
 
