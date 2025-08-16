@@ -11,7 +11,7 @@ import {
 import { MerchantService } from './merchant.service';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MerchantConfigDto } from './dto/merchant-config.dto';
-import { CreateMerchantAgentFeeDto } from './dto/create-merchant-agent-fee.dto';
+import { CreateMerchantFeeDto } from './dto/create-merchant-fee.dto';
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
 import { UpdateMerchantAgentFeeDto } from './dto/update-merchant-agent-fee';
 import { CreateMerchantAgentShareholderDto } from './dto/create-merchant-agent-shareholder.dto';
@@ -43,11 +43,11 @@ export class MerchantController {
   @ApiOperation({
     summary: 'Create Merchant chosing provider and payment method',
   })
-  @ApiBody({ type: CreateMerchantAgentFeeDto, isArray: true })
+  @ApiBody({ type: CreateMerchantFeeDto, isArray: true })
   async createProvider(
     @Param('merchantId', ParseIntPipe) merchantId: number,
-    @Body(new ParseArrayPipe({ items: CreateMerchantAgentFeeDto }))
-    body: CreateMerchantAgentFeeDto[],
+    @Body(new ParseArrayPipe({ items: CreateMerchantFeeDto }))
+    body: CreateMerchantFeeDto[],
   ) {
     await this.merchantService.createProvider(merchantId, body);
     return new ResponseDto({ status: ResponseStatus.CREATED });

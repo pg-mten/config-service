@@ -1,7 +1,7 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MerchantConfigDto } from './dto/merchant-config.dto';
-import { CreateMerchantAgentFeeDto } from './dto/create-merchant-agent-fee.dto';
+import { CreateMerchantFeeDto } from './dto/create-merchant-fee.dto';
 import { Prisma } from '@prisma/client';
 import { Decimal } from 'decimal.js';
 import { UpdateMerchantAgentFeeDto } from './dto/update-merchant-agent-fee';
@@ -131,34 +131,44 @@ export class MerchantService {
     });
   }
 
-  createProvider(merchantId: number, body: CreateMerchantAgentFeeDto[]) {
+  createProvider(merchantId: number, body: CreateMerchantFeeDto[]) {
     return this.prisma.$transaction(async (tx) => {
       await tx.merchant.create({
         data: { id: merchantId },
       });
-      await tx.agentFee.createManyAndReturn({
-        data: body.map((data) => {
+      const merchantFeeManyInput: Prisma.MerchantFeeCreateManyInput[] =
+        body.map((data) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return {
-            internalFeeId: data.internalFeeId,
-            merchantId: merchantId,
-            percentageForAgent: data.percentageForAgent,
-          } as Prisma.AgentFeeCreateManyInput;
-        }),
+            baseFeeId: data.baseFeeId,
+            isPercentageInternal: data.isPercentageInternal,
+            feeInternal: data.feeInternal,
+            isPercentageAgent: data.isPercentageAgent,
+            feeAgent: data.feeAgent ?? new Decimal(0),
+          } as Prisma.MerchantFeeCreateManyInput;
+        });
+      await tx.merchantFee.createManyAndReturn({
+        data: merchantFeeManyInput,
       });
     });
   }
 
   updateProvider(merchantId: number, body: UpdateMerchantAgentFeeDto[]) {
     return this.prisma.$transaction(async (tx) => {
-      for (const agentFee of body) {
-        await tx.agentFee.update({
+      for (const merchantFee of body) {
+        await tx.merchantFee.update({
           where: {
-            merchantId_internalFeeId: {
-              merchantId: merchantId,
-              internalFeeId: agentFee.internalFeeId,
+            merchantId_baseFeeId: {
+              merchantId,
+              baseFeeId: merchantFee.baseFeeId,
             },
           },
-          data: { percentageForAgent: agentFee.percentageForAgent },
+          data: {
+            isPercentageInternal: merchantFee.isPercentageInternal,
+            feeInternal: merchantFee.feeInternal,
+            isPercentageAgent: merchantFee.isPercentageAgent,
+            feeAgent: merchantFee.feeAgent ?? new Decimal(0),
+          },
         });
       }
     });

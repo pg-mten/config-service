@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InvalidRequestException } from 'src/exception/invalid-request.exception';
 import { CommonService } from 'src/module/common/common.service';
-import { CreateMerchantAgentFeeDto } from 'src/module/merchant/dto/create-merchant-agent-fee.dto';
+import { CreateMerchantAgentFeeDto } from 'src/module/merchant/dto/create-merchant-fee.dto';
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
 
 @Injectable()
