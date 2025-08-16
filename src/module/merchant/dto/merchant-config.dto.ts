@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import Decimal from 'decimal.js';
-import { ToDecimalFixed } from 'src/decorator/decimal.decorator';
+import { DateTime } from 'luxon';
+import { FeeConfigDto } from './fee-config.dto';
+import { AgentShareholderDto } from './agent-shareholder.dto';
 
 export class MerchantConfigDto {
   constructor(data: MerchantConfigDto) {
@@ -8,23 +9,14 @@ export class MerchantConfigDto {
   }
 
   @ApiProperty()
-  internalFeeId: number;
-
-  @ToDecimalFixed()
-  @ApiProperty({ type: Decimal })
-  internalPercentage: Decimal;
+  settlementInternal: number;
 
   @ApiProperty()
-  provider: string;
+  lastSettlementAt: DateTime | null;
 
-  @ApiProperty()
-  paymentMethod: string;
+  @ApiProperty({ type: AgentShareholderDto, isArray: true })
+  agentShareholders: AgentShareholderDto[];
 
-  @ToDecimalFixed()
-  @ApiProperty({ type: Decimal })
-  providerPercentage: Decimal;
-
-  @ToDecimalFixed()
-  @ApiProperty({ type: Decimal })
-  agentPercentage: Decimal;
+  @ApiProperty({ type: FeeConfigDto, isArray: true })
+  fees: FeeConfigDto[];
 }

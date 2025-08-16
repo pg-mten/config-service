@@ -24,7 +24,7 @@ export class MerchantController {
   constructor(private readonly merchantService: MerchantService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Merchant List with Agent detail' })
+  @ApiOperation({ summary: 'Merchant List with Agent Shareholder' })
   @ApiOkResponse({ type: MerchantAgentDto, isArray: true })
   findAll() {
     return this.merchantService.findAll();
@@ -33,8 +33,10 @@ export class MerchantController {
   @Get(':merchantId/config')
   @ApiOperation({ summary: 'Merchant config information' })
   @ApiOkResponse({ type: MerchantConfigDto, isArray: true })
-  findAllConfig(@Param('merchantId', ParseIntPipe) merchantId: number) {
-    return this.merchantService.findAllConfig(merchantId);
+  findAllConfigByMerchantId(
+    @Param('merchantId', ParseIntPipe) merchantId: number,
+  ) {
+    return this.merchantService.findAllConfigByMerchantId(merchantId);
   }
 
   @Post(':merchantId/provider')

@@ -14,6 +14,11 @@ import { ResponseDto } from 'src/shared/response.dto';
 import { MerchantDto } from './dto/merchant.dto';
 import { AgentDto } from './dto/agent.dto';
 import { MerchantAgentDto } from './dto/merchant-agent.dto';
+import { FeeConfigDto } from './dto/fee-config.dto';
+import { MerchantFeeConfigDto } from './dto/merchant-fee-config.dto';
+import { BaseFeeConfigDto } from './dto/base-fee-config.dto';
+import { DateHelper } from 'src/shared/helper/date.helper';
+import { AgentShareholderDto } from './dto/agent-shareholder.dto';
 
 @Injectable()
 export class MerchantService {
@@ -85,43 +90,51 @@ export class MerchantService {
     });
   }
 
-  async findAllConfig(merchantId: number) {
+  async findAllConfigByMerchantId(merchantId: number) {
     /**
-     * Agent
-     * Provider
-     * Payment Method
+     * Merchant
      */
-    const agentFees = await this.prisma.agentFee.findMany({
+    const merchant = await this.prisma.merchant.findUniqueOrThrow({
+      where: { id: merchantId },
+    });
+
+    /**
+     * Agent Shareholder
+     */
+    const agentShareholders = await this.prisma.agentShareholder.findMany({
       where: { merchantId: merchantId },
     });
-    const providers: MerchantConfigDto[] = [];
-    for (const agentFee of agentFees) {
-      const internalFee = await this.prisma.internalFee.findFirstOrThrow({
-        where: {
-          id: agentFee.internalFeeId,
-        },
-        include: { providerFee: true },
+    const agentShareholderDtos = agentShareholders.map((agentShareholder) => {
+      return new AgentShareholderDto({ ...agentShareholder });
+    });
+
+    /**
+     * Merchant Fee and Base Fee (config)
+     */
+    const merchantFees = await this.prisma.merchantFee.findMany({
+      where: { merchantId },
+      include: { baseFee: true },
+    });
+    const feeConfigDtos: FeeConfigDto[] = merchantFees.map((merchantFee) => {
+      return new FeeConfigDto({
+        baseFeeConfig: new BaseFeeConfigDto({ ...merchantFee.baseFee }),
+        merchantFeeConfig: new MerchantFeeConfigDto({ ...merchantFee }),
       });
-      const providerFee = internalFee.providerFee;
-      providers.push(
-        new MerchantConfigDto({
-          internalFeeId: internalFee.id,
-          internalPercentage: internalFee.percentageInternal,
-          provider: providerFee.providerName,
-          paymentMethod: providerFee.paymentMethodName,
-          providerPercentage: providerFee.percentageProvider,
-          agentPercentage: agentFee.percentageForAgent ?? new Decimal(0),
-        }),
-      );
-    }
-    providers.sort((a, b) => a.provider.localeCompare(b.provider));
-    return providers;
+    });
+    console.log({ feeConfigDtos });
+
+    return new MerchantConfigDto({
+      settlementInternal: merchant.settlementInterval,
+      lastSettlementAt: DateHelper.fromJsDate(merchant.lastSettlementAt),
+      agentShareholders: agentShareholderDtos,
+      fees: feeConfigDtos,
+    });
   }
 
   createProvider(merchantId: number, body: CreateMerchantAgentFeeDto[]) {
     return this.prisma.$transaction(async (tx) => {
       await tx.merchant.create({
-        data: { id: merchantId, name: `Merchant ${merchantId}` },
+        data: { id: merchantId },
       });
       await tx.agentFee.createManyAndReturn({
         data: body.map((data) => {

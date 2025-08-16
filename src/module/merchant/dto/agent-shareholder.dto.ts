@@ -3,19 +3,15 @@ import Decimal from 'decimal.js';
 import { ToDecimalFixed } from 'src/decorator/decimal.decorator';
 import { DtoHelper } from 'src/shared/helper/dto.helper';
 
-export class AgentDto {
-  constructor(data: AgentDto) {
+export class AgentShareholderDto {
+  constructor(data: AgentShareholderDto) {
     DtoHelper.assign(this, data);
   }
 
-  @ApiProperty()
-  id: number;
+  @ApiProperty({ type: Number })
+  agentId: number;
 
   @ToDecimalFixed()
   @ApiProperty({ type: Decimal })
-  nominal: Decimal;
-
-  @ToDecimalFixed()
-  @ApiProperty({ type: Decimal })
-  percentage: Decimal;
+  percentagePerAgent: Decimal;
 }

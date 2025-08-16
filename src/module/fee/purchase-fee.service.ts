@@ -2,7 +2,7 @@ import { TransactionType } from 'src/shared/constant/fee.constant';
 import { PrismaService } from '../prisma/prisma.service';
 import { FilterPurchasingFeeDto } from './dto/filter-purchasing-fee.dto';
 import Decimal from 'decimal.js';
-import { AgentDto } from './dto/agent.dto';
+import { AgentFeeEachDto } from './dto/agent-fee-each.dto';
 import { ProviderFeeDto } from './dto/provider-fee.dto';
 import { InternalFeeDto } from './dto/internal-fee.dto';
 import { AgentFeeDto } from './dto/agent-fee.dto';
@@ -88,7 +88,7 @@ export class PurchaseFeeService {
     /**
      * Find Agent Shareholder based on Merchant and Calculate Nominal each Agent
      */
-    const agentDtos: AgentDto[] = [];
+    const agentDtos: AgentFeeEachDto[] = [];
     if (isMerchantHaveAgents) {
       const shareholders = await this.prisma.agentShareholder.findMany({
         where: { merchantId },
@@ -96,7 +96,7 @@ export class PurchaseFeeService {
       });
       agentDtos.push(
         ...shareholders.map((shareholder) => {
-          return new AgentDto({
+          return new AgentFeeEachDto({
             id: shareholder.agent.id,
             nominal: feeAgentTotal.times(
               shareholder.percentagePerAgent.dividedBy(100),
