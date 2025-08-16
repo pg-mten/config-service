@@ -13,7 +13,7 @@ function getRandomPercentage(): number {
   const maxFloor = Math.floor(max / 5);
   const multiplier =
     Math.floor(Math.random() * (maxFloor - minCeil + 1)) + minCeil;
-  return multiplier * 2;
+  return (multiplier * 2) / 100;
 }
 
 export async function feeSeed(prisma: PrismaClient) {

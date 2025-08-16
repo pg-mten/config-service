@@ -3,23 +3,30 @@ import Decimal from 'decimal.js';
 import { ToDecimalFixed } from 'src/decorator/decimal.decorator';
 import { DtoHelper } from 'src/shared/helper/dto.helper';
 
-export class MerchantFeeDto {
-  constructor(data: MerchantFeeDto) {
+export class BaseFeeDto {
+  constructor(data: BaseFeeDto) {
     DtoHelper.assign(this, data);
   }
 
   @ApiProperty()
   id: number;
 
-  @ToDecimalFixed()
-  @ApiProperty({ type: Decimal })
-  nominal: Decimal;
+  @ApiProperty()
+  code: string;
+
+  @ApiProperty()
+  providerName: string;
+
+  @ApiProperty()
+  paymentMethodName: string;
+
+  @ApiProperty()
+  transactionTypeName: string;
+
+  @ApiProperty()
+  isPercentageProvider: boolean;
 
   @ToDecimalFixed()
   @ApiProperty({ type: Decimal })
-  merchantNetAmount: Decimal;
-
-  @ToDecimalFixed()
-  @ApiProperty({ type: Decimal })
-  percentage: Decimal;
+  feeProvider: Decimal;
 }

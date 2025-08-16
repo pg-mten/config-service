@@ -6,7 +6,7 @@ import { ToDecimal } from 'src/decorator/decimal.decorator';
 import { PaymentMethodExist } from 'src/module/common/validator/payment-method-exist.validator';
 import { ProviderExist } from 'src/module/common/validator/provider-exist.validator';
 
-export class QueryPurchasingFeeDto {
+export class FilterPurchasingFeeDto {
   @IsNumber()
   @Type(() => Number)
   @ApiProperty({ example: 1 })

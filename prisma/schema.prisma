@@ -15,10 +15,19 @@ datasource db {
   schemas  = ["config"]
 }
 
+model Merchant {
+  id                 Int       @id @default(autoincrement())
+  settlementInterval Int       @default(120) // in minutes like 30, 60, 120 or 0 for bypass interval 30
+  lastSettlementAt   DateTime?
+
+  merchantFees     MerchantFee[]
+  AgentShareholder AgentShareholder[]
+
+  @@schema("config")
+}
+
 model Agent {
   id Int @id
-
-  name String
 
   AgentShareholders AgentShareholder[]
 
@@ -38,77 +47,78 @@ model AgentShareholder {
   @@schema("config")
 }
 
-// Addon Modal (ALL)
-model AgentFee {
-  id            Int         @id @default(autoincrement())
-  merchantId    Int
-  merchant      Merchant    @relation(fields: [merchantId], references: [id])
-  internalFeeId Int
-  internalFee   InternalFee @relation(fields: [internalFeeId], references: [id])
-
-  percentageForAgent Decimal?
-
-  @@unique([merchantId, internalFeeId])
-  @@schema("config")
-}
-
-model Merchant {
-  id Int @id
-
-  name               String
-  settlementInterval Int       @default(120) // in minutes like 30, 60, 120 or 0 for bypass interval 30
-  lastSettlementAt   DateTime?
-
-  AgentShareholders AgentShareholder[]
-  AgentFee          AgentFee[]
-
-  @@schema("config")
-}
-
+// -- 1. Provider
 model Provider {
-  name String @id
-
-  ProviderFee          ProviderFee[]
+  // id        Int      @id @default(autoincrement())
+  // code      String   @unique
+  name                 String    @id
   reconciliationTime   String //format: '02:00' (HH:mm)
   lastReconciliationAt DateTime?
 
+  baseFees BaseFee[]
+
   @@schema("config")
 }
 
-// Modal
-model ProviderFee {
-  id                Int           @id @default(autoincrement())
-  providerName      String
-  provider          Provider      @relation(fields: [providerName], references: [name])
-  paymentMethodName String
-  paymentMethod     PaymentMethod @relation(fields: [paymentMethodName], references: [name])
-
-  percentageProvider Decimal
-
-  InternalFee InternalFee[]
-
-  @@unique([providerName, paymentMethodName])
-  @@schema("config")
-}
-
+// -- 2. Payment Method
 model PaymentMethod {
+  // id        Int      @id @default(autoincrement())
   name String @id
 
-  ProviderFee ProviderFee[]
+  baseFees BaseFee[]
 
   @@schema("config")
 }
 
-// Margin PG
-model InternalFee {
-  id            Int         @id @default(autoincrement())
-  providerFeeId Int         @unique
-  providerFee   ProviderFee @relation(fields: [providerFeeId], references: [id])
+// -- 3. Transaction Type
+model TransactionType {
+  // id        Int      @id @default(autoincrement())
+  name String @id
 
-  percentageInternal Decimal
+  baseFees BaseFee[]
 
-  AgentFee AgentFee[]
+  @@schema("config")
+}
 
+// -- 4. Base Fee Config (default: hanya fee provider)
+model BaseFee {
+  id                  Int    @id @default(autoincrement())
+  code                String @unique // PROVIDER_PAYMENTMETHOD_TRANSACTIONTYPE => format
+  providerName        String
+  paymentMethodName   String
+  transactionTypeName String
+
+  isPercentageProvider Boolean @default(false)
+  feeProvider          Decimal @default(0.0) @db.Decimal(10, 4)
+
+  provider        Provider        @relation(fields: [providerName], references: [name])
+  paymentMethod   PaymentMethod   @relation(fields: [paymentMethodName], references: [name])
+  transactionType TransactionType @relation(fields: [transactionTypeName], references: [name])
+
+  merchantFees MerchantFee[]
+
+  @@schema("config")
+}
+
+// -- 5. Merchant Fee Config (override internal & agent fee per merchant)
+model MerchantFee {
+  id         Int @id @default(autoincrement())
+  merchantId Int
+  baseFeeId  Int
+
+  isPercentageInternal Boolean @default(false)
+  feeInternal          Decimal @default(0.0) @db.Decimal(10, 4)
+
+  isPercentageAgent Boolean @default(false)
+  feeAgent          Decimal @default(0.0) @db.Decimal(10, 4)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  merchant Merchant @relation(fields: [merchantId], references: [id])
+  baseFee  BaseFee  @relation(fields: [baseFeeId], references: [id])
+
+  @@unique([merchantId, baseFeeId])
   @@schema("config")
 }
 

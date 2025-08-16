@@ -7,13 +7,14 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { CommonService } from 'src/module/common/common.service';
+import { CommonDiv } from 'src/shared/constant/fee.constant';
 
 @Injectable()
 @ValidatorConstraint({ async: true })
 export class ProviderExistValidator implements ValidatorConstraintInterface {
   constructor(private readonly commonService: CommonService) {}
 
-  private readonly div = 'PROVIDER';
+  private readonly div = CommonDiv.PROVIDER;
 
   async validate(
     value: string,
