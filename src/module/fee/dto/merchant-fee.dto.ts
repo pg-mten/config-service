@@ -17,9 +17,9 @@ export class MerchantFeeDto {
 
   @ToDecimalFixed()
   @ApiProperty({ type: Decimal })
-  merchantNetAmount: Decimal;
+  netNominal: Decimal;
 
   @ToDecimalFixed()
   @ApiProperty({ type: Decimal })
-  percentage: Decimal;
+  feePercentage: Decimal;
 }

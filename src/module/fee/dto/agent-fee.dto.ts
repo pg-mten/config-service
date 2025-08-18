@@ -13,6 +13,9 @@ export class AgentFeeDto {
   @ApiProperty({ type: Decimal })
   nominal: Decimal;
 
+  @ApiProperty()
+  isPercentage: boolean;
+
   @ToDecimalFixed()
   @ApiProperty({ type: Decimal })
   fee: Decimal;

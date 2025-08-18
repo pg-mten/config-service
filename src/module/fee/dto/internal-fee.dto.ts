@@ -7,6 +7,7 @@ export class InternalFeeDto {
   constructor(data: InternalFeeDto) {
     DtoHelper.assign(this, data);
   }
+
   @ToDecimalFixed()
   @ApiProperty({ type: Decimal })
   nominal: Decimal;

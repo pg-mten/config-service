@@ -101,7 +101,7 @@ export class PurchaseFeeService {
             nominal: feeAgentTotal.times(
               shareholder.percentagePerAgent.dividedBy(100),
             ),
-            percentage: shareholder.percentagePerAgent,
+            feePercentage: shareholder.percentagePerAgent,
           });
         }),
       );
@@ -137,21 +137,22 @@ export class PurchaseFeeService {
     });
     const agentFeeDto = new AgentFeeDto({
       nominal: feeAgentTotal,
+      isPercentage: merchantFee.isPercentageAgent,
       fee: merchantFee.feeAgent,
       agents: agentDtos,
     });
     const merchantFeeDto = new MerchantFeeDto({
       id: merchantId,
-      merchantNetAmount: merchantNetAmount,
+      netNominal: merchantNetAmount,
       nominal: nominal,
-      percentage: merchantPercentage,
+      feePercentage: merchantPercentage,
     });
 
     return new PurchasingFeeDto({
-      provider: providerFeeDto,
-      internal: internalFeeDto,
-      agent: agentFeeDto,
-      merchant: merchantFeeDto,
+      providerFee: providerFeeDto,
+      internalFee: internalFeeDto,
+      agentFee: agentFeeDto,
+      merchantFee: merchantFeeDto,
     });
   }
 }
