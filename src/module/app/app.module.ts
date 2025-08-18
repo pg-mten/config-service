@@ -22,6 +22,7 @@ import { FeeModule } from '../fee/fee.module';
 import { MerchantModule } from '../merchant/merchant.module';
 import { SettlementModule } from '../settlement/settlement.module';
 import { ReconciliationModule } from '../reconciliation/reconciliation.module';
+import { AgentModule } from '../agent/agent.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ReconciliationModule } from '../reconciliation/reconciliation.module';
     MerchantModule,
     SettlementModule,
     ReconciliationModule,
+    AgentModule,
   ],
   controllers: [AppController],
   providers: [

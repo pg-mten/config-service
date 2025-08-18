@@ -17,6 +17,7 @@ import { UpdateMerchantAgentFeeDto } from './dto/update-merchant-agent-fee';
 import { CreateMerchantAgentShareholderDto } from './dto/create-merchant-agent-shareholder.dto';
 import { UpdateMerchantAgentShareholderDto } from './dto/update-merchant-agent-shareholder.dto';
 import { MerchantAgentDto } from './dto/merchant-agent.dto';
+import { CreateMerchantDto } from './dto/create-merchant.dto';
 
 @Controller('merchant')
 @ApiTags('Merchant')
@@ -37,6 +38,14 @@ export class MerchantController {
     @Param('merchantId', ParseIntPipe) merchantId: number,
   ) {
     return this.merchantService.findAllConfigByMerchantId(merchantId);
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Create Merchant' })
+  @ApiBody({ type: CreateMerchantDto })
+  async create(@Body() body: CreateMerchantDto) {
+    await this.merchantService.create(body);
+    return new ResponseDto({ status: ResponseStatus.CREATED });
   }
 
   @Post(':merchantId/provider')

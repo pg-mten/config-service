@@ -19,6 +19,7 @@ import { MerchantFeeConfigDto } from './dto/merchant-fee-config.dto';
 import { BaseFeeConfigDto } from './dto/base-fee-config.dto';
 import { DateHelper } from 'src/shared/helper/date.helper';
 import { AgentShareholderDto } from './dto/agent-shareholder.dto';
+import { CreateMerchantDto } from './dto/create-merchant.dto';
 
 @Injectable()
 export class MerchantService {
@@ -131,16 +132,26 @@ export class MerchantService {
     });
   }
 
+  create(body: CreateMerchantDto) {
+    const { id, settlementInterval } = body;
+    return this.prisma.merchant.create({
+      data: {
+        id,
+        settlementInterval,
+      },
+    });
+  }
+
   createProvider(merchantId: number, body: CreateMerchantFeeDto[]) {
     return this.prisma.$transaction(async (tx) => {
-      const merchant = await tx.merchant.create({
-        data: { id: merchantId },
-      });
-      console.log({ merchant });
+      // const merchant = await tx.merchant.create({
+      //   data: { id: merchantId },
+      // });
+      // console.log({ merchant });
       const merchantFeeManyInput: Prisma.MerchantFeeCreateManyInput[] =
         body.map((data) => {
           return {
-            merchantId: merchant.id,
+            merchantId: merchantId,
             baseFeeId: data.baseFeeId,
             isPercentageInternal: data.isPercentageInternal,
             feeInternal: data.feeInternal,
