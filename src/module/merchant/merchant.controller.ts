@@ -44,6 +44,7 @@ export class MerchantController {
   @ApiOperation({ summary: 'Create Merchant' })
   @ApiBody({ type: CreateMerchantDto })
   async create(@Body() body: CreateMerchantDto) {
+    console.log({ body });
     await this.merchantService.create(body);
     return new ResponseDto({ status: ResponseStatus.CREATED });
   }

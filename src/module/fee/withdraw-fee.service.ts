@@ -1,22 +1,22 @@
-import { TransactionType } from 'src/shared/constant/fee.constant';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { FilterPurchasingFeeDto } from './dto/filter-purchasing-fee.dto';
-import Decimal from 'decimal.js';
+import { FilterWithdrawFeeDto } from './dto/filter-withdraw-fee.dto';
 import { AgentFeeEachDto } from './dto/agent-fee-each.dto';
+import Decimal from 'decimal.js';
+import { TransactionType } from 'src/shared/constant/fee.constant';
 import { ProviderFeeDto } from './dto/provider-fee.dto';
 import { InternalFeeDto } from './dto/internal-fee.dto';
 import { AgentFeeDto } from './dto/agent-fee.dto';
 import { MerchantFeeDto } from './dto/merchant-fee.dto';
-import { PurchasingFeeDto } from './dto/purchashing-fee.dto';
-import { Injectable } from '@nestjs/common';
+import { WithdrawFeeDto } from './dto/withdraw-fee.dto';
 
 @Injectable()
-export class PurchaseFeeService {
+export class WithdrawFeeService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private readonly transactionTypeName = TransactionType.PURCHASE;
+  private readonly transactionTypeName = TransactionType.WITHDRAW;
 
-  async calculatePurchaseFee(filter: FilterPurchasingFeeDto) {
+  async calculateWithdrawFee(filter: FilterWithdrawFeeDto) {
     const { merchantId, providerName, paymentMethodName, nominal } = filter;
 
     /**
@@ -38,7 +38,7 @@ export class PurchaseFeeService {
     if (baseFee.isPercentageProvider) {
       feeProviderTotal = nominal.times(baseFee.feeProvider.dividedBy(100));
     } else {
-      feeProviderTotal = baseFee.feeProvider;
+      feeProviderTotal = nominal.minus(baseFee.feeProvider);
     }
     console.log({ feeProviderTotal });
 
@@ -62,7 +62,7 @@ export class PurchaseFeeService {
     if (merchantFee.isPercentageInternal) {
       feeInternalTotal = nominal.times(merchantFee.feeInternal.dividedBy(100));
     } else {
-      feeInternalTotal = merchantFee.feeInternal;
+      feeInternalTotal = nominal.minus(merchantFee.feeInternal);
     }
     console.log({ feeInternalTotal });
 
@@ -80,7 +80,7 @@ export class PurchaseFeeService {
       if (merchantFee.isPercentageAgent) {
         feeAgentTotal = nominal.times(merchantFee.feeAgent.dividedBy(100));
       } else {
-        feeAgentTotal = merchantFee.feeAgent;
+        feeAgentTotal = nominal.minus(merchantFee.feeAgent);
       }
     }
     console.log({ feeAgentTotal });
@@ -113,8 +113,8 @@ export class PurchaseFeeService {
     // Calculate merchant net amount
     const merchantNetAmount = nominal
       .minus(feeProviderTotal)
-      .minus(feeInternalTotal)
-      .minus(feeAgentTotal);
+      .sub(feeInternalTotal)
+      .sub(feeAgentTotal);
 
     // Calculate merchant percentage
     const merchantPercentage = merchantNetAmount.dividedBy(nominal).times(100);
@@ -148,7 +148,7 @@ export class PurchaseFeeService {
       feePercentage: merchantPercentage,
     });
 
-    return new PurchasingFeeDto({
+    return new WithdrawFeeDto({
       providerFee: providerFeeDto,
       internalFee: internalFeeDto,
       agentFee: agentFeeDto,
