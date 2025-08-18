@@ -1,6 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
+import { DateHelper } from 'src/shared/helper/date.helper';
+import { UpdateSettlementInternalDto } from './dto/update-settlement-internal.dto';
+import axios from 'axios';
+import { ResponseDto } from 'src/shared/response.dto';
+import { SettlementInternalDto } from './dto/settlement-internal.dto';
+import { URL_TRANSACTION } from 'src/shared/constant/url.constant';
 
 @Injectable()
 export class SettlementService {
@@ -39,7 +45,7 @@ export class SettlementService {
   }
 
   async runForInterval(intervalInMinutes: number) {
-    const now = new Date();
+    const now = DateHelper.now();
 
     // Ambil merchant yang memiliki interval yang sesuai DAN waktunya sudah lewat
     const merchants = await this.prisma.merchant.findMany({
@@ -49,7 +55,7 @@ export class SettlementService {
           { lastSettlementAt: null },
           {
             lastSettlementAt: {
-              lt: new Date(now.getTime() - intervalInMinutes * 60 * 1000),
+              lt: new Date(now.toMillis() - intervalInMinutes * 60 * 1000),
             },
           },
         ],
@@ -67,25 +73,37 @@ export class SettlementService {
       `Menjalankan settlement untuk ${merchants.length} merchant (interval ${intervalInMinutes} menit)`,
     );
 
-    for (const merchant of merchants) {
-      try {
-        // TODO: Gantikan dengan logika settlement kamu
-        this.logger.log(`▶ Settlement merchant ${merchant.id}`);
+    const merchantIds: number[] = merchants.map((merchant) => merchant.id);
 
-        // Simulasikan proses settlement
-        // await this.settlementService.process(merchant.id);
+    const updateSettlementInternalDto = new UpdateSettlementInternalDto({
+      date: now,
+      interval: intervalInMinutes,
+      merchantIds,
+    });
 
-        // Update waktu terakhir settlement
-        await this.prisma.merchant.update({
-          where: { id: merchant.id },
-          data: { lastSettlementAt: now },
-        });
-      } catch (error) {
-        this.logger.error(
-          `❌ Gagal settlement merchant ${merchant.id}`,
-          error.stack,
+    try {
+      const res = await axios.patch<ResponseDto<SettlementInternalDto>>(
+        `${URL_TRANSACTION}/settlement/internal`,
+        updateSettlementInternalDto,
+      );
+      const data = res.data.data!;
+      const { merchantIds } = data;
+
+      await this.prisma.$transaction(async (tx) => {
+        await Promise.all(
+          merchantIds.map((merchantId) => {
+            return tx.merchant.update({
+              where: { id: merchantId },
+              data: { lastSettlementAt: now.toJSDate() },
+            });
+          }),
         );
-      }
+      });
+      return data;
+    } catch (error) {
+      console.log(error);
+      this.logger.error(error);
+      throw error;
     }
   }
 }

@@ -26,6 +26,7 @@ async function main() {
   // 1. Provider
   const providers = await prisma.provider.createMany({
     data: [
+      { name: 'INTERNAL', reconciliationTime: '02:00' },
       { name: 'NETZME', reconciliationTime: '02:00' },
       { name: 'DANA', reconciliationTime: '02:00' },
     ],
