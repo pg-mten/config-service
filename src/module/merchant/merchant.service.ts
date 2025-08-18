@@ -133,13 +133,14 @@ export class MerchantService {
 
   createProvider(merchantId: number, body: CreateMerchantFeeDto[]) {
     return this.prisma.$transaction(async (tx) => {
-      await tx.merchant.create({
+      const merchant = await tx.merchant.create({
         data: { id: merchantId },
       });
+      console.log({ merchant });
       const merchantFeeManyInput: Prisma.MerchantFeeCreateManyInput[] =
         body.map((data) => {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return {
+            merchantId: merchant.id,
             baseFeeId: data.baseFeeId,
             isPercentageInternal: data.isPercentageInternal,
             feeInternal: data.feeInternal,

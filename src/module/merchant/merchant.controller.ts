@@ -49,6 +49,7 @@ export class MerchantController {
     @Body(new ParseArrayPipe({ items: CreateMerchantFeeDto }))
     body: CreateMerchantFeeDto[],
   ) {
+    console.log({ merchantId, body });
     await this.merchantService.createProvider(merchantId, body);
     return new ResponseDto({ status: ResponseStatus.CREATED });
   }
@@ -76,6 +77,7 @@ export class MerchantController {
     @Body(new ParseArrayPipe({ items: CreateMerchantAgentShareholderDto }))
     body: CreateMerchantAgentShareholderDto[],
   ) {
+    console.log({ merchantId, body });
     await this.merchantService.createAgentShareholder(merchantId, body);
     return new ResponseDto({ status: ResponseStatus.CREATED });
   }

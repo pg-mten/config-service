@@ -23,6 +23,11 @@ function getRandomDouble(): number {
 async function main() {
   console.log('Seeding data...');
 
+  const agents = await prisma.agent.createMany({
+    data: [{ id: 1 }, { id: 2 }],
+  });
+  console.log({ agents });
+
   // 1. Provider
   const providers = await prisma.provider.createMany({
     data: [
