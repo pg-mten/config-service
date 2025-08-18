@@ -112,9 +112,9 @@ export class WithdrawFeeService {
      */
     // Calculate merchant net amount
     const merchantNetAmount = nominal
-      .minus(feeProviderTotal)
-      .sub(feeInternalTotal)
-      .sub(feeAgentTotal);
+      .plus(feeProviderTotal)
+      .plus(feeInternalTotal)
+      .plus(feeAgentTotal);
 
     // Calculate merchant percentage
     const merchantPercentage = merchantNetAmount.dividedBy(nominal).times(100);
