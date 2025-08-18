@@ -9,7 +9,7 @@ import { CreateMerchantAgentShareholderDto } from './dto/create-merchant-agent-s
 import { ResponseException } from 'src/exception/response.exception';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { URL_AUTH } from 'src/shared/constant/webclient';
+import { URL_AUTH } from 'src/shared/constant/url.constant';
 import { ResponseDto } from 'src/shared/response.dto';
 import { MerchantDto } from './dto/merchant.dto';
 import { AgentDto } from './dto/agent.dto';
