@@ -34,14 +34,32 @@ async function main() {
       { name: 'INTERNAL', reconciliationTime: '02:00' },
       { name: 'NETZME', reconciliationTime: '02:00' },
       { name: 'DANA', reconciliationTime: '02:00' },
+      { name: 'OVO', reconciliationTime: '02:00' },
+      { name: 'GOPAY', reconciliationTime: '02:00' },
+      { name: 'SHOPEEPAY', reconciliationTime: '02:00' },
+      { name: 'LINKAJA', reconciliationTime: '02:00' },
     ],
     skipDuplicates: true,
   });
   console.log({ providers });
 
+  const paymentMethodsArr = [
+    'QRIS',
+    'VA',
+    'TRANSFER_BANK',
+    'OVO_WALLET',
+    'GOPAY_WALLET',
+    'DANA_WALLET',
+    'SHOPEEPAY_WALLET',
+    'LINKAJA_WALLET',
+  ];
+
   // 2. Payment Method
   const paymentMethods = await prisma.paymentMethod.createMany({
-    data: [{ name: 'QRIS' }, { name: 'VA' }, { name: 'TransferBank' }],
+    data: paymentMethodsArr.map((e) => {
+      return { name: e };
+    }),
+    // data: [{ name: 'QRIS' }, { name: 'VA' }, { name: 'TRANSFER_BANK' }],
     skipDuplicates: true,
   });
   console.log({ paymentMethods });
@@ -98,11 +116,11 @@ async function main() {
       feeProvider: new Prisma.Decimal(0),
     },
 
-    // TransferBank TopUp (0 fee provider)
+    // TRANSFER_BANK TopUp (0 fee provider)
     {
       code: 'NETZME_TF_TOPUP',
       providerName: 'NETZME',
-      paymentMethodName: 'TransferBank',
+      paymentMethodName: 'TRANSFER_BANK',
       transactionTypeName: 'TOPUP',
       isPercentageProvider: false,
       feeProvider: new Prisma.Decimal(0),
@@ -110,7 +128,7 @@ async function main() {
     {
       code: 'DANA_TF_TOPUP',
       providerName: 'DANA',
-      paymentMethodName: 'TransferBank',
+      paymentMethodName: 'TRANSFER_BANK',
       transactionTypeName: 'TOPUP',
       isPercentageProvider: false,
       feeProvider: new Prisma.Decimal(0),
@@ -134,11 +152,11 @@ async function main() {
       feeProvider: new Prisma.Decimal(getRandomDouble()),
     },
 
-    // TransferBank Withdraw
+    // TRANSFER_BANK Withdraw
     {
       code: 'NETZME_TF_WITHDRAW',
       providerName: 'NETZME',
-      paymentMethodName: 'TransferBank',
+      paymentMethodName: 'TRANSFER_BANK',
       transactionTypeName: 'WITHDRAW',
       isPercentageProvider: false,
       feeProvider: new Prisma.Decimal(getRandomDouble()),
@@ -146,7 +164,7 @@ async function main() {
     {
       code: 'DANA_TF_WITHDRAW',
       providerName: 'DANA',
-      paymentMethodName: 'TransferBank',
+      paymentMethodName: 'TRANSFER_BANK',
       transactionTypeName: 'WITHDRAW',
       isPercentageProvider: false,
       feeProvider: new Prisma.Decimal(getRandomDouble()),
@@ -170,11 +188,11 @@ async function main() {
       feeProvider: new Prisma.Decimal(getRandomPercentage()),
     },
 
-    // TransferBank Disbursement
+    // TRANSFER_BANK Disbursement
     {
       code: 'NETZME_TF_DISBURSEMENT',
       providerName: 'NETZME',
-      paymentMethodName: 'TransferBank',
+      paymentMethodName: 'TRANSFER_BANK',
       transactionTypeName: 'DISBURSEMENT',
       isPercentageProvider: true,
       feeProvider: new Prisma.Decimal(getRandomPercentage()),
@@ -182,7 +200,7 @@ async function main() {
     {
       code: 'DANA_TF_DISBURSEMENT',
       providerName: 'DANA',
-      paymentMethodName: 'TransferBank',
+      paymentMethodName: 'TRANSFER_BANK',
       transactionTypeName: 'DISBURSEMENT',
       isPercentageProvider: false,
       feeProvider: new Prisma.Decimal(getRandomDouble()),
