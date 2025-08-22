@@ -7,6 +7,7 @@ import { BaseFeeDto } from './dto/base-fee.dto';
 import { PurchaseFeeService } from './purchase-fee.service';
 import { WithdrawFeeService } from './withdraw-fee.service';
 import { FilterWithdrawFeeDto } from './dto/filter-withdraw-fee.dto';
+import { MessagePattern } from '@nestjs/microservices';
 
 @Controller('fee')
 export class FeeController {
@@ -39,5 +40,12 @@ export class FeeController {
     const withdrawFeeDto =
       await this.withdrawFeeService.calculateWithdrawFee(filter);
     return withdrawFeeDto;
+  }
+
+  @MessagePattern({ cmd: 'calculate_fee_purchase' })
+  async purchasingTCP(@Query() filter: FilterPurchasingFeeDto) {
+    const purchaseFeeDto =
+      await this.purchaseFeeService.calculatePurchaseFee(filter);
+    return purchaseFeeDto;
   }
 }
