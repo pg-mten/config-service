@@ -1,6 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { FeeService } from './fee.service';
-import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PurchasingFeeDto } from './dto/purchashing-fee.dto';
 import { FilterPurchasingFeeDto } from './dto/filter-purchasing-fee.dto';
 import { BaseFeeDto } from './dto/base-fee.dto';
@@ -24,7 +24,8 @@ export class FeeController {
     return this.feeService.findAllConfig();
   }
 
-  @Get('purchasing')
+  @Get('/internal/purchasing')
+  @ApiTags('Internal')
   @ApiOperation({ summary: 'Calculate purchasing fee' })
   @ApiOkResponse({ type: PurchasingFeeDto })
   async purchasing(@Query() filter: FilterPurchasingFeeDto) {

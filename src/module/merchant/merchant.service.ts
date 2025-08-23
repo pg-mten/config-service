@@ -114,6 +114,9 @@ export class MerchantService {
      * Merchant Fee and Base Fee (config)
      */
     const baseFees = await this.prisma.baseFee.findMany({
+      where: {
+        isActive: true,
+      },
       orderBy: { code: 'asc' },
       include: {
         merchantFees: {
