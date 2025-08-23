@@ -26,16 +26,18 @@ export class FeeController {
 
   @Get('/internal/purchasing')
   @ApiTags('Internal')
-  @ApiOperation({ summary: 'Calculate purchasing fee' })
+  @ApiOperation({ summary: 'Calculate purchase fee' })
   @ApiOkResponse({ type: PurchasingFeeDto })
   async purchasing(@Query() filter: FilterPurchasingFeeDto) {
+    console.log({ filter });
     const purchaseFeeDto =
       await this.purchaseFeeService.calculatePurchaseFee(filter);
     return purchaseFeeDto;
   }
 
-  @Get('withdraw')
-  @ApiOperation({ summary: 'Calculate purchasing fee' })
+  @Get('/internal/withdraw')
+  @ApiTags('Internal')
+  @ApiOperation({ summary: 'Calculate withdraw fee' })
   @ApiOkResponse({ type: PurchasingFeeDto })
   async withdraw(@Query() filter: FilterWithdrawFeeDto) {
     const withdrawFeeDto =
@@ -44,7 +46,9 @@ export class FeeController {
   }
 
   @MessagePattern({ cmd: 'calculate_fee_purchase' })
-  async purchasingTCP(@Query() filter: FilterPurchasingFeeDto) {
+  async purchasingTCP(filter: FilterPurchasingFeeDto) {
+    console.log({ filter });
+    console.log('ANJING');
     const purchaseFeeDto =
       await this.purchaseFeeService.calculatePurchaseFee(filter);
     return purchaseFeeDto;

@@ -70,7 +70,8 @@ export class PurchaseFeeService {
      * Agent Related to Merchant
      * If fee agent equals to zero then it means merchant do not have an agent
      */
-    const isMerchantHaveAgents = merchantFee.feeAgent.equals(new Decimal(0));
+    const isMerchantHaveAgents = !merchantFee.feeAgent.equals(new Decimal(0));
+    console.log({ isMerchantHaveAgents });
 
     /**
      * Agent Fee Total Calculate
