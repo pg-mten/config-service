@@ -233,7 +233,13 @@ async function main() {
     update: {},
     create: { settlementInterval: 90 },
   });
-  console.log({ merchantA, merchantB, merchantC });
+
+  const merchantD = await prisma.merchant.upsert({
+    where: { id: 4 },
+    update: {},
+    create: { settlementInterval: 90 },
+  });
+  console.log({ merchantA, merchantB, merchantC, merchantD });
 
   // Ambil baseFeeConfig untuk assign ke MerchantFeeConfig
   const baseFees = await prisma.baseFee.findMany();
@@ -340,6 +346,22 @@ async function main() {
         agentId: 3,
         merchantId: merchantC.id,
         percentagePerAgent: new Prisma.Decimal(100),
+      },
+    ],
+  );
+
+  /// Merchant D Agent Sharehoder
+  agentShareholders.push(
+    ...[
+      {
+        agentId: 2,
+        merchantId: merchantD.id,
+        percentagePerAgent: new Prisma.Decimal(20),
+      },
+      {
+        agentId: 3,
+        merchantId: merchantD.id,
+        percentagePerAgent: new Prisma.Decimal(80),
       },
     ],
   );
