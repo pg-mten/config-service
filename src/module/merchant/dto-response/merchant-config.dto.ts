@@ -15,7 +15,7 @@ export class MerchantConfigDto {
   lastSettlementAt: DateTime | null;
 
   @ApiProperty({ type: AgentShareholderDto, isArray: true })
-  agentShareholders: AgentShareholderDto[];
+  agentShareholders: AgentShareholderDto[] | null;
 
   @ApiProperty({ type: MerchantBaseFeeConfigDto, isArray: true })
   fees: MerchantBaseFeeConfigDto[];

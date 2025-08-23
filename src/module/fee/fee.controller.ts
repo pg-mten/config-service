@@ -48,7 +48,6 @@ export class FeeController {
   @MessagePattern({ cmd: 'calculate_fee_purchase' })
   async purchasingTCP(filter: FilterPurchasingFeeDto) {
     console.log({ filter });
-    console.log('ANJING');
     const purchaseFeeDto =
       await this.purchaseFeeService.calculatePurchaseFee(filter);
     return purchaseFeeDto;
