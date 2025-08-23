@@ -10,14 +10,14 @@ import {
 } from '@nestjs/common';
 import { MerchantService } from './merchant.service';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { MerchantConfigDto } from './dto/merchant-config.dto';
-import { CreateMerchantFeeDto } from './dto/create-merchant-fee.dto';
+import { MerchantConfigDto } from './dto-response/merchant-config.dto';
+import { CreateMerchantFeeDto } from './dto-request/create-merchant-fee.dto';
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
-import { UpdateMerchantAgentFeeDto } from './dto/update-merchant-agent-fee';
-import { CreateMerchantAgentShareholderDto } from './dto/create-merchant-agent-shareholder.dto';
-import { UpdateMerchantAgentShareholderDto } from './dto/update-merchant-agent-shareholder.dto';
-import { MerchantAgentDto } from './dto/merchant-agent.dto';
-import { CreateMerchantDto } from './dto/create-merchant.dto';
+import { UpdateMerchantAgentFeeDto } from './dto-request/update-merchant-agent-fee';
+import { CreateMerchantAgentShareholderDto } from './dto-request/create-merchant-agent-shareholder.dto';
+import { UpdateMerchantAgentShareholderDto } from './dto-request/update-merchant-agent-shareholder.dto';
+import { MerchantAgentDto } from './dto-response/merchant-agent.dto';
+import { CreateMerchantDto } from './dto-request/create-merchant.dto';
 
 @Controller('merchant')
 @ApiTags('Merchant')

@@ -88,8 +88,10 @@ model BaseFee {
   paymentMethodName   String
   transactionTypeName String
 
-  isPercentageProvider Boolean @default(true)
+  isPercentageProvider Boolean
   feeProvider          Decimal @default(0.0) @db.Decimal(10, 4)
+
+  isActive Boolean @default(true)
 
   provider        Provider        @relation(fields: [providerName], references: [name])
   paymentMethod   PaymentMethod   @relation(fields: [paymentMethodName], references: [name])
@@ -106,10 +108,10 @@ model MerchantFee {
   merchantId Int
   baseFeeId  Int
 
-  isPercentageInternal Boolean @default(true)
+  isPercentageInternal Boolean
   feeInternal          Decimal @default(0.0) @db.Decimal(10, 4)
 
-  isPercentageAgent Boolean @default(true)
+  isPercentageAgent Boolean
   feeAgent          Decimal @default(0.0) @db.Decimal(10, 4)
 
   createdAt DateTime @default(now())
@@ -126,7 +128,7 @@ model Common {
   id       Int     @id @default(autoincrement())
   div      String
   value    String
-  isActive Boolean @default(true)
+  isActive Boolean
   explain  String
 
   @@schema("config")

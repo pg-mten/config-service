@@ -1,25 +1,25 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { MerchantConfigDto } from './dto/merchant-config.dto';
-import { CreateMerchantFeeDto } from './dto/create-merchant-fee.dto';
+import { MerchantConfigDto } from './dto-response/merchant-config.dto';
+import { CreateMerchantFeeDto } from './dto-request/create-merchant-fee.dto';
 import { Prisma } from '@prisma/client';
 import { Decimal } from 'decimal.js';
-import { UpdateMerchantAgentFeeDto } from './dto/update-merchant-agent-fee';
-import { CreateMerchantAgentShareholderDto } from './dto/create-merchant-agent-shareholder.dto';
+import { UpdateMerchantAgentFeeDto } from './dto-request/update-merchant-agent-fee';
+import { CreateMerchantAgentShareholderDto } from './dto-request/create-merchant-agent-shareholder.dto';
 import { ResponseException } from 'src/exception/response.exception';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { URL_AUTH } from 'src/shared/constant/url.constant';
 import { ResponseDto } from 'src/shared/response.dto';
-import { MerchantDto } from './dto/merchant.dto';
-import { AgentDto } from './dto/agent.dto';
-import { MerchantAgentDto } from './dto/merchant-agent.dto';
-import { FeeConfigDto } from './dto/fee-config.dto';
-import { MerchantFeeConfigDto } from './dto/merchant-fee-config.dto';
-import { BaseFeeConfigDto } from './dto/base-fee-config.dto';
+import { MerchantDto } from './dto-response/merchant.dto';
+import { AgentDto } from './dto-response/agent.dto';
+import { MerchantAgentDto } from './dto-response/merchant-agent.dto';
+import { MerchantBaseFeeConfigDto } from './dto-response/merchant-base-fee-config.dto';
+import { MerchantFeeDto } from './dto-response/merchant-fee.dto';
+import { BaseFeeDto } from './dto-response/base-fee.dto';
 import { DateHelper } from 'src/shared/helper/date.helper';
-import { AgentShareholderDto } from './dto/agent-shareholder.dto';
-import { CreateMerchantDto } from './dto/create-merchant.dto';
+import { AgentShareholderDto } from './dto-response/agent-shareholder.dto';
+import { CreateMerchantDto } from './dto-request/create-merchant.dto';
 
 @Injectable()
 export class MerchantService {
@@ -108,27 +108,55 @@ export class MerchantService {
     const agentShareholderDtos = agentShareholders.map((agentShareholder) => {
       return new AgentShareholderDto({ ...agentShareholder });
     });
+    console.log({ agentShareholderDtos });
 
     /**
      * Merchant Fee and Base Fee (config)
      */
-    const merchantFees = await this.prisma.merchantFee.findMany({
-      where: { merchantId },
-      include: { baseFee: true },
+    const baseFees = await this.prisma.baseFee.findMany({
+      orderBy: { code: 'asc' },
+      include: {
+        merchantFees: {
+          where: {
+            merchantId, // filter to only this merchant
+          },
+          take: 1, // each merchantId+baseFeeId is unique
+        },
+      },
     });
-    const feeConfigDtos: FeeConfigDto[] = merchantFees.map((merchantFee) => {
-      return new FeeConfigDto({
-        baseFeeConfig: new BaseFeeConfigDto({ ...merchantFee.baseFee }),
-        merchantFeeConfig: new MerchantFeeConfigDto({ ...merchantFee }),
+    /// SQL Equivalent
+    // SELECT
+    //   bf.*,
+    //   mf.*
+    // FROM config."BaseFee" bf
+    // LEFT JOIN config."MerchantFee" mf
+    //   ON mf."baseFeeId" = bf.id
+    //   AND mf."merchantId" = 3
+    // ORDER BY bf.code ASC
+    // ; -- replace with the merchantId you want
+
+    const merchantBaseFeeConfigDtos: MerchantBaseFeeConfigDto[] = baseFees
+      .map((baseFee) => {
+        return new MerchantBaseFeeConfigDto({
+          baseFeeConfig: new BaseFeeDto({ ...baseFee }),
+          merchantFeeConfig: !baseFee.merchantFees[0]
+            ? null
+            : new MerchantFeeDto({ ...baseFee.merchantFees[0] }),
+        });
+      })
+      .sort((a, b) => {
+        if (a.merchantFeeConfig === null && b.merchantFeeConfig === null)
+          return 0;
+        if (a.merchantFeeConfig === null) return 1;
+        if (b.merchantFeeConfig === null) return -1;
+        return a.baseFeeConfig.code.localeCompare(b.baseFeeConfig.code);
       });
-    });
-    console.log({ feeConfigDtos });
 
     return new MerchantConfigDto({
       settlementInternal: merchant.settlementInterval,
       lastSettlementAt: DateHelper.fromJsDate(merchant.lastSettlementAt),
       agentShareholders: agentShareholderDtos,
-      fees: feeConfigDtos,
+      fees: merchantBaseFeeConfigDtos,
     });
   }
 
@@ -144,10 +172,6 @@ export class MerchantService {
 
   createProvider(merchantId: number, body: CreateMerchantFeeDto[]) {
     return this.prisma.$transaction(async (tx) => {
-      // const merchant = await tx.merchant.create({
-      //   data: { id: merchantId },
-      // });
-      // console.log({ merchant });
       const merchantFeeManyInput: Prisma.MerchantFeeCreateManyInput[] =
         body.map((data) => {
           return {

@@ -3,8 +3,8 @@ import { Decimal } from '@prisma/client/runtime/library';
 import { ToDecimalFixed } from 'src/decorator/decimal.decorator';
 import { DtoHelper } from 'src/shared/helper/dto.helper';
 
-export class BaseFeeConfigDto {
-  constructor(data: BaseFeeConfigDto) {
+export class BaseFeeDto {
+  constructor(data: BaseFeeDto) {
     DtoHelper.assign(this, data);
   }
 

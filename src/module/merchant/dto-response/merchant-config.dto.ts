@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DateTime } from 'luxon';
-import { FeeConfigDto } from './fee-config.dto';
+import { MerchantBaseFeeConfigDto } from './merchant-base-fee-config.dto';
 import { AgentShareholderDto } from './agent-shareholder.dto';
 
 export class MerchantConfigDto {
@@ -17,6 +17,6 @@ export class MerchantConfigDto {
   @ApiProperty({ type: AgentShareholderDto, isArray: true })
   agentShareholders: AgentShareholderDto[];
 
-  @ApiProperty({ type: FeeConfigDto, isArray: true })
-  fees: FeeConfigDto[];
+  @ApiProperty({ type: MerchantBaseFeeConfigDto, isArray: true })
+  fees: MerchantBaseFeeConfigDto[];
 }

@@ -24,7 +24,7 @@ async function main() {
   console.log('Seeding data...');
 
   const agents = await prisma.agent.createMany({
-    data: [{ id: 1 }, { id: 2 }],
+    data: [{ id: 1 }, { id: 2 }, { id: 3 }],
   });
   console.log({ agents });
 
@@ -227,7 +227,13 @@ async function main() {
     update: {},
     create: { settlementInterval: 60 },
   });
-  console.log({ merchantA, merchantB });
+
+  const merchantC = await prisma.merchant.upsert({
+    where: { id: 3 },
+    update: {},
+    create: { settlementInterval: 90 },
+  });
+  console.log({ merchantA, merchantB, merchantC });
 
   // Ambil baseFeeConfig untuk assign ke MerchantFeeConfig
   const baseFees = await prisma.baseFee.findMany();
@@ -276,11 +282,74 @@ async function main() {
     }
   }
 
+  Array.from([1, 2, 7, 9, 13, 14]).forEach((bcfId) => {
+    merchantFees.push({
+      merchantId: merchantC.id,
+      baseFeeId: bcfId,
+      isPercentageInternal: false,
+      feeInternal: new Prisma.Decimal(getRandomDouble()),
+      isPercentageAgent: false,
+      feeAgent: new Prisma.Decimal(getRandomDouble()),
+    });
+  });
+
   const merchantFeeConfig = await prisma.merchantFee.createMany({
     data: merchantFees,
     skipDuplicates: true,
   });
   console.log({ merchantFeeConfig });
+
+  const agentShareholders: Prisma.AgentShareholderCreateManyInput[] = [];
+
+  /// Merchant A Agent Sharehoder
+  agentShareholders.push(
+    ...[
+      {
+        agentId: 1,
+        merchantId: merchantA.id,
+        percentagePerAgent: new Prisma.Decimal(40),
+      },
+      {
+        agentId: 2,
+        merchantId: merchantA.id,
+        percentagePerAgent: new Prisma.Decimal(60),
+      },
+    ],
+  );
+
+  /// Merchant B Agent Sharehoder
+  agentShareholders.push(
+    ...[
+      {
+        agentId: 2,
+        merchantId: merchantB.id,
+        percentagePerAgent: new Prisma.Decimal(30),
+      },
+      {
+        agentId: 3,
+        merchantId: merchantB.id,
+        percentagePerAgent: new Prisma.Decimal(70),
+      },
+    ],
+  );
+
+  /// Merchant C Agent Sharehoder
+  agentShareholders.push(
+    ...[
+      {
+        agentId: 3,
+        merchantId: merchantC.id,
+        percentagePerAgent: new Prisma.Decimal(100),
+      },
+    ],
+  );
+
+  const agentShareholderConfig =
+    await prisma.agentShareholder.createManyAndReturn({
+      data: agentShareholders,
+      skipDuplicates: true,
+    });
+  console.log({ agentShareholderConfig });
 
   console.log('Seeding selesai ✅');
 }
