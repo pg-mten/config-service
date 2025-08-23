@@ -1,11 +1,7 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MerchantConfigDto } from './dto-response/merchant-config.dto';
-import { CreateMerchantFeeDto } from './dto-request/create-merchant-fee.dto';
-import { Prisma } from '@prisma/client';
 import { Decimal } from 'decimal.js';
-import { UpdateMerchantAgentFeeDto } from './dto-request/update-merchant-agent-fee';
-import { CreateMerchantAgentShareholderDto } from './dto-request/create-merchant-agent-shareholder.dto';
 import { ResponseException } from 'src/exception/response.exception';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
@@ -20,6 +16,8 @@ import { BaseFeeDto } from './dto-response/base-fee.dto';
 import { DateHelper } from 'src/shared/helper/date.helper';
 import { AgentShareholderDto } from './dto-response/agent-shareholder.dto';
 import { CreateMerchantDto } from './dto-request/create-merchant.dto';
+import { UpsertMerchantFeeDto } from './dto-request/upsert-merchant-fee.dto';
+import { UpsertMerchantAgentShareholderDto } from './dto-request/upsert-merchant-agent-shareholder.dto';
 
 @Injectable()
 export class MerchantService {
@@ -173,83 +171,71 @@ export class MerchantService {
     });
   }
 
-  createProvider(merchantId: number, body: CreateMerchantFeeDto[]) {
+  upsertProvider(merchantId: number, body: UpsertMerchantFeeDto[]) {
     return this.prisma.$transaction(async (tx) => {
-      const merchantFeeManyInput: Prisma.MerchantFeeCreateManyInput[] =
-        body.map((data) => {
-          return {
-            merchantId: merchantId,
-            baseFeeId: data.baseFeeId,
-            isPercentageInternal: data.isPercentageInternal,
-            feeInternal: data.feeInternal,
-            isPercentageAgent: data.isPercentageAgent,
-            feeAgent: data.feeAgent ?? new Decimal(0),
-          } as Prisma.MerchantFeeCreateManyInput;
-        });
-      await tx.merchantFee.createManyAndReturn({
-        data: merchantFeeManyInput,
-      });
-    });
-  }
-
-  updateProvider(merchantId: number, body: UpdateMerchantAgentFeeDto[]) {
-    return this.prisma.$transaction(async (tx) => {
-      for (const merchantFee of body) {
-        await tx.merchantFee.update({
-          where: {
-            merchantId_baseFeeId: {
-              merchantId,
-              baseFeeId: merchantFee.baseFeeId,
-            },
-          },
-          data: {
-            isPercentageInternal: merchantFee.isPercentageInternal,
-            feeInternal: merchantFee.feeInternal,
-            isPercentageAgent: merchantFee.isPercentageAgent,
-            feeAgent: merchantFee.feeAgent ?? new Decimal(0),
-          },
-        });
-      }
-    });
-  }
-
-  createAgentShareholder(
-    merchantId: number,
-    body: CreateMerchantAgentShareholderDto[],
-  ) {
-    this.agentShareholderValidity(body.map((e) => e.percentagePerAgent));
-    return this.prisma.$transaction(async (tx) => {
-      await tx.agentShareholder.createManyAndReturn({
-        data: body.map((data) => {
-          return {
-            agentId: data.agentId,
-            merchantId: merchantId,
-            percentagePerAgent: data.percentagePerAgent,
-          } as Prisma.AgentShareholderCreateManyInput;
-        }),
-      });
-    });
-  }
-
-  updateAgentShareholder(
-    merchantId: number,
-    body: CreateMerchantAgentShareholderDto[],
-  ) {
-    this.agentShareholderValidity(body.map((e) => e.percentagePerAgent));
-    return this.prisma.$transaction(async (tx) => {
-      for (const agentShareholder of body) {
-        await tx.agentShareholder.update({
-          where: {
-            agentId_merchantId: {
-              agentId: agentShareholder.agentId,
+      await Promise.all(
+        body.map((merchantFee) => {
+          const {
+            baseFeeId,
+            feeAgent,
+            feeInternal,
+            isPercentageAgent,
+            isPercentageInternal,
+          } = merchantFee;
+          return tx.merchantFee.upsert({
+            create: {
               merchantId: merchantId,
+              baseFeeId,
+              feeAgent: feeAgent ?? new Decimal(0),
+              feeInternal,
+              isPercentageAgent,
+              isPercentageInternal,
             },
-          },
-          data: {
-            percentagePerAgent: agentShareholder.percentagePerAgent,
-          },
-        });
-      }
+            where: {
+              merchantId_baseFeeId: {
+                baseFeeId,
+                merchantId,
+              },
+            },
+            update: {
+              feeAgent: feeAgent ?? new Decimal(0),
+              feeInternal,
+              isPercentageAgent,
+              isPercentageInternal,
+            },
+          });
+        }),
+      );
+    });
+  }
+
+  upsertAgentShareholder(
+    merchantId: number,
+    body: UpsertMerchantAgentShareholderDto[],
+  ) {
+    this.agentShareholderValidity(body.map((e) => e.percentagePerAgent));
+    return this.prisma.$transaction(async (tx) => {
+      await Promise.all(
+        body.map((agentShareholder) => {
+          const { agentId, percentagePerAgent } = agentShareholder;
+          return tx.agentShareholder.upsert({
+            create: {
+              merchantId,
+              agentId,
+              percentagePerAgent,
+            },
+            where: {
+              agentId_merchantId: {
+                agentId,
+                merchantId,
+              },
+            },
+            update: {
+              percentagePerAgent,
+            },
+          });
+        }),
+      );
     });
   }
 

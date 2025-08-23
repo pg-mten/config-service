@@ -5,19 +5,16 @@ import {
   Param,
   ParseArrayPipe,
   ParseIntPipe,
-  Patch,
   Post,
 } from '@nestjs/common';
 import { MerchantService } from './merchant.service';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MerchantConfigDto } from './dto-response/merchant-config.dto';
-import { CreateMerchantFeeDto } from './dto-request/create-merchant-fee.dto';
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
-import { UpdateMerchantAgentFeeDto } from './dto-request/update-merchant-agent-fee';
-import { CreateMerchantAgentShareholderDto } from './dto-request/create-merchant-agent-shareholder.dto';
-import { UpdateMerchantAgentShareholderDto } from './dto-request/update-merchant-agent-shareholder.dto';
 import { MerchantAgentDto } from './dto-response/merchant-agent.dto';
 import { CreateMerchantDto } from './dto-request/create-merchant.dto';
+import { UpsertMerchantFeeDto } from './dto-request/upsert-merchant-fee.dto';
+import { UpsertMerchantAgentShareholderDto } from './dto-request/upsert-merchant-agent-shareholder.dto';
 
 @Controller('merchant')
 @ApiTags('Merchant')
@@ -51,56 +48,29 @@ export class MerchantController {
 
   @Post(':merchantId/provider')
   @ApiOperation({
-    summary: 'Create Merchant chosing provider and payment method',
+    summary: 'Upsert Merchant Fee Configuration',
   })
-  @ApiBody({ type: CreateMerchantFeeDto, isArray: true })
-  async createProvider(
+  @ApiBody({ type: UpsertMerchantFeeDto, isArray: true })
+  async upsertProvider(
     @Param('merchantId', ParseIntPipe) merchantId: number,
-    @Body(new ParseArrayPipe({ items: CreateMerchantFeeDto }))
-    body: CreateMerchantFeeDto[],
+    @Body(new ParseArrayPipe({ items: UpsertMerchantFeeDto }))
+    body: UpsertMerchantFeeDto[],
   ) {
     console.log({ merchantId, body });
-    await this.merchantService.createProvider(merchantId, body);
+    await this.merchantService.upsertProvider(merchantId, body);
     return new ResponseDto({ status: ResponseStatus.CREATED });
-  }
-
-  @Patch(':merchantId/provider')
-  @ApiOperation({
-    summary: 'Update Merchant chosing provider and payment method',
-  })
-  @ApiBody({ type: UpdateMerchantAgentFeeDto, isArray: true })
-  async updateProvider(
-    @Param('merchantId', ParseIntPipe) merchantId: number,
-    @Body(new ParseArrayPipe({ items: UpdateMerchantAgentFeeDto }))
-    body: UpdateMerchantAgentFeeDto[],
-  ) {
-    console.log({ merchantId, body });
-    await this.merchantService.updateProvider(merchantId, body);
-    return new ResponseDto({ status: ResponseStatus.UPDATED });
   }
 
   @Post(':merchantId/agent-shareholder')
-  @ApiOperation({ summary: 'Create Agent shareholder' })
-  @ApiBody({ type: CreateMerchantAgentShareholderDto, isArray: true })
-  async createAgentShareholder(
+  @ApiOperation({ summary: 'Upsert Agent Shareholder Configuration' })
+  @ApiBody({ type: UpsertMerchantAgentShareholderDto, isArray: true })
+  async upsertAgentShareholder(
     @Param('merchantId', ParseIntPipe) merchantId: number,
-    @Body(new ParseArrayPipe({ items: CreateMerchantAgentShareholderDto }))
-    body: CreateMerchantAgentShareholderDto[],
+    @Body(new ParseArrayPipe({ items: UpsertMerchantAgentShareholderDto }))
+    body: UpsertMerchantAgentShareholderDto[],
   ) {
     console.log({ merchantId, body });
-    await this.merchantService.createAgentShareholder(merchantId, body);
+    await this.merchantService.upsertAgentShareholder(merchantId, body);
     return new ResponseDto({ status: ResponseStatus.CREATED });
-  }
-
-  @Patch(':merchantId/agent-shareholder')
-  @ApiOperation({ summary: 'Update Agent shareholder' })
-  @ApiBody({ type: UpdateMerchantAgentShareholderDto, isArray: true })
-  async updateAgentShareholder(
-    @Param('merchantId', ParseIntPipe) merchantId: number,
-    @Body(new ParseArrayPipe({ items: UpdateMerchantAgentShareholderDto }))
-    body: UpdateMerchantAgentShareholderDto[],
-  ) {
-    await this.merchantService.updateAgentShareholder(merchantId, body);
-    return new ResponseDto({ status: ResponseStatus.UPDATED });
   }
 }

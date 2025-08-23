@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import Decimal from 'decimal.js';
 import { ToDecimal } from 'src/decorator/decimal.decorator';
 
-export class CreateMerchantAgentShareholderDto {
+export class UpsertMerchantAgentShareholderDto {
   @ApiProperty()
   agentId: number;
 
