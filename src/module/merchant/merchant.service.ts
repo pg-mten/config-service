@@ -156,7 +156,8 @@ export class MerchantService {
     return new MerchantConfigDto({
       settlementInternal: merchant.settlementInterval,
       lastSettlementAt: DateHelper.fromJsDate(merchant.lastSettlementAt),
-      agentShareholders: agentShareholderDtos,
+      agentShareholders:
+        agentShareholderDtos.length === 0 ? null : agentShareholderDtos,
       fees: merchantBaseFeeConfigDtos,
     });
   }
