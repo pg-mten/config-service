@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CommonDto } from './dto/common.dto';
 import { CommonDiv } from 'src/shared/constant/fee.constant';
+import { TransactionTypeEnum } from '@prisma/client';
+import { FilterCommonDto } from './dto/filter-common.dto';
 
 @Injectable()
 export class CommonService {
@@ -22,19 +24,35 @@ export class CommonService {
     });
   }
 
-  async findManyByDiv(div: CommonDiv) {
+  async findManyByDiv(filter: FilterCommonDto) {
+    const { div } = filter;
+
     if (CommonDiv.PROVIDER === div) {
-      const commons = await this.prisma.provider.findMany({
-        select: { name: true },
-      });
-      return commons.map((common) => new CommonDto(common));
+      const commons = await this.prisma.provider.findMany();
+      return commons.map(
+        (common) => new CommonDto({ name: common.name, explain: common.name }),
+      );
     } else if (CommonDiv.PAYMENT_METHOD === div) {
-      const commons = await this.prisma.paymentMethod.findMany({
-        select: { name: true },
-      });
+      const commons = await this.prisma.paymentMethod.findMany();
       return commons.map((common) => new CommonDto(common));
     }
-    return [];
+
+    let type: TransactionTypeEnum = TransactionTypeEnum.PURCHASE;
+    if (CommonDiv.PAYMENT_METHOD_PURCHASE === div)
+      type = TransactionTypeEnum.PURCHASE;
+    if (CommonDiv.PAYMENT_METHOD_TOPUP === div)
+      type = TransactionTypeEnum.TOPUP;
+    if (CommonDiv.PAYMENT_METHOD_WITHDRAW === div)
+      type = TransactionTypeEnum.WITHDRAW;
+    if (CommonDiv.PAYMENT_METHOD_DISBURSEMENT === div)
+      type = TransactionTypeEnum.DISBURSEMENT;
+
+    const commons = await this.prisma.paymentMethod.findMany({
+      where: {
+        transactionTypes: { has: type },
+      },
+    });
+    return commons.map((common) => new CommonDto(common));
   }
 
   divAndValueIsExist(div: string, values: string[]) {

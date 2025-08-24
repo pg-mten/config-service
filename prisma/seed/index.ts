@@ -1,5 +1,5 @@
 // prisma/seed.ts
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, Prisma, TransactionTypeEnum } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -39,11 +39,38 @@ async function main() {
   // 2. Payment Method
   const paymentMethods = await prisma.paymentMethod.createMany({
     data: [
-      { name: 'QRIS', explain: 'QRIS' },
-      { name: 'VIRTUALACCOUNT', explain: 'VIRTUAL_ACCOUNT' },
-      { name: 'DIRECTEWALLET', explain: 'DIRECT_E_WALLET' },
-      { name: 'TRANSFERBANK', explain: 'TRANSFER_BANK' },
-      { name: 'TRANSFEREWALLET', explain: 'TRANSFER_E_WALLET' },
+      {
+        name: 'QRIS',
+        explain: 'QRIS',
+        transactionTypes: [TransactionTypeEnum.PURCHASE],
+      },
+      {
+        name: 'VIRTUALACCOUNT',
+        explain: 'VIRTUAL_ACCOUNT',
+        transactionTypes: [TransactionTypeEnum.PURCHASE],
+      },
+      {
+        name: 'DIRECTEWALLET',
+        explain: 'DIRECT_E_WALLET',
+        transactionTypes: [TransactionTypeEnum.PURCHASE],
+      },
+      {
+        name: 'TRANSFERBANK',
+        explain: 'TRANSFER_BANK',
+        transactionTypes: [
+          TransactionTypeEnum.TOPUP,
+          TransactionTypeEnum.DISBURSEMENT,
+          TransactionTypeEnum.WITHDRAW,
+        ],
+      },
+      {
+        name: 'TRANSFEREWALLET',
+        explain: 'TRANSFER_E_WALLET',
+        transactionTypes: [
+          TransactionTypeEnum.DISBURSEMENT,
+          TransactionTypeEnum.WITHDRAW,
+        ],
+      },
     ],
     skipDuplicates: true,
   });

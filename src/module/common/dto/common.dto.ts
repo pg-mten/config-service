@@ -8,4 +8,7 @@ export class CommonDto {
 
   @ApiProperty()
   name: string;
+
+  @ApiProperty({ type: String })
+  explain: string;
 }

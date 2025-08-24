@@ -14,8 +14,7 @@ export class CommonController {
   @ApiOkResponse({ type: CommonDto, isArray: true })
   async findManyByDiv(@Query() filter: FilterCommonDto) {
     console.log({ filter });
-    const { div } = filter;
-    const commons = await this.commonService.findManyByDiv(div);
+    const commons = await this.commonService.findManyByDiv(filter);
     return commons;
   }
 }

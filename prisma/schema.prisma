@@ -51,7 +51,7 @@ model AgentShareholder {
 model Provider {
   // id        Int      @id @default(autoincrement())
   // code      String   @unique
-  name    String @id
+  name String @id
 
   reconciliationTime   String //format: '02:00' (HH:mm)
   lastReconciliationAt DateTime?
@@ -64,8 +64,9 @@ model Provider {
 // -- 2. Payment Method
 model PaymentMethod {
   // id        Int      @id @default(autoincrement())
-  name    String @id
-  explain String
+  name             String                @id
+  explain          String
+  transactionTypes TransactionTypeEnum[]
 
   baseFees BaseFee[]
 
