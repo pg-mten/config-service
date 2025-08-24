@@ -2,10 +2,3 @@ export enum CommonDiv {
   PROVIDER = 'PROVIDER',
   PAYMENT_METHOD = 'PAYMENT_METHOD',
 }
-
-export enum TransactionType {
-  PURCHASE = 'PURCHASE',
-  TOPUP = 'TOPUP',
-  WITHDRAW = 'WITHDRAW',
-  DISBURSEMENT = 'DISBURSEMENT',
-}

@@ -51,7 +51,8 @@ model AgentShareholder {
 model Provider {
   // id        Int      @id @default(autoincrement())
   // code      String   @unique
-  name                 String    @id
+  name    String @id
+
   reconciliationTime   String //format: '02:00' (HH:mm)
   lastReconciliationAt DateTime?
 
@@ -63,17 +64,8 @@ model Provider {
 // -- 2. Payment Method
 model PaymentMethod {
   // id        Int      @id @default(autoincrement())
-  name String @id
-
-  baseFees BaseFee[]
-
-  @@schema("config")
-}
-
-// -- 3. Transaction Type
-model TransactionType {
-  // id        Int      @id @default(autoincrement())
-  name String @id
+  name    String @id
+  explain String
 
   baseFees BaseFee[]
 
@@ -82,20 +74,19 @@ model TransactionType {
 
 // -- 4. Base Fee Config (default: hanya fee provider)
 model BaseFee {
-  id                  Int    @id @default(autoincrement())
-  code                String @unique // PROVIDER_PAYMENTMETHOD_TRANSACTIONTYPE => format
-  providerName        String
-  paymentMethodName   String
-  transactionTypeName String
+  id                Int                 @id @default(autoincrement())
+  code              String              @unique // PROVIDER_PAYMENTMETHOD_TRANSACTIONTYPE => format
+  providerName      String
+  paymentMethodName String
+  transactionType   TransactionTypeEnum
 
   isPercentageProvider Boolean
   feeProvider          Decimal @default(0.0) @db.Decimal(10, 4)
 
   isActive Boolean @default(true)
 
-  provider        Provider        @relation(fields: [providerName], references: [name])
-  paymentMethod   PaymentMethod   @relation(fields: [paymentMethodName], references: [name])
-  transactionType TransactionType @relation(fields: [transactionTypeName], references: [name])
+  provider      Provider      @relation(fields: [providerName], references: [name])
+  paymentMethod PaymentMethod @relation(fields: [paymentMethodName], references: [name])
 
   merchantFees MerchantFee[]
 
@@ -130,6 +121,15 @@ model Common {
   value    String
   isActive Boolean
   explain  String
+
+  @@schema("config")
+}
+
+enum TransactionTypeEnum {
+  WITHDRAW
+  TOPUP
+  DISBURSEMENT
+  PURCHASE
 
   @@schema("config")
 }

@@ -15,7 +15,6 @@ export class ResponseInterceptor<T>
         console.log('ResponseInterceptor');
         console.log({ response });
         if (response instanceof ResponseDto) {
-          console.log('LeRucco response instanceof ResponseDto');
           return response;
         }
         if (response instanceof Page) {

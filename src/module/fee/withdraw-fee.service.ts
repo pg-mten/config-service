@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { FilterWithdrawFeeDto } from './dto/filter-withdraw-fee.dto';
 import { AgentFeeEachDto } from './dto/agent-fee-each.dto';
 import Decimal from 'decimal.js';
-import { TransactionType } from 'src/shared/constant/fee.constant';
+import { TransactionTypeEnum } from '@prisma/client';
 import { ProviderFeeDto } from './dto/provider-fee.dto';
 import { InternalFeeDto } from './dto/internal-fee.dto';
 import { AgentFeeDto } from './dto/agent-fee.dto';
@@ -14,7 +14,7 @@ import { WithdrawFeeDto } from './dto/withdraw-fee.dto';
 export class WithdrawFeeService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private readonly transactionTypeName = TransactionType.WITHDRAW;
+  private readonly transactionType = TransactionTypeEnum.WITHDRAW;
 
   async calculateWithdrawFee(filter: FilterWithdrawFeeDto) {
     const { merchantId, providerName, paymentMethodName, nominal } = filter;
@@ -26,7 +26,7 @@ export class WithdrawFeeService {
       where: {
         providerName,
         paymentMethodName,
-        transactionTypeName: this.transactionTypeName.toString(),
+        transactionType: this.transactionType,
       },
     });
     console.log({ baseFee });

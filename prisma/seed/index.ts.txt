@@ -1,20 +1,23 @@
 // prisma/seed.ts
 import { PrismaClient, Prisma } from '@prisma/client';
+import { TransactionType } from '../../src/shared/constant/fee.constant';
 
 const prisma = new PrismaClient();
 
-function getRandomPercentage(min: number = 0.01, max: number = 0.7): number {
+function getRandomPercentage(): number {
+  const min = 0.01; // 0.01%
+  const max = 10; // 10%
   const value = Math.random() * (max - min) + min;
   return parseFloat(value.toFixed(2));
 }
 
-function getRandomDouble(min: number = 500, max: number = 2500): number {
+function getRandomDouble(): number {
   const base = 500;
-  const minCeil = Math.ceil(min / base) * base;
-  const maxFloor = Math.floor(max / base) * base;
-  const rangeCount = Math.floor((maxFloor - minCeil) / base) + 1;
+  const min = Math.ceil(500 / base) * base;
+  const max = Math.floor(7000 / base) * base;
+  const rangeCount = Math.floor((max - min) / 500) + 1;
   const randomIndex = Math.floor(Math.random() * rangeCount);
-  return minCeil + randomIndex * base;
+  return min + randomIndex * 500;
 }
 
 async function main() {
@@ -31,164 +34,176 @@ async function main() {
       { name: 'INTERNAL', reconciliationTime: '02:00' },
       { name: 'NETZME', reconciliationTime: '02:00' },
       { name: 'DANA', reconciliationTime: '02:00' },
+      { name: 'OVO', reconciliationTime: '02:00' },
+      { name: 'GOPAY', reconciliationTime: '02:00' },
+      { name: 'SHOPEEPAY', reconciliationTime: '02:00' },
+      { name: 'LINKAJA', reconciliationTime: '02:00' },
     ],
     skipDuplicates: true,
   });
   console.log({ providers });
 
+  const paymentMethodsArr = [
+    'QRIS',
+    'VA',
+    'TRANSFER_BANK',
+    'OVO_WALLET',
+    'GOPAY_WALLET',
+    'DANA_WALLET',
+    'SHOPEEPAY_WALLET',
+    'LINKAJA_WALLET',
+  ];
+
   // 2. Payment Method
   const paymentMethods = await prisma.paymentMethod.createMany({
-    data: [
-      { name: 'QRIS', explain: 'QRIS' },
-      { name: 'VIRTUALACCOUNT', explain: 'VIRTUAL_ACCOUNT' },
-      { name: 'DIRECTEWALLET', explain: 'DIRECT_E_WALLET' },
-      { name: 'TRANSFERBANK', explain: 'TRANSFER_BANK' },
-      { name: 'TRANSFEREWALLET', explain: 'TRANSFER_E_WALLET' },
-    ],
+    data: paymentMethodsArr.map((e) => {
+      return { name: e };
+    }),
+    // data: [{ name: 'QRIS' }, { name: 'VA' }, { name: 'TRANSFER_BANK' }],
     skipDuplicates: true,
   });
   console.log({ paymentMethods });
 
+  // 3. Transaction Types
+  const transactionTypes = await prisma.transactionType.createMany({
+    data: Object.values(TransactionType).map((type) => {
+      return { name: type };
+    }),
+    skipDuplicates: true,
+  });
+  console.log({ transactionTypes });
+
+  // Helper function untuk dapat ID relasi by name
+  // const getProviderName = (name: string) => name;
+  // const getPaymentMethodName = (name: string) => name;
+  // const getTransactionTypeName = (name: string) => name;
+
   // 4. Base Fee Config (fee provider default)
   const baseFeeConfigsData: Prisma.BaseFeeCreateManyInput[] = [
-    /**
-     * PURCHASE NETZME
-     */
+    // QRIS Purchase
     {
       code: 'NETZME_QRIS_PURCHASE',
       providerName: 'NETZME',
       paymentMethodName: 'QRIS',
-      transactionType: 'PURCHASE',
+      transactionTypeName: 'PURCHASE',
       isPercentageProvider: true,
       feeProvider: new Prisma.Decimal(getRandomPercentage()),
     },
     {
-      code: 'NETZME_VIRTUALACCOUNT_PURCHASE',
-      providerName: 'NETZME',
-      paymentMethodName: 'VIRTUALACCOUNT',
-      transactionType: 'PURCHASE',
+      code: 'DANA_QRIS_PURCHASE',
+      providerName: 'DANA',
+      paymentMethodName: 'QRIS',
+      transactionTypeName: 'PURCHASE',
       isPercentageProvider: false,
       feeProvider: new Prisma.Decimal(getRandomDouble()),
-    },
-    /**
-     * PURCHASE DANA
-     */
-    {
-      code: 'DANA_VIRTUALACCOUNT_PURCHASE',
-      providerName: 'DANA',
-      paymentMethodName: 'VIRTUALACCOUNT',
-      transactionType: 'PURCHASE',
-      isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble()),
-    },
-    {
-      code: 'DANA_DIRECTEWALLET_PURCHASE',
-      providerName: 'DANA',
-      paymentMethodName: 'DIRECTEWALLET',
-      transactionType: 'PURCHASE',
-      isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble(500, 3000)),
     },
 
-    /**
-     * TOPUP NETZME
-     */
+    // VA TopUp (0 fee provider)
     {
-      code: 'NETZME_TRANSFERBANK_TOPUP',
+      code: 'NETZME_VA_TOPUP',
       providerName: 'NETZME',
-      paymentMethodName: 'TRANSFERBANK',
-      transactionType: 'TOPUP',
-      isPercentageProvider: true,
+      paymentMethodName: 'VA',
+      transactionTypeName: 'TOPUP',
+      isPercentageProvider: false,
       feeProvider: new Prisma.Decimal(0),
     },
-    /**
-     * TOPUP DANA
-     */
     {
-      code: 'DANA_TRANSFERBANK_TOPUP',
+      code: 'DANA_VA_TOPUP',
       providerName: 'DANA',
-      paymentMethodName: 'TRANSFERBANK',
-      transactionType: 'TOPUP',
-      isPercentageProvider: true,
+      paymentMethodName: 'VA',
+      transactionTypeName: 'TOPUP',
+      isPercentageProvider: false,
       feeProvider: new Prisma.Decimal(0),
     },
 
-    /**
-     * DISBURSEMENT NETZME
-     */
+    // TRANSFER_BANK TopUp (0 fee provider)
     {
-      code: 'NETZME_TRANSFERBANK_DISBURSEMENT',
+      code: 'NETZME_TF_TOPUP',
       providerName: 'NETZME',
-      paymentMethodName: 'TRANSFERBANK',
-      transactionType: 'DISBURSEMENT',
+      paymentMethodName: 'TRANSFER_BANK',
+      transactionTypeName: 'TOPUP',
       isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble()),
+      feeProvider: new Prisma.Decimal(0),
     },
     {
-      code: 'NETZME_TRANSFEREWALLET_DISBURSEMENT',
-      providerName: 'NETZME',
-      paymentMethodName: 'TRANSFEREWALLET',
-      transactionType: 'DISBURSEMENT',
-      isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble(500, 4000)),
-    },
-    /**
-     * DISBURSEMENT DANA
-     */
-    {
-      code: 'DANA_TRANSFERBANK_DISBURSEMENT',
+      code: 'DANA_TF_TOPUP',
       providerName: 'DANA',
-      paymentMethodName: 'TRANSFERBANK',
-      transactionType: 'DISBURSEMENT',
+      paymentMethodName: 'TRANSFER_BANK',
+      transactionTypeName: 'TOPUP',
       isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble()),
-    },
-    {
-      code: 'DANA_TRANSFEREWALLET_DISBURSEMENT',
-      providerName: 'DANA',
-      paymentMethodName: 'TRANSFEREWALLET',
-      transactionType: 'DISBURSEMENT',
-      isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble(500, 4000)),
+      feeProvider: new Prisma.Decimal(0),
     },
 
-    /**
-     * WITHDRAW NETZME
-     */
+    // VA Withdraw
     {
-      code: 'NETZME_TRANSFERBANK_WITHDRAW',
+      code: 'NETZME_VA_WITHDRAW',
       providerName: 'NETZME',
-      paymentMethodName: 'TRANSFERBANK',
-      transactionType: 'WITHDRAW',
+      paymentMethodName: 'VA',
+      transactionTypeName: 'WITHDRAW',
       isPercentageProvider: false,
       feeProvider: new Prisma.Decimal(getRandomDouble()),
     },
     {
-      code: 'NETZME_TRANSFEREWALLET_WITHDRAW',
-      providerName: 'NETZME',
-      paymentMethodName: 'TRANSFEREWALLET',
-      transactionType: 'WITHDRAW',
-      isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble(500, 4000)),
-    },
-    /**
-     * WITHDRAW DANA
-     */
-    {
-      code: 'DANA_TRANSFERBANK_WITHDRAW',
+      code: 'DANA_VA_WITHDRAW',
       providerName: 'DANA',
-      paymentMethodName: 'TRANSFERBANK',
-      transactionType: 'WITHDRAW',
+      paymentMethodName: 'VA',
+      transactionTypeName: 'WITHDRAW',
+      isPercentageProvider: false,
+      feeProvider: new Prisma.Decimal(getRandomDouble()),
+    },
+
+    // TRANSFER_BANK Withdraw
+    {
+      code: 'NETZME_TF_WITHDRAW',
+      providerName: 'NETZME',
+      paymentMethodName: 'TRANSFER_BANK',
+      transactionTypeName: 'WITHDRAW',
       isPercentageProvider: false,
       feeProvider: new Prisma.Decimal(getRandomDouble()),
     },
     {
-      code: 'DANA_TRANSFEREWALLET_WITHDRAW',
+      code: 'DANA_TF_WITHDRAW',
       providerName: 'DANA',
-      paymentMethodName: 'TRANSFEREWALLET',
-      transactionType: 'WITHDRAW',
+      paymentMethodName: 'TRANSFER_BANK',
+      transactionTypeName: 'WITHDRAW',
       isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble(500, 4000)),
+      feeProvider: new Prisma.Decimal(getRandomDouble()),
+    },
+
+    // VA Disbursement
+    {
+      code: 'NETZME_VA_DISBURSEMENT',
+      providerName: 'NETZME',
+      paymentMethodName: 'VA',
+      transactionTypeName: 'DISBURSEMENT',
+      isPercentageProvider: false,
+      feeProvider: new Prisma.Decimal(getRandomDouble()),
+    },
+    {
+      code: 'DANA_VA_DISBURSEMENT',
+      providerName: 'DANA',
+      paymentMethodName: 'VA',
+      transactionTypeName: 'DISBURSEMENT',
+      isPercentageProvider: true,
+      feeProvider: new Prisma.Decimal(getRandomPercentage()),
+    },
+
+    // TRANSFER_BANK Disbursement
+    {
+      code: 'NETZME_TF_DISBURSEMENT',
+      providerName: 'NETZME',
+      paymentMethodName: 'TRANSFER_BANK',
+      transactionTypeName: 'DISBURSEMENT',
+      isPercentageProvider: true,
+      feeProvider: new Prisma.Decimal(getRandomPercentage()),
+    },
+    {
+      code: 'DANA_TF_DISBURSEMENT',
+      providerName: 'DANA',
+      paymentMethodName: 'TRANSFER_BANK',
+      transactionTypeName: 'DISBURSEMENT',
+      isPercentageProvider: false,
+      feeProvider: new Prisma.Decimal(getRandomDouble()),
     },
   ];
 
@@ -204,25 +219,25 @@ async function main() {
   const merchantA = await prisma.merchant.upsert({
     where: { id: 1 },
     update: {},
-    create: { settlementInterval: 1 },
+    create: { settlementInterval: 120 },
   });
 
   const merchantB = await prisma.merchant.upsert({
     where: { id: 2 },
     update: {},
-    create: { settlementInterval: 1 },
+    create: { settlementInterval: 60 },
   });
 
   const merchantC = await prisma.merchant.upsert({
     where: { id: 3 },
     update: {},
-    create: { settlementInterval: 1 },
+    create: { settlementInterval: 90 },
   });
 
   const merchantD = await prisma.merchant.upsert({
     where: { id: 4 },
     update: {},
-    create: { settlementInterval: 1 },
+    create: { settlementInterval: 90 },
   });
   console.log({ merchantA, merchantB, merchantC, merchantD });
 
@@ -234,7 +249,7 @@ async function main() {
 
   for (const bfc of baseFees) {
     // Untuk TopUp → fee 0
-    if (bfc.transactionType === 'TOPUP') {
+    if (bfc.transactionTypeName === 'TOPUP') {
       merchantFees.push({
         merchantId: merchantA.id,
         baseFeeId: bfc.id,

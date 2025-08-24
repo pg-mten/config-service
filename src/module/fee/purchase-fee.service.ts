@@ -1,4 +1,4 @@
-import { TransactionType } from 'src/shared/constant/fee.constant';
+import { TransactionTypeEnum } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { FilterPurchasingFeeDto } from './dto/filter-purchasing-fee.dto';
 import Decimal from 'decimal.js';
@@ -14,7 +14,7 @@ import { Injectable } from '@nestjs/common';
 export class PurchaseFeeService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private readonly transactionTypeName = TransactionType.PURCHASE;
+  private readonly transactionType = TransactionTypeEnum.PURCHASE;
 
   async calculatePurchaseFee(filter: FilterPurchasingFeeDto) {
     const { merchantId, providerName, paymentMethodName, nominal } = filter;
@@ -26,7 +26,7 @@ export class PurchaseFeeService {
       where: {
         providerName,
         paymentMethodName,
-        transactionTypeName: this.transactionTypeName.toString(),
+        transactionType: this.transactionType,
       },
     });
     console.log({ baseFee });
