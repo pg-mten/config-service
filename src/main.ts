@@ -5,6 +5,7 @@ import {
   APP_NAME,
   IS_DEVELOPMENT,
   PORT,
+  PORT_TCP,
   VERSION,
 } from './shared/constant/global.constant';
 import { useContainer } from 'class-validator';
@@ -40,7 +41,7 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: {
       host: '127.0.0.1',
-      port: 4001,
+      port: PORT_TCP,
     },
   });
   await app.startAllMicroservices();
