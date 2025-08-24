@@ -29,9 +29,14 @@ export class CommonService {
 
     if (CommonDiv.PROVIDER === div) {
       const commons = await this.prisma.provider.findMany();
-      return commons.map(
-        (common) => new CommonDto({ name: common.name, explain: common.name }),
-      );
+      return commons
+        .filter((common) => common.name !== 'INTERNAL')
+        .map(
+          (common) =>
+            new CommonDto({ name: common.name, explain: common.name }),
+        );
+    } else if (CommonDiv.PROVIDER_TOPUP === div) {
+      return [new CommonDto({ name: 'INTERNAL', explain: 'INTERNAL' })];
     } else if (CommonDiv.PAYMENT_METHOD === div) {
       const commons = await this.prisma.paymentMethod.findMany();
       return commons.map((common) => new CommonDto(common));
