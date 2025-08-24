@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { DateHelper } from 'src/shared/helper/date.helper';
@@ -7,12 +7,19 @@ import axios from 'axios';
 import { ResponseDto } from 'src/shared/response.dto';
 import { SettlementInternalDto } from './dto/settlement-internal.dto';
 import { URL_TRANSACTION } from 'src/shared/constant/url.constant';
+import { firstValueFrom } from 'rxjs';
+import { ClientProxy } from '@nestjs/microservices';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class SettlementService {
   private readonly logger = new Logger(SettlementService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject('TRANSACTION_SERVICE')
+    private readonly transactionClient: ClientProxy,
+  ) {}
 
   @Cron(CronExpression.EVERY_MINUTE)
   async runEveryMinutes() {
@@ -81,12 +88,16 @@ export class SettlementService {
       merchantIds,
     });
 
+    // eslint-disable-next-line no-useless-catch
     try {
-      const res = await axios.patch<ResponseDto<SettlementInternalDto>>(
-        `${URL_TRANSACTION}/settlement/internal`,
-        updateSettlementInternalDto,
-      );
-      const data = res.data.data!;
+      console.log(updateSettlementInternalDto);
+      const res = await this.SettlementServiceTCP(updateSettlementInternalDto);
+      // const res = await this.SettlementService(updateSettlementInternalDto);
+      // const res = await axios.patch<ResponseDto<SettlementInternalDto>>(
+      //   `${URL_TRANSACTION}/settlement/internal`,
+      //   updateSettlementInternalDto,
+      // );
+      const data = res.data!;
       const { merchantIds } = data;
 
       await this.prisma.$transaction(async (tx) => {
@@ -101,9 +112,34 @@ export class SettlementService {
       });
       return data;
     } catch (error) {
-      console.log(error);
-      this.logger.error(error);
+      // console.log(error);
+      // this.logger.error(error);
       throw error;
+    }
+  }
+  async SettlementServiceTCP(filter: UpdateSettlementInternalDto) {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const res = await firstValueFrom(
+        this.transactionClient.send<ResponseDto<SettlementInternalDto>>(
+          { cmd: 'settlement_schedule' },
+          filter,
+        ),
+      );
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async SettlementService(filter: UpdateSettlementInternalDto) {
+    try {
+      const res = await axios.post<ResponseDto<SettlementInternalDto>>(
+        `${URL_TRANSACTION}/settlement/internal`,
+        filter,
+      );
+      return res.data;
+    } catch (error) {
+      throw new Error('error call http ' + error.message);
     }
   }
 }
