@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { BaseFeeDto } from './dto/base-fee.dto';
+import { BaseFeeDto } from '../merchant/dto-response/base-fee.dto';
 
 @Injectable()
 export class FeeService {
@@ -9,10 +9,6 @@ export class FeeService {
   async findAllConfig() {
     const baseFees = await this.prisma.baseFee.findMany();
 
-    const baseFeeDtos: BaseFeeDto[] = [];
-    for (const baseFee of baseFees) {
-      baseFeeDtos.push(new BaseFeeDto({ ...baseFee }));
-    }
-    return baseFeeDtos;
+    return baseFees.map((baseFee) => new BaseFeeDto({ ...baseFee }));
   }
 }

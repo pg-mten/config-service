@@ -12,7 +12,7 @@ import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MerchantConfigDto } from './dto-response/merchant-config.dto';
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
 import { MerchantAgentDto } from './dto-response/merchant-agent.dto';
-import { CreateMerchantDto } from './dto-request/create-merchant.dto';
+import { CreateMerchantSystemDto } from './dto-request/create-merchant.system.dto';
 import { UpsertMerchantFeeDto } from './dto-request/upsert-merchant-fee.dto';
 import { UpsertMerchantAgentShareholderDto } from './dto-request/upsert-merchant-agent-shareholder.dto';
 
@@ -37,10 +37,11 @@ export class MerchantController {
     return this.merchantService.findAllConfigByMerchantId(merchantId);
   }
 
-  @Post()
-  @ApiOperation({ summary: 'Create Merchant' })
-  @ApiBody({ type: CreateMerchantDto })
-  async create(@Body() body: CreateMerchantDto) {
+  @Post('/internal')
+  @ApiTags('Internal')
+  @ApiOperation({ summary: 'Create Merchant System Internal' })
+  @ApiBody({ type: CreateMerchantSystemDto })
+  async create(@Body() body: CreateMerchantSystemDto) {
     console.log({ body });
     await this.merchantService.create(body);
     return new ResponseDto({ status: ResponseStatus.CREATED });

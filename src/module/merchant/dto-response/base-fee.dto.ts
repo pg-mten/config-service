@@ -24,10 +24,11 @@ export class BaseFeeDto {
   @ApiProperty({ enum: TransactionTypeEnum })
   transactionType: TransactionTypeEnum;
 
-  @ApiProperty({ type: Boolean })
-  isPercentageProvider: boolean;
+  @ToDecimalFixed()
+  @ApiProperty({ type: Decimal })
+  feeProviderFixed: Decimal;
 
   @ToDecimalFixed()
   @ApiProperty({ type: Decimal })
-  feeProvider: Decimal;
+  feeProviderPercentage: Decimal;
 }

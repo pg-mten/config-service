@@ -2,12 +2,12 @@ import { TransactionTypeEnum } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { FilterPurchasingFeeDto } from './dto/filter-purchasing-fee.dto';
 import Decimal from 'decimal.js';
-import { AgentFeeEachDto } from './dto/agent-fee-each.dto';
-import { ProviderFeeDto } from './dto/provider-fee.dto';
-import { InternalFeeDto } from './dto/internal-fee.dto';
-import { AgentFeeDto } from './dto/agent-fee.dto';
-import { MerchantFeeDto } from './dto/merchant-fee.dto';
-import { PurchasingFeeDto } from './dto/purchashing-fee.dto';
+import { AgentFeeEachSystemDto } from './dto/agent-fee-each.system.dto';
+import { ProviderFeeSystemDto } from './dto/provider-fee.system.dto';
+import { InternalFeeSystemDto } from './dto/internal-fee.system.dto';
+import { AgentFeeSystemDto } from './dto/agent-fee.system.dto';
+import { MerchantFeeSystemDto } from './dto/merchant-fee.system.dto';
+import { PurchasingFeeSystemDto } from './dto/purchashing-fee.system.dto';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -34,12 +34,9 @@ export class PurchaseFeeService {
     /**
      * Provider Fee Calculate
      */
-    let feeProviderTotal = new Decimal(0);
-    if (baseFee.isPercentageProvider) {
-      feeProviderTotal = nominal.times(baseFee.feeProvider.dividedBy(100));
-    } else {
-      feeProviderTotal = baseFee.feeProvider;
-    }
+    const feeProviderTotal = new Decimal(0)
+      .plus(baseFee.feeProviderFixed)
+      .plus(nominal.times(baseFee.feeProviderPercentage.dividedBy(100)));
     console.log({ feeProviderTotal });
 
     /**
@@ -58,38 +55,33 @@ export class PurchaseFeeService {
     /**
      * Internal Fee Calculate
      */
-    let feeInternalTotal = new Decimal(0);
-    if (merchantFee.isPercentageInternal) {
-      feeInternalTotal = nominal.times(merchantFee.feeInternal.dividedBy(100));
-    } else {
-      feeInternalTotal = merchantFee.feeInternal;
-    }
+    const feeInternalTotal = new Decimal(0)
+      .plus(merchantFee.feeInternalFixed)
+      .plus(nominal.times(merchantFee.feeInternalPercentage.dividedBy(100)));
+
     console.log({ feeInternalTotal });
 
     /**
      * Agent Related to Merchant
      * If fee agent equals to zero then it means merchant do not have an agent
      */
-    const isMerchantHaveAgents = !merchantFee.feeAgent.equals(new Decimal(0));
+    const isMerchantHaveAgents =
+      !merchantFee.feeAgentFixed.equals(new Decimal(0)) &&
+      !merchantFee.feeAgentPercentage.equals(new Decimal(0));
     console.log({ isMerchantHaveAgents });
 
     /**
      * Agent Fee Total Calculate
      */
-    let feeAgentTotal = new Decimal(0);
-    if (isMerchantHaveAgents) {
-      if (merchantFee.isPercentageAgent) {
-        feeAgentTotal = nominal.times(merchantFee.feeAgent.dividedBy(100));
-      } else {
-        feeAgentTotal = merchantFee.feeAgent;
-      }
-    }
+    const feeAgentTotal = new Decimal(0)
+      .plus(merchantFee.feeAgentFixed)
+      .plus(nominal.times(merchantFee.feeAgentPercentage.dividedBy(100)));
     console.log({ feeAgentTotal });
 
     /**
      * Find Agent Shareholder based on Merchant and Calculate Nominal each Agent
      */
-    const agentDtos: AgentFeeEachDto[] = [];
+    const agentDtos: AgentFeeEachSystemDto[] = [];
     if (isMerchantHaveAgents) {
       const shareholders = await this.prisma.agentShareholder.findMany({
         where: { merchantId },
@@ -97,7 +89,7 @@ export class PurchaseFeeService {
       });
       agentDtos.push(
         ...shareholders.map((shareholder) => {
-          return new AgentFeeEachDto({
+          return new AgentFeeEachSystemDto({
             id: shareholder.agent.id,
             nominal: feeAgentTotal.times(
               shareholder.percentagePerAgent.dividedBy(100),
@@ -125,31 +117,31 @@ export class PurchaseFeeService {
     /**
      * DTO
      */
-    const providerFeeDto = new ProviderFeeDto({
+    const providerFeeDto = new ProviderFeeSystemDto({
       name: providerName,
       nominal: feeProviderTotal,
-      isPercentage: baseFee.isPercentageProvider,
-      fee: baseFee.feeProvider,
+      feeFixed: baseFee.feeProviderFixed,
+      feePercentage: baseFee.feeProviderPercentage,
     });
-    const internalFeeDto = new InternalFeeDto({
+    const internalFeeDto = new InternalFeeSystemDto({
       nominal: feeInternalTotal,
-      isPercentage: merchantFee.isPercentageInternal,
-      fee: merchantFee.feeInternal,
+      feeFixed: merchantFee.feeInternalFixed,
+      feePercentage: merchantFee.feeInternalPercentage,
     });
-    const agentFeeDto = new AgentFeeDto({
+    const agentFeeDto = new AgentFeeSystemDto({
       nominal: feeAgentTotal,
-      isPercentage: merchantFee.isPercentageAgent,
-      fee: merchantFee.feeAgent,
+      feeFixed: merchantFee.feeAgentFixed,
+      feePercentage: merchantFee.feeAgentPercentage,
       agents: agentDtos,
     });
-    const merchantFeeDto = new MerchantFeeDto({
+    const merchantFeeDto = new MerchantFeeSystemDto({
       id: merchantId,
       netNominal: merchantNetAmount,
       nominal: nominal,
       feePercentage: merchantPercentage,
     });
 
-    return new PurchasingFeeDto({
+    return new PurchasingFeeSystemDto({
       providerFee: providerFeeDto,
       internalFee: internalFeeDto,
       agentFee: agentFeeDto,

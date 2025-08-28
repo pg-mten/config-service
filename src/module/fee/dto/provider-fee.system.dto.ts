@@ -1,25 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
 import Decimal from 'decimal.js';
 import { ToDecimalFixed } from 'src/decorator/decimal.decorator';
-import { AgentFeeEachDto } from 'src/module/fee/dto/agent-fee-each.dto';
 import { DtoHelper } from 'src/shared/helper/dto.helper';
 
-export class AgentFeeDto {
-  constructor(data: AgentFeeDto) {
+export class ProviderFeeSystemDto {
+  constructor(data: ProviderFeeSystemDto) {
     DtoHelper.assign(this, data);
   }
+
+  @ApiProperty()
+  name: string;
 
   @ToDecimalFixed()
   @ApiProperty({ type: Decimal })
   nominal: Decimal;
 
-  @ApiProperty()
-  isPercentage: boolean;
+  @ToDecimalFixed()
+  @ApiProperty({ type: Decimal })
+  feeFixed: Decimal;
 
   @ToDecimalFixed()
   @ApiProperty({ type: Decimal })
-  fee: Decimal;
-
-  @ApiProperty({ type: AgentFeeEachDto, isArray: true })
-  agents: AgentFeeEachDto[];
+  feePercentage: Decimal;
 }

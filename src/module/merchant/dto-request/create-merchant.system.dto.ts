@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsOptional } from 'class-validator';
 
-export class CreateMerchantDto {
+export class CreateMerchantSystemDto {
   @ApiProperty({ type: Number })
   @IsNumber()
   id: number;

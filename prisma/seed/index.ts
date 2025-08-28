@@ -1,5 +1,6 @@
 // prisma/seed.ts
 import { PrismaClient, Prisma, TransactionTypeEnum } from '@prisma/client';
+import Decimal from 'decimal.js';
 
 const prisma = new PrismaClient();
 
@@ -86,16 +87,16 @@ async function main() {
       providerName: 'NETZME',
       paymentMethodName: 'QRIS',
       transactionType: 'PURCHASE',
-      isPercentageProvider: true,
-      feeProvider: new Prisma.Decimal(getRandomPercentage()),
+      feeProviderFixed: new Decimal(getRandomDouble()),
+      feeProviderPercentage: new Decimal(getRandomPercentage()),
     },
     {
       code: 'NETZME_VIRTUALACCOUNT_PURCHASE',
       providerName: 'NETZME',
       paymentMethodName: 'VIRTUALACCOUNT',
       transactionType: 'PURCHASE',
-      isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble()),
+      feeProviderFixed: new Decimal(getRandomDouble()),
+      feeProviderPercentage: new Decimal(getRandomPercentage()),
     },
     /**
      * PURCHASE DANA
@@ -105,16 +106,16 @@ async function main() {
       providerName: 'DANA',
       paymentMethodName: 'VIRTUALACCOUNT',
       transactionType: 'PURCHASE',
-      isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble()),
+      feeProviderFixed: new Decimal(getRandomDouble()),
+      feeProviderPercentage: new Decimal(getRandomPercentage()),
     },
     {
       code: 'DANA_DIRECTEWALLET_PURCHASE',
       providerName: 'DANA',
       paymentMethodName: 'DIRECTEWALLET',
       transactionType: 'PURCHASE',
-      isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble(500, 3000)),
+      feeProviderFixed: new Decimal(getRandomDouble()),
+      feeProviderPercentage: new Decimal(getRandomPercentage()),
     },
 
     /**
@@ -125,8 +126,8 @@ async function main() {
       providerName: 'NETZME',
       paymentMethodName: 'TRANSFERBANK',
       transactionType: 'TOPUP',
-      isPercentageProvider: true,
-      feeProvider: new Prisma.Decimal(0),
+      feeProviderFixed: new Decimal(0),
+      feeProviderPercentage: new Decimal(0),
     },
     /**
      * TOPUP DANA
@@ -136,8 +137,8 @@ async function main() {
       providerName: 'DANA',
       paymentMethodName: 'TRANSFERBANK',
       transactionType: 'TOPUP',
-      isPercentageProvider: true,
-      feeProvider: new Prisma.Decimal(0),
+      feeProviderFixed: new Decimal(0),
+      feeProviderPercentage: new Decimal(0),
     },
 
     /**
@@ -148,16 +149,16 @@ async function main() {
       providerName: 'NETZME',
       paymentMethodName: 'TRANSFERBANK',
       transactionType: 'DISBURSEMENT',
-      isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble()),
+      feeProviderFixed: new Decimal(getRandomDouble()),
+      feeProviderPercentage: new Decimal(getRandomPercentage()),
     },
     {
       code: 'NETZME_TRANSFEREWALLET_DISBURSEMENT',
       providerName: 'NETZME',
       paymentMethodName: 'TRANSFEREWALLET',
       transactionType: 'DISBURSEMENT',
-      isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble(500, 4000)),
+      feeProviderFixed: new Decimal(getRandomDouble()),
+      feeProviderPercentage: new Decimal(getRandomPercentage()),
     },
     /**
      * DISBURSEMENT DANA
@@ -167,16 +168,16 @@ async function main() {
       providerName: 'DANA',
       paymentMethodName: 'TRANSFERBANK',
       transactionType: 'DISBURSEMENT',
-      isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble()),
+      feeProviderFixed: new Decimal(getRandomDouble()),
+      feeProviderPercentage: new Decimal(getRandomPercentage()),
     },
     {
       code: 'DANA_TRANSFEREWALLET_DISBURSEMENT',
       providerName: 'DANA',
       paymentMethodName: 'TRANSFEREWALLET',
       transactionType: 'DISBURSEMENT',
-      isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble(500, 4000)),
+      feeProviderFixed: new Decimal(getRandomDouble()),
+      feeProviderPercentage: new Decimal(getRandomPercentage()),
     },
 
     /**
@@ -187,16 +188,16 @@ async function main() {
       providerName: 'NETZME',
       paymentMethodName: 'TRANSFERBANK',
       transactionType: 'WITHDRAW',
-      isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble()),
+      feeProviderFixed: new Decimal(getRandomDouble()),
+      feeProviderPercentage: new Decimal(getRandomPercentage()),
     },
     {
       code: 'NETZME_TRANSFEREWALLET_WITHDRAW',
       providerName: 'NETZME',
       paymentMethodName: 'TRANSFEREWALLET',
       transactionType: 'WITHDRAW',
-      isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble(500, 4000)),
+      feeProviderFixed: new Decimal(getRandomDouble()),
+      feeProviderPercentage: new Decimal(getRandomPercentage()),
     },
     /**
      * WITHDRAW DANA
@@ -206,16 +207,16 @@ async function main() {
       providerName: 'DANA',
       paymentMethodName: 'TRANSFERBANK',
       transactionType: 'WITHDRAW',
-      isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble()),
+      feeProviderFixed: new Decimal(getRandomDouble()),
+      feeProviderPercentage: new Decimal(getRandomPercentage()),
     },
     {
       code: 'DANA_TRANSFEREWALLET_WITHDRAW',
       providerName: 'DANA',
       paymentMethodName: 'TRANSFEREWALLET',
       transactionType: 'WITHDRAW',
-      isPercentageProvider: false,
-      feeProvider: new Prisma.Decimal(getRandomDouble(500, 4000)),
+      feeProviderFixed: new Decimal(getRandomDouble()),
+      feeProviderPercentage: new Decimal(getRandomPercentage()),
     },
   ];
 
@@ -265,37 +266,37 @@ async function main() {
       merchantFees.push({
         merchantId: merchantA.id,
         baseFeeId: bfc.id,
-        isPercentageInternal: false,
-        feeInternal: new Prisma.Decimal(0),
-        isPercentageAgent: false,
-        feeAgent: new Prisma.Decimal(0),
+        feeAgentFixed: new Decimal(0),
+        feeAgentPercentage: new Decimal(0),
+        feeInternalFixed: new Decimal(0),
+        feeInternalPercentage: new Decimal(0),
       });
       merchantFees.push({
         merchantId: merchantB.id,
         baseFeeId: bfc.id,
-        isPercentageInternal: false,
-        feeInternal: new Prisma.Decimal(0),
-        isPercentageAgent: false,
-        feeAgent: new Prisma.Decimal(0),
+        feeAgentFixed: new Decimal(0),
+        feeAgentPercentage: new Decimal(0),
+        feeInternalFixed: new Decimal(0),
+        feeInternalPercentage: new Decimal(0),
       });
     } else {
       // Simulasi Merchant A dapat fee internal 0.2% dan agent 0.1%
       merchantFees.push({
         merchantId: merchantA.id,
         baseFeeId: bfc.id,
-        isPercentageInternal: true,
-        feeInternal: new Prisma.Decimal(getRandomPercentage()),
-        isPercentageAgent: true,
-        feeAgent: new Prisma.Decimal(getRandomPercentage()),
+        feeAgentFixed: new Decimal(getRandomDouble()),
+        feeAgentPercentage: new Decimal(getRandomPercentage()),
+        feeInternalFixed: new Decimal(getRandomDouble()),
+        feeInternalPercentage: new Decimal(getRandomPercentage()),
       });
       // Simulasi Merchant B flat fee internal 2000 dan agent flat 1500
       merchantFees.push({
         merchantId: merchantB.id,
         baseFeeId: bfc.id,
-        isPercentageInternal: false,
-        feeInternal: new Prisma.Decimal(getRandomDouble()),
-        isPercentageAgent: false,
-        feeAgent: new Prisma.Decimal(getRandomDouble()),
+        feeAgentFixed: new Decimal(getRandomDouble()),
+        feeAgentPercentage: new Decimal(getRandomPercentage()),
+        feeInternalFixed: new Decimal(getRandomDouble()),
+        feeInternalPercentage: new Decimal(getRandomPercentage()),
       });
     }
   }
@@ -304,10 +305,10 @@ async function main() {
     merchantFees.push({
       merchantId: merchantC.id,
       baseFeeId: bcfId,
-      isPercentageInternal: false,
-      feeInternal: new Prisma.Decimal(getRandomDouble()),
-      isPercentageAgent: false,
-      feeAgent: new Prisma.Decimal(getRandomDouble()),
+      feeAgentFixed: new Decimal(getRandomDouble()),
+      feeAgentPercentage: new Decimal(getRandomPercentage()),
+      feeInternalFixed: new Decimal(getRandomDouble()),
+      feeInternalPercentage: new Decimal(getRandomPercentage()),
     });
   });
 
@@ -325,12 +326,12 @@ async function main() {
       {
         agentId: 1,
         merchantId: merchantA.id,
-        percentagePerAgent: new Prisma.Decimal(40),
+        percentagePerAgent: new Decimal(40),
       },
       {
         agentId: 2,
         merchantId: merchantA.id,
-        percentagePerAgent: new Prisma.Decimal(60),
+        percentagePerAgent: new Decimal(60),
       },
     ],
   );
@@ -341,12 +342,12 @@ async function main() {
       {
         agentId: 2,
         merchantId: merchantB.id,
-        percentagePerAgent: new Prisma.Decimal(30),
+        percentagePerAgent: new Decimal(30),
       },
       {
         agentId: 3,
         merchantId: merchantB.id,
-        percentagePerAgent: new Prisma.Decimal(70),
+        percentagePerAgent: new Decimal(70),
       },
     ],
   );
@@ -357,7 +358,7 @@ async function main() {
       {
         agentId: 3,
         merchantId: merchantC.id,
-        percentagePerAgent: new Prisma.Decimal(100),
+        percentagePerAgent: new Decimal(100),
       },
     ],
   );
@@ -368,12 +369,12 @@ async function main() {
       {
         agentId: 2,
         merchantId: merchantD.id,
-        percentagePerAgent: new Prisma.Decimal(20),
+        percentagePerAgent: new Decimal(20),
       },
       {
         agentId: 3,
         merchantId: merchantD.id,
-        percentagePerAgent: new Prisma.Decimal(80),
+        percentagePerAgent: new Decimal(80),
       },
     ],
   );

@@ -4,8 +4,8 @@ import Decimal from 'decimal.js';
 import { ToDecimalFixed } from 'src/decorator/decimal.decorator';
 import { DtoHelper } from 'src/shared/helper/dto.helper';
 
-export class BaseFeeDto {
-  constructor(data: BaseFeeDto) {
+export class BaseFeeSystemDto {
+  constructor(data: BaseFeeSystemDto) {
     DtoHelper.assign(this, data);
   }
 
@@ -24,10 +24,11 @@ export class BaseFeeDto {
   @ApiProperty({ enum: TransactionTypeEnum })
   transactionType: TransactionTypeEnum;
 
-  @ApiProperty({ type: Boolean })
-  isPercentageProvider: boolean;
+  @ToDecimalFixed()
+  @ApiProperty({ type: Decimal })
+  feeProviderFixed: Decimal;
 
   @ToDecimalFixed()
   @ApiProperty({ type: Decimal })
-  feeProvider: Decimal;
+  feeProviderPercentage: Decimal;
 }

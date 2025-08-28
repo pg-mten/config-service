@@ -81,8 +81,8 @@ model BaseFee {
   paymentMethodName String
   transactionType   TransactionTypeEnum
 
-  isPercentageProvider Boolean
-  feeProvider          Decimal @default(0.0) @db.Decimal(10, 4)
+  feeProviderFixed      Decimal @default(0.0) @db.Decimal(10, 4)
+  feeProviderPercentage Decimal @default(0.0) @db.Decimal(10, 4)
 
   isActive Boolean @default(true)
 
@@ -100,11 +100,11 @@ model MerchantFee {
   merchantId Int
   baseFeeId  Int
 
-  isPercentageInternal Boolean
-  feeInternal          Decimal @default(0.0) @db.Decimal(10, 4)
+  feeInternalFixed      Decimal @default(0.0) @db.Decimal(10, 4)
+  feeInternalPercentage Decimal @default(0.0) @db.Decimal(10, 4)
 
-  isPercentageAgent Boolean
-  feeAgent          Decimal @default(0.0) @db.Decimal(10, 4)
+  feeAgentFixed      Decimal @default(0.0) @db.Decimal(10, 4)
+  feeAgentPercentage Decimal @default(0.0) @db.Decimal(10, 4)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

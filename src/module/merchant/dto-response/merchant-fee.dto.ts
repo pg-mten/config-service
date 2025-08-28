@@ -14,17 +14,19 @@ export class MerchantFeeDto {
   @ApiProperty({ type: Number })
   baseFeeId: number;
 
-  @ApiProperty({ type: Boolean })
-  isPercentageInternal: boolean;
+  @ToDecimalFixed()
+  @ApiProperty({ type: Decimal })
+  feeInternalFixed: Decimal;
 
   @ToDecimalFixed()
   @ApiProperty({ type: Decimal })
-  feeInternal: Decimal;
-
-  @ApiProperty({ type: Boolean })
-  isPercentageAgent: boolean;
+  feeInternalPercentage: Decimal;
 
   @ToDecimalFixed()
   @ApiProperty({ type: Decimal })
-  feeAgent: Decimal;
+  feeAgentFixed: Decimal;
+
+  @ToDecimalFixed()
+  @ApiProperty({ type: Decimal })
+  feeAgentPercentage: Decimal;
 }

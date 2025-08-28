@@ -15,7 +15,7 @@ import { MerchantFeeDto } from './dto-response/merchant-fee.dto';
 import { BaseFeeDto } from './dto-response/base-fee.dto';
 import { DateHelper } from 'src/shared/helper/date.helper';
 import { AgentShareholderDto } from './dto-response/agent-shareholder.dto';
-import { CreateMerchantDto } from './dto-request/create-merchant.dto';
+import { CreateMerchantSystemDto } from './dto-request/create-merchant.system.dto';
 import { UpsertMerchantFeeDto } from './dto-request/upsert-merchant-fee.dto';
 import { UpsertMerchantAgentShareholderDto } from './dto-request/upsert-merchant-agent-shareholder.dto';
 
@@ -81,8 +81,8 @@ export class MerchantService {
     });
   }
 
-  findById(merchantId: number) {
-    return this.prisma.merchant.findUnique({
+  findByIdThrow(merchantId: number) {
+    return this.prisma.merchant.findUniqueOrThrow({
       where: {
         id: merchantId,
       },
@@ -162,7 +162,7 @@ export class MerchantService {
     });
   }
 
-  create(body: CreateMerchantDto) {
+  create(body: CreateMerchantSystemDto) {
     const { id, settlementInterval } = body;
     return this.prisma.merchant.create({
       data: {
@@ -178,19 +178,19 @@ export class MerchantService {
         body.map((merchantFee) => {
           const {
             baseFeeId,
-            feeAgent,
-            feeInternal,
-            isPercentageAgent,
-            isPercentageInternal,
+            feeInternalFixed,
+            feeInternalPercentage,
+            feeAgentFixed,
+            feeAgentPercentage,
           } = merchantFee;
           return tx.merchantFee.upsert({
             create: {
               merchantId: merchantId,
               baseFeeId,
-              feeAgent: feeAgent ?? new Decimal(0),
-              feeInternal,
-              isPercentageAgent,
-              isPercentageInternal,
+              feeInternalFixed,
+              feeInternalPercentage,
+              feeAgentFixed: feeAgentFixed ?? new Decimal(0),
+              feeAgentPercentage: feeAgentPercentage ?? new Decimal(0),
             },
             where: {
               merchantId_baseFeeId: {
@@ -199,10 +199,10 @@ export class MerchantService {
               },
             },
             update: {
-              feeAgent: feeAgent ?? new Decimal(0),
-              feeInternal,
-              isPercentageAgent,
-              isPercentageInternal,
+              feeInternalFixed,
+              feeInternalPercentage,
+              feeAgentFixed: feeAgentFixed ?? new Decimal(0),
+              feeAgentPercentage: feeAgentPercentage ?? new Decimal(0),
             },
           });
         }),
