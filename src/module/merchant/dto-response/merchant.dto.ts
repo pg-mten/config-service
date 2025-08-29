@@ -1,6 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import Decimal from 'decimal.js';
-import { ToDecimalFixed } from 'src/decorator/decimal.decorator';
 import { DtoHelper } from 'src/shared/helper/dto.helper';
 
 export class MerchantDto {
@@ -36,8 +34,4 @@ export class MerchantDto {
 
   @ApiProperty({ type: String })
   accountHolderName: string;
-
-  @ToDecimalFixed()
-  @ApiProperty({ type: Decimal })
-  balance: Decimal;
 }

@@ -3,12 +3,12 @@ import { FeeService } from './fee.service';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PurchasingFeeSystemDto } from './dto/purchashing-fee.system.dto';
 import { FilterPurchasingFeeDto } from './dto/filter-purchasing-fee.dto';
-import { BaseFeeSystemDto } from './dto/base-fee.system.dto';
 import { PurchaseFeeService } from './purchase-fee.service';
 import { WithdrawFeeService } from './withdraw-fee.service';
 import { FilterWithdrawFeeDto } from './dto/filter-withdraw-fee.dto';
 import { MessagePattern } from '@nestjs/microservices';
 import { WithdrawFeeSystemDto } from './dto/withdraw-fee.system.dto';
+import { BaseFeeDto } from '../merchant/dto-response/base-fee.dto';
 
 @Controller('fee')
 export class FeeController {
@@ -20,7 +20,7 @@ export class FeeController {
 
   @Get('config')
   @ApiOperation({ summary: 'List All Provider fee configuration' })
-  @ApiOkResponse({ type: BaseFeeSystemDto, isArray: true })
+  @ApiOkResponse({ type: BaseFeeDto, isArray: true })
   async config() {
     return this.feeService.findAllConfig();
   }

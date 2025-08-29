@@ -18,9 +18,12 @@ export class MerchantExistValidator implements ValidatorConstraintInterface {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     validationArguments?: ValidationArguments,
   ): Promise<boolean> {
-    const merchant = await this.merchantServie.findById(value);
-    if (!merchant) return false;
-    return true;
+    try {
+      await this.merchantServie.findByIdThrow(value);
+      return true;
+    } catch {
+      return false;
+    }
   }
   defaultMessage?(validationArguments?: ValidationArguments): string {
     return `Merchant with id [${validationArguments?.value}] not exist`;

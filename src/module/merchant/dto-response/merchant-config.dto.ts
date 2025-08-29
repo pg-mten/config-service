@@ -11,10 +11,10 @@ export class MerchantConfigDto {
   @ApiProperty()
   settlementInternal: number;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   lastSettlementAt: DateTime | null;
 
-  @ApiProperty({ type: AgentShareholderDto, isArray: true })
+  @ApiProperty({ type: AgentShareholderDto, isArray: true, required: false })
   agentShareholders: AgentShareholderDto[] | null;
 
   @ApiProperty({ type: MerchantBaseFeeConfigDto, isArray: true })
