@@ -14,7 +14,7 @@ import { TopupFeeSystemDto } from './dto-transaction-system/topup-fee.system.dto
 export class TopupFeeService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private readonly transactionType = TransactionTypeEnum.PURCHASE;
+  private readonly transactionType = TransactionTypeEnum.TOPUP;
 
   async calculateTopupFee(filter: FilterPurchaseFeeSystemDto) {
     const { merchantId, providerName, paymentMethodName, nominal } = filter;

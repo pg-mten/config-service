@@ -14,7 +14,7 @@ import { DisbursementFeeSystemDto } from './dto-transaction-system/disbursement-
 export class DisbursementFeeService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private readonly transactionType = TransactionTypeEnum.PURCHASE;
+  private readonly transactionType = TransactionTypeEnum.DISBURSEMENT;
 
   async calculateDisbursementFee(filter: FilterPurchaseFeeSystemDto) {
     const { merchantId, providerName, paymentMethodName, nominal } = filter;
