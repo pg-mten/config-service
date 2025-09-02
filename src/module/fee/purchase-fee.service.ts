@@ -1,13 +1,13 @@
 import { TransactionTypeEnum } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { FilterPurchasingFeeDto } from './dto/filter-purchasing-fee.dto';
+import { FilterPurchaseFeeSystemDto } from './dto-transaction-system/filter-purchase-fee.system.dto';
 import Decimal from 'decimal.js';
-import { AgentFeeEachSystemDto } from './dto/agent-fee-each.system.dto';
-import { ProviderFeeSystemDto } from './dto/provider-fee.system.dto';
-import { InternalFeeSystemDto } from './dto/internal-fee.system.dto';
-import { AgentFeeSystemDto } from './dto/agent-fee.system.dto';
-import { MerchantFeeSystemDto } from './dto/merchant-fee.system.dto';
-import { PurchasingFeeSystemDto } from './dto/purchashing-fee.system.dto';
+import { AgentFeeEachSystemDto } from './dto-system/agent-fee-each.system.dto';
+import { ProviderFeeSystemDto } from './dto-system/provider-fee.system.dto';
+import { InternalFeeSystemDto } from './dto-system/internal-fee.system.dto';
+import { AgentFeeSystemDto } from './dto-system/agent-fee.system.dto';
+import { MerchantFeeSystemDto } from './dto-system/merchant-fee.system.dto';
+import { PurchaseFeeSystemDto } from './dto-transaction-system/purchase-fee.system.dto';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class PurchaseFeeService {
 
   private readonly transactionType = TransactionTypeEnum.PURCHASE;
 
-  async calculatePurchaseFee(filter: FilterPurchasingFeeDto) {
+  async calculatePurchaseFee(filter: FilterPurchaseFeeSystemDto) {
     const { merchantId, providerName, paymentMethodName, nominal } = filter;
 
     /**
@@ -141,7 +141,7 @@ export class PurchaseFeeService {
       feePercentage: merchantPercentage,
     });
 
-    return new PurchasingFeeSystemDto({
+    return new PurchaseFeeSystemDto({
       providerFee: providerFeeDto,
       internalFee: internalFeeDto,
       agentFee: agentFeeDto,

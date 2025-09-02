@@ -1,8 +1,8 @@
-import { AgentFeeSystemDto } from './agent-fee.system.dto';
+import { AgentFeeSystemDto } from '../dto-system/agent-fee.system.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { MerchantFeeSystemDto } from './merchant-fee.system.dto';
-import { ProviderFeeSystemDto } from './provider-fee.system.dto';
-import { InternalFeeSystemDto } from './internal-fee.system.dto';
+import { MerchantFeeSystemDto } from '../dto-system/merchant-fee.system.dto';
+import { ProviderFeeSystemDto } from '../dto-system/provider-fee.system.dto';
+import { InternalFeeSystemDto } from '../dto-system/internal-fee.system.dto';
 import { DtoHelper } from 'src/shared/helper/dto.helper';
 
 export class WithdrawFeeSystemDto {

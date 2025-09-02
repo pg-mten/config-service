@@ -1,22 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { FilterWithdrawFeeSystemDto } from './dto-transaction-system/filter-withdraw-fee.system.dto';
-import Decimal from 'decimal.js';
 import { TransactionTypeEnum } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
+import { FilterPurchaseFeeSystemDto } from './dto-transaction-system/filter-purchase-fee.system.dto';
+import Decimal from 'decimal.js';
 import { AgentFeeEachSystemDto } from './dto-system/agent-fee-each.system.dto';
 import { ProviderFeeSystemDto } from './dto-system/provider-fee.system.dto';
 import { InternalFeeSystemDto } from './dto-system/internal-fee.system.dto';
 import { AgentFeeSystemDto } from './dto-system/agent-fee.system.dto';
 import { MerchantFeeSystemDto } from './dto-system/merchant-fee.system.dto';
-import { WithdrawFeeSystemDto } from './dto-transaction-system/withdraw-fee.system.dto';
+import { Injectable } from '@nestjs/common';
+import { DisbursementFeeSystemDto } from './dto-transaction-system/disbursement-fee.system.dto';
 
 @Injectable()
-export class WithdrawFeeService {
+export class DisbursementFeeService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private readonly transactionType = TransactionTypeEnum.WITHDRAW;
+  private readonly transactionType = TransactionTypeEnum.PURCHASE;
 
-  async calculateWithdrawFee(filter: FilterWithdrawFeeSystemDto) {
+  async calculateDisbursementFee(filter: FilterPurchaseFeeSystemDto) {
     const { merchantId, providerName, paymentMethodName, nominal } = filter;
 
     /**
@@ -58,6 +58,7 @@ export class WithdrawFeeService {
     const feeInternalTotal = new Decimal(0)
       .plus(merchantFee.feeInternalFixed)
       .plus(nominal.times(merchantFee.feeInternalPercentage.dividedBy(100)));
+
     console.log({ feeInternalTotal });
 
     /**
@@ -104,9 +105,9 @@ export class WithdrawFeeService {
      */
     // Calculate merchant net amount
     const merchantNetAmount = nominal
-      .plus(feeProviderTotal)
-      .plus(feeInternalTotal)
-      .plus(feeAgentTotal);
+      .minus(feeProviderTotal)
+      .minus(feeInternalTotal)
+      .minus(feeAgentTotal);
 
     // Calculate merchant percentage
     const merchantPercentage = merchantNetAmount.dividedBy(nominal).times(100);
@@ -140,7 +141,7 @@ export class WithdrawFeeService {
       feePercentage: merchantPercentage,
     });
 
-    return new WithdrawFeeSystemDto({
+    return new DisbursementFeeSystemDto({
       providerFee: providerFeeDto,
       internalFee: internalFeeDto,
       agentFee: agentFeeDto,

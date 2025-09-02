@@ -9,7 +9,6 @@ import { SettlementInternalDto } from './dto/settlement-internal.dto';
 import { URL_TRANSACTION } from 'src/shared/constant/url.constant';
 import { firstValueFrom } from 'rxjs';
 import { ClientProxy } from '@nestjs/microservices';
-import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class SettlementService {
@@ -91,12 +90,8 @@ export class SettlementService {
     // eslint-disable-next-line no-useless-catch
     try {
       console.log(updateSettlementInternalDto);
-      const res = await this.SettlementServiceTCP(updateSettlementInternalDto);
-      // const res = await this.SettlementService(updateSettlementInternalDto);
-      // const res = await axios.patch<ResponseDto<SettlementInternalDto>>(
-      //   `${URL_TRANSACTION}/settlement/internal`,
-      //   updateSettlementInternalDto,
-      // );
+      const res = await this.settlementServiceTCP(updateSettlementInternalDto);
+      // const res = await this.settlementService(updateSettlementInternalDto);
       const data = res.data!;
       const { merchantIds } = data;
 
@@ -117,7 +112,7 @@ export class SettlementService {
       throw error;
     }
   }
-  async SettlementServiceTCP(filter: UpdateSettlementInternalDto) {
+  async settlementServiceTCP(filter: UpdateSettlementInternalDto) {
     // eslint-disable-next-line no-useless-catch
     try {
       const res = await firstValueFrom(
@@ -131,7 +126,7 @@ export class SettlementService {
       throw error;
     }
   }
-  async SettlementService(filter: UpdateSettlementInternalDto) {
+  async settlementService(filter: UpdateSettlementInternalDto) {
     try {
       const res = await axios.post<ResponseDto<SettlementInternalDto>>(
         `${URL_TRANSACTION}/settlement/internal`,

@@ -6,7 +6,7 @@ import { ToDecimal } from 'src/decorator/decimal.decorator';
 import { PaymentMethodExist } from 'src/module/common/validator/payment-method-exist.validator';
 import { ProviderExist } from 'src/module/common/validator/provider-exist.validator';
 
-export class FilterPurchasingFeeDto {
+export class FilterWithdrawFeeSystemDto {
   @IsNumber()
   @Type(() => Number)
   @ApiProperty({ example: 1 })
@@ -25,6 +25,6 @@ export class FilterPurchasingFeeDto {
   @ToDecimal()
   @Type(() => Decimal)
   @ValidateIf((o) => o.nominal !== undefined)
-  @ApiProperty({ example: '1000000' })
+  @ApiProperty({ type: Decimal, example: '100' })
   nominal: Decimal;
 }
