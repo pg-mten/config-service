@@ -18,6 +18,7 @@ import { AgentShareholderDto } from './dto-response/agent-shareholder.dto';
 import { CreateMerchantSystemDto } from './dto-request/create-merchant.system.dto';
 import { UpsertMerchantFeeDto } from './dto-request/upsert-merchant-fee.dto';
 import { UpsertMerchantAgentShareholderDto } from './dto-request/upsert-merchant-agent-shareholder.dto';
+import { ActionEnum } from 'src/shared/constant/merchant-fee.constant';
 
 @Injectable()
 export class MerchantService {
@@ -177,12 +178,23 @@ export class MerchantService {
       await Promise.all(
         body.map((merchantFee) => {
           const {
+            action,
             baseFeeId,
             feeInternalFixed,
             feeInternalPercentage,
             feeAgentFixed,
             feeAgentPercentage,
           } = merchantFee;
+          if (action === ActionEnum.D) {
+            return tx.merchantFee.delete({
+              where: {
+                merchantId_baseFeeId: {
+                  baseFeeId,
+                  merchantId,
+                },
+              },
+            });
+          }
           return tx.merchantFee.upsert({
             create: {
               merchantId: merchantId,
