@@ -226,11 +226,25 @@ export class MerchantService {
     merchantId: number,
     body: UpsertMerchantAgentShareholderDto[],
   ) {
-    this.agentShareholderValidity(body.map((e) => e.percentagePerAgent));
+    this.agentShareholderValidity(
+      body
+        .filter((e) => e.action !== ActionEnum.D)
+        .map((e) => e.percentagePerAgent),
+    );
     return this.prisma.$transaction(async (tx) => {
       await Promise.all(
         body.map((agentShareholder) => {
-          const { agentId, percentagePerAgent } = agentShareholder;
+          const { action, agentId, percentagePerAgent } = agentShareholder;
+          if (action === ActionEnum.D) {
+            return tx.agentShareholder.delete({
+              where: {
+                agentId_merchantId: {
+                  agentId,
+                  merchantId,
+                },
+              },
+            });
+          }
           return tx.agentShareholder.upsert({
             create: {
               merchantId,

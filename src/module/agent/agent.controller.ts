@@ -1,4 +1,11 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateAgentDto } from './dto/create-agent.dto';
 import { AgentService } from './agent.service';
@@ -15,5 +22,12 @@ export class AgentController {
   async create(@Body() body: CreateAgentDto) {
     await this.agentService.create(body);
     return new ResponseDto({ status: ResponseStatus.CREATED });
+  }
+
+  @Get(':agentId/merchants')
+  @ApiOperation({ summary: 'Merchant List with Agent Shareholder by Agent Id' })
+  findMerchantByAgentId(@Param('agentId', ParseIntPipe) agentId: number) {
+    console.log({ agentId });
+    return this.agentService.findMerchantByAgentId(agentId);
   }
 }

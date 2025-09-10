@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, UseInterceptors } from '@nestjs/common';
 import { FeeService } from './fee.service';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PurchaseFeeSystemDto } from './dto-transaction-system/purchase-fee.system.dto';
@@ -6,7 +6,7 @@ import { FilterPurchaseFeeSystemDto } from './dto-transaction-system/filter-purc
 import { PurchaseFeeService } from './purchase-fee.service';
 import { WithdrawFeeService } from './withdraw-fee.service';
 import { FilterWithdrawFeeSystemDto } from './dto-transaction-system/filter-withdraw-fee.system.dto';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { WithdrawFeeSystemDto } from './dto-transaction-system/withdraw-fee.system.dto';
 import { BaseFeeDto } from '../merchant/dto-response/base-fee.dto';
 import { TopupFeeService } from './topup-fee.service';
@@ -15,6 +15,8 @@ import { FilterTopupFeeSystemDto } from './dto-transaction-system/filter-topup-f
 import { FilterDisbursementFeeSystemDto } from './dto-transaction-system/filter-disbursement-fee.system.dto';
 import { TopupFeeSystemDto } from './dto-transaction-system/topup-fee.system.dto';
 import { DisbursementFeeSystemDto } from './dto-transaction-system/disbursement-fee.system.dto';
+import { CustomValidationPipe } from 'src/pipe/custom-validation.pipe';
+import { ResponseInterceptor } from 'src/interceptor/response.interceptor';
 
 @Controller('fee')
 export class FeeController {
@@ -47,7 +49,11 @@ export class FeeController {
   }
 
   @MessagePattern({ cmd: 'calculate_fee_purchase' })
-  async purchaseTCP(filter: FilterPurchaseFeeSystemDto) {
+  @UseInterceptors(ResponseInterceptor)
+  async purchaseTCP(
+    @Payload(CustomValidationPipe)
+    filter: FilterPurchaseFeeSystemDto,
+  ) {
     const purchaseFeeDto =
       await this.purchaseFeeService.calculatePurchaseFee(filter);
     return purchaseFeeDto;
@@ -66,7 +72,11 @@ export class FeeController {
   }
 
   @MessagePattern({ cmd: 'calculate_fee_withdraw' })
-  async withdrawTCP(filter: FilterWithdrawFeeSystemDto) {
+  @UseInterceptors(ResponseInterceptor)
+  async withdrawTCP(
+    @Payload(CustomValidationPipe)
+    filter: FilterWithdrawFeeSystemDto,
+  ) {
     const feeDto = await this.withdrawFeeService.calculateWithdrawFee(filter);
     return feeDto;
   }
@@ -84,7 +94,11 @@ export class FeeController {
   }
 
   @MessagePattern({ cmd: 'calculate_fee_topup' })
-  async topupTCP(filter: FilterTopupFeeSystemDto) {
+  @UseInterceptors(ResponseInterceptor)
+  async topupTCP(
+    @Payload(CustomValidationPipe)
+    filter: FilterTopupFeeSystemDto,
+  ) {
     const feeDto = await this.topupFeeService.calculateTopupFee(filter);
     return feeDto;
   }
@@ -103,7 +117,11 @@ export class FeeController {
   }
 
   @MessagePattern({ cmd: 'calculate_fee_disbursement' })
-  async disbursementTCP(filter: FilterDisbursementFeeSystemDto) {
+  @UseInterceptors(ResponseInterceptor)
+  async disbursementTCP(
+    @Payload(CustomValidationPipe)
+    filter: FilterDisbursementFeeSystemDto,
+  ) {
     const feeDto =
       await this.disbursementService.calculateDisbursementFee(filter);
     return feeDto;
