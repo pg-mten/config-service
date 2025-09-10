@@ -80,6 +80,14 @@ async function main() {
 
   // 4. Base Fee Config (fee provider default)
   const baseFeeConfigsData: Prisma.BaseFeeCreateManyInput[] = [
+    {
+      code: 'INTERNAL_TRANSFERBANK_TOPUP',
+      providerName: 'NETZME',
+      paymentMethodName: 'QRIS',
+      transactionType: 'TOPUP',
+      feeProviderFixed: new Decimal(0),
+      feeProviderPercentage: new Decimal(0),
+    },
     /**
      * PURCHASE NETZME
      */
