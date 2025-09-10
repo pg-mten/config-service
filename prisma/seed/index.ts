@@ -32,6 +32,7 @@ async function main() {
       { name: 'INTERNAL', reconciliationTime: '02:00' },
       { name: 'NETZME', reconciliationTime: '02:00' },
       { name: 'DANA', reconciliationTime: '02:00' },
+      { name: 'PAYHERE', reconciliationTime: '02:00' },
     ],
     skipDuplicates: true,
   });
@@ -218,6 +219,18 @@ async function main() {
       feeProviderFixed: new Decimal(getRandomDouble()),
       feeProviderPercentage: new Decimal(getRandomPercentage()),
     },
+
+    /**
+     * PAYHERE PURCHASE
+     */
+    {
+      code: 'PAYHERE_QRIS_PURCHASE',
+      providerName: 'PAYHERE',
+      paymentMethodName: 'QRIS',
+      transactionType: 'PURCHASE',
+      feeProviderFixed: new Decimal(0),
+      feeProviderPercentage: new Decimal(0.7),
+    },
   ];
 
   console.log({ baseFeeConfigsData });
@@ -301,15 +314,26 @@ async function main() {
     }
   }
 
-  Array.from([1, 2, 7, 9, 13, 14]).forEach((bcfId) => {
-    merchantFees.push({
-      merchantId: merchantC.id,
-      baseFeeId: bcfId,
-      feeAgentFixed: new Decimal(getRandomDouble()),
-      feeAgentPercentage: new Decimal(getRandomPercentage()),
-      feeInternalFixed: new Decimal(getRandomDouble()),
-      feeInternalPercentage: new Decimal(getRandomPercentage()),
-    });
+  Array.from([1, 2, 7, 9, 13, 14, 15]).forEach((bcfId) => {
+    if (bcfId === 15) {
+      merchantFees.push({
+        merchantId: merchantC.id,
+        baseFeeId: bcfId,
+        feeAgentFixed: new Decimal(0),
+        feeAgentPercentage: new Decimal(0.1),
+        feeInternalFixed: new Decimal(0),
+        feeInternalPercentage: new Decimal(0.2),
+      });
+    } else {
+      merchantFees.push({
+        merchantId: merchantC.id,
+        baseFeeId: bcfId,
+        feeAgentFixed: new Decimal(getRandomDouble()),
+        feeAgentPercentage: new Decimal(getRandomPercentage()),
+        feeInternalFixed: new Decimal(getRandomDouble()),
+        feeInternalPercentage: new Decimal(getRandomPercentage()),
+      });
+    }
   });
 
   const merchantFeeConfig = await prisma.merchantFee.createMany({
