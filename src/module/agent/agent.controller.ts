@@ -6,7 +6,7 @@ import {
   ParseIntPipe,
   Post,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateAgentDto } from './dto/create-agent.dto';
 import { AgentService } from './agent.service';
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
@@ -18,8 +18,8 @@ export class AgentController {
 
   @Post()
   @ApiOperation({ summary: 'Create Agent' })
-  @ApiBody({ type: CreateAgentDto })
   async create(@Body() body: CreateAgentDto) {
+    console.log({ body });
     await this.agentService.create(body);
     return new ResponseDto({ status: ResponseStatus.CREATED });
   }
