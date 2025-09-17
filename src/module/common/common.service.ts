@@ -27,6 +27,14 @@ export class CommonService {
   async findManyByDiv(filter: FilterCommonDto) {
     const { div } = filter;
 
+    if (CommonDiv.BANK === div) {
+      const commons = await this.prisma.bank.findMany();
+      const banks: CommonDto[] = commons.map(
+        (common) => new CommonDto({ name: common.code, explain: common.name }),
+      );
+      return banks;
+    }
+
     if (CommonDiv.PROVIDER === div) {
       const commons = await this.prisma.provider.findMany();
       return commons

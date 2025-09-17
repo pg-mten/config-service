@@ -15,6 +15,13 @@ datasource db {
   schemas  = ["config"]
 }
 
+model Bank {
+  code     String @id
+  name     String
+
+  @@schema("config")
+}
+
 model Merchant {
   id                 Int       @id @default(autoincrement())
   settlementInterval Int       @default(120) // in minutes like 30, 60, 120 or 0 for bypass interval 30

@@ -1,6 +1,7 @@
 // prisma/seed.ts
 import { PrismaClient, Prisma, TransactionTypeEnum } from '@prisma/client';
 import Decimal from 'decimal.js';
+import { bankSeed } from './bank.seed';
 
 const prisma = new PrismaClient();
 
@@ -19,6 +20,10 @@ function getRandomDouble(min: number = 500, max: number = 2500): number {
 }
 
 async function main() {
+  await bankSeed(prisma);
+  const bankCount = await prisma.bank.count();
+  console.log(`Bank Seeding with total ${bankCount}`);
+
   console.log('Seeding data...');
 
   const agents = await prisma.agent.createMany({
