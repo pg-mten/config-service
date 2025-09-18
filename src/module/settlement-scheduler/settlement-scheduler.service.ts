@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { DateHelper } from 'src/shared/helper/date.helper';
-import { SettlementClient } from 'src/microservice/settle-recon/settlement.client';
+import { SettlementSettleReconClient } from 'src/microservice/settle-recon/settlement.client';
 
 @Injectable()
 export class SettlementSchedulerService {
@@ -10,7 +10,7 @@ export class SettlementSchedulerService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly settlementClient: SettlementClient,
+    private readonly settlementClient: SettlementSettleReconClient,
   ) {}
 
   @Cron(CronExpression.EVERY_MINUTE)
