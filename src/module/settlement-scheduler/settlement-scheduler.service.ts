@@ -1,23 +1,16 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { DateHelper } from 'src/shared/helper/date.helper';
-import { UpdateSettlementInternalDto } from './dto/update-settlement-internal.dto';
-import axios from 'axios';
-import { ResponseDto } from 'src/shared/response.dto';
-import { SettlementInternalDto } from './dto/settlement-internal.dto';
-import { URL_TRANSACTION } from 'src/shared/constant/url.constant';
-import { firstValueFrom } from 'rxjs';
-import { ClientProxy } from '@nestjs/microservices';
+import { SettlementClient } from 'src/microservice/settle-recon/settlement.client';
 
 @Injectable()
-export class SettlementService {
-  private readonly logger = new Logger(SettlementService.name);
+export class SettlementSchedulerService {
+  private readonly logger = new Logger(SettlementSchedulerService.name);
 
   constructor(
     private readonly prisma: PrismaService,
-    @Inject('TRANSACTION_SERVICE')
-    private readonly transactionClient: ClientProxy,
+    private readonly settlementClient: SettlementClient,
   ) {}
 
   @Cron(CronExpression.EVERY_MINUTE)
@@ -79,21 +72,18 @@ export class SettlementService {
       `Menjalankan settlement untuk ${merchants.length} merchant (interval ${intervalInMinutes} menit)`,
     );
 
-    const merchantIds: number[] = merchants.map((merchant) => merchant.id);
-
-    const updateSettlementInternalDto = new UpdateSettlementInternalDto({
-      date: now,
-      interval: intervalInMinutes,
-      merchantIds,
-    });
-
     // eslint-disable-next-line no-useless-catch
     try {
-      console.log(updateSettlementInternalDto);
-      const res = await this.settlementServiceTCP(updateSettlementInternalDto);
-      // const res = await this.settlementService(updateSettlementInternalDto);
-      const data = res.data!;
-      const { merchantIds } = data;
+      const merchantIdList: number[] = merchants.map((merchant) => merchant.id);
+
+      const res = await this.settlementClient.scheduleTCP({
+        date: now,
+        interval: intervalInMinutes,
+        merchantIds: merchantIdList,
+      });
+
+      const { merchantIds, merchantIdsNoSettlement } = res.data!;
+      console.log({ merchantIds, merchantIdsNoSettlement });
 
       await this.prisma.$transaction(async (tx) => {
         await Promise.all(
@@ -105,36 +95,11 @@ export class SettlementService {
           }),
         );
       });
-      return data;
+      return;
     } catch (error) {
       // console.log(error);
       // this.logger.error(error);
       throw error;
-    }
-  }
-  async settlementServiceTCP(filter: UpdateSettlementInternalDto) {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const res = await firstValueFrom(
-        this.transactionClient.send<ResponseDto<SettlementInternalDto>>(
-          { cmd: 'settlement_schedule' },
-          filter,
-        ),
-      );
-      return res;
-    } catch (error) {
-      throw error;
-    }
-  }
-  async settlementService(filter: UpdateSettlementInternalDto) {
-    try {
-      const res = await axios.post<ResponseDto<SettlementInternalDto>>(
-        `${URL_TRANSACTION}/settlement/internal`,
-        filter,
-      );
-      return res.data;
-    } catch (error) {
-      throw new Error('error call http ' + error.message);
     }
   }
 }

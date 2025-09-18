@@ -8,5 +8,5 @@ export class CreateMerchantSystemDto {
 
   @ApiProperty({ type: Number, required: false })
   @IsOptional()
-  settlementInterval?: number;
+  settlementInterval: number | null;
 }

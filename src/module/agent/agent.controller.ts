@@ -5,10 +5,15 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CreateAgentDto } from './dto/create-agent.dto';
 import { AgentService } from './agent.service';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import { SERVICES } from 'src/shared/constant/client.constant';
+import { ResponseInterceptor } from 'src/interceptor/response.interceptor';
+import { CustomValidationPipe } from 'src/pipe/custom-validation.pipe';
+import { CreateAgentSystemDto } from 'src/microservice/config/dto-system/create-agent.system.dto';
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
 
 @Controller('agent')
@@ -16,11 +21,24 @@ import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
 export class AgentController {
   constructor(private readonly agentService: AgentService) {}
 
-  @Post()
-  @ApiOperation({ summary: 'Create Agent' })
-  async create(@Body() body: CreateAgentDto) {
+  // Harusnya bakal jadi internal
+  @Post('/internal')
+  @ApiTags('Internal')
+  @ApiOperation({ summary: 'Create Agent System' })
+  async create(@Body() body: CreateAgentSystemDto) {
     console.log({ body });
     await this.agentService.create(body);
+    return new ResponseDto({ status: ResponseStatus.CREATED });
+  }
+
+  @MessagePattern({ cmd: SERVICES.CONFIG.cmd.create_agent_config })
+  @UseInterceptors(ResponseInterceptor)
+  async createTCP(
+    @Payload(CustomValidationPipe)
+    payload: CreateAgentSystemDto,
+  ) {
+    console.log({ payload });
+    await this.agentService.create(payload);
     return new ResponseDto({ status: ResponseStatus.CREATED });
   }
 

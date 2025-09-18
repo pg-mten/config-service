@@ -17,6 +17,7 @@ import { TopupFeeSystemDto } from './dto-transaction-system/topup-fee.system.dto
 import { DisbursementFeeSystemDto } from './dto-transaction-system/disbursement-fee.system.dto';
 import { CustomValidationPipe } from 'src/pipe/custom-validation.pipe';
 import { ResponseInterceptor } from 'src/interceptor/response.interceptor';
+import { SERVICES } from 'src/shared/constant/client.constant';
 
 @Controller('fee')
 export class FeeController {
@@ -48,14 +49,14 @@ export class FeeController {
     return feeDto;
   }
 
-  @MessagePattern({ cmd: 'calculate_fee_purchase' })
+  @MessagePattern({ cmd: SERVICES.CONFIG.cmd.calculate_fee_purchase })
   @UseInterceptors(ResponseInterceptor)
   async purchaseTCP(
     @Payload(CustomValidationPipe)
-    filter: FilterPurchaseFeeSystemDto,
+    payload: FilterPurchaseFeeSystemDto,
   ) {
     const purchaseFeeDto =
-      await this.purchaseFeeService.calculatePurchaseFee(filter);
+      await this.purchaseFeeService.calculatePurchaseFee(payload);
     return purchaseFeeDto;
   }
 
@@ -71,13 +72,13 @@ export class FeeController {
     return feeDto;
   }
 
-  @MessagePattern({ cmd: 'calculate_fee_withdraw' })
+  @MessagePattern({ cmd: SERVICES.CONFIG.cmd.calculate_fee_withdraw })
   @UseInterceptors(ResponseInterceptor)
   async withdrawTCP(
     @Payload(CustomValidationPipe)
-    filter: FilterWithdrawFeeSystemDto,
+    payload: FilterWithdrawFeeSystemDto,
   ) {
-    const feeDto = await this.withdrawFeeService.calculateWithdrawFee(filter);
+    const feeDto = await this.withdrawFeeService.calculateWithdrawFee(payload);
     return feeDto;
   }
 
@@ -93,13 +94,13 @@ export class FeeController {
     return feeDto;
   }
 
-  @MessagePattern({ cmd: 'calculate_fee_topup' })
+  @MessagePattern({ cmd: SERVICES.CONFIG.cmd.calculate_fee_topup })
   @UseInterceptors(ResponseInterceptor)
   async topupTCP(
     @Payload(CustomValidationPipe)
-    filter: FilterTopupFeeSystemDto,
+    payload: FilterTopupFeeSystemDto,
   ) {
-    const feeDto = await this.topupFeeService.calculateTopupFee(filter);
+    const feeDto = await this.topupFeeService.calculateTopupFee(payload);
     return feeDto;
   }
 
@@ -116,14 +117,14 @@ export class FeeController {
     return feeDto;
   }
 
-  @MessagePattern({ cmd: 'calculate_fee_disbursement' })
+  @MessagePattern({ cmd: SERVICES.CONFIG.cmd.calculate_fee_disbursement })
   @UseInterceptors(ResponseInterceptor)
   async disbursementTCP(
     @Payload(CustomValidationPipe)
-    filter: FilterDisbursementFeeSystemDto,
+    payload: FilterDisbursementFeeSystemDto,
   ) {
     const feeDto =
-      await this.disbursementService.calculateDisbursementFee(filter);
+      await this.disbursementService.calculateDisbursementFee(payload);
     return feeDto;
   }
 }
