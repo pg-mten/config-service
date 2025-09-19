@@ -1,21 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAgentDto } from './dto/create-agent.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { firstValueFrom } from 'rxjs';
-import { ResponseDto } from 'src/shared/response.dto';
-import { AgentDto } from '../merchant/dto-response/agent.dto';
-import { MerchantDto } from '../merchant/dto-response/merchant.dto';
-import { URL_AUTH } from 'src/shared/constant/url.constant';
-import { HttpService } from '@nestjs/axios';
+import { CreateAgentSystemDto } from 'src/microservice/config/dto-system/create-agent.system.dto';
+import { UserAuthClient } from 'src/microservice/auth/user.auth.client';
 
 @Injectable()
 export class AgentService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly httpService: HttpService,
+    private readonly userAuthClient: UserAuthClient,
   ) {}
 
-  create(body: CreateAgentDto) {
+  create(body: CreateAgentSystemDto) {
     const { id } = body;
     return this.prisma.agent.create({
       data: { id },
@@ -33,15 +28,11 @@ export class AgentService {
       .join(',');
     console.log({ merchantIds });
 
-    const res = await firstValueFrom(
-      this.httpService.get<
-        ResponseDto<{ merchants: MerchantDto[]; agents: AgentDto[] }>
-      >(`${URL_AUTH}/user/internal/merchants-and-agents-by-ids`, {
-        params: { merchantIds: merchantIds, agentIds: '' },
-      }),
-    );
+    const res = await this.userAuthClient.findAllMerchantsAndAgentsByIdsTCP({
+      merchantIds,
+      agentIds: '',
+    });
 
-    const { merchants } = res.data.data!;
-    return merchants;
+    return res.data?.merchants ?? [];
   }
 }

@@ -6,15 +6,20 @@ import {
   ParseArrayPipe,
   ParseIntPipe,
   Post,
+  UseInterceptors,
 } from '@nestjs/common';
 import { MerchantService } from './merchant.service';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MerchantConfigDto } from './dto-response/merchant-config.dto';
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
 import { MerchantAgentDto } from './dto-response/merchant-agent.dto';
-import { CreateMerchantSystemDto } from './dto-request/create-merchant.system.dto';
 import { UpsertMerchantFeeDto } from './dto-request/upsert-merchant-fee.dto';
 import { UpsertMerchantAgentShareholderDto } from './dto-request/upsert-merchant-agent-shareholder.dto';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import { ResponseInterceptor } from 'src/interceptor/response.interceptor';
+import { CustomValidationPipe } from 'src/pipe/custom-validation.pipe';
+import { CreateMerchantSystemDto } from 'src/microservice/config/dto-system/create-merchant.system.dto';
+import { SERVICES } from 'src/shared/constant/client.constant';
 
 @Controller('merchant')
 @ApiTags('Merchant')
@@ -39,9 +44,20 @@ export class MerchantController {
 
   @Post('/internal')
   @ApiTags('Internal')
-  @ApiOperation({ summary: 'Create Merchant System Internal' })
+  @ApiOperation({ summary: 'Create Merchant System' })
   @ApiBody({ type: CreateMerchantSystemDto })
   async create(@Body() body: CreateMerchantSystemDto) {
+    console.log({ body });
+    await this.merchantService.create(body);
+    return new ResponseDto({ status: ResponseStatus.CREATED });
+  }
+
+  @MessagePattern({ cmd: SERVICES.CONFIG.cmd.create_merchant_config })
+  @UseInterceptors(ResponseInterceptor)
+  async createTCP(
+    @Payload(CustomValidationPipe)
+    body: CreateMerchantSystemDto,
+  ) {
     console.log({ body });
     await this.merchantService.create(body);
     return new ResponseDto({ status: ResponseStatus.CREATED });

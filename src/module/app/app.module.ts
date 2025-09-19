@@ -20,7 +20,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { CommonModule } from '../common/common.module';
 import { FeeModule } from '../fee/fee.module';
 import { MerchantModule } from '../merchant/merchant.module';
-import { SettlementModule } from '../settlement/settlement.module';
+import { SettlementSchedulerModule } from '../settlement-scheduler/settlement-scheduler.module';
 import { ReconciliationModule } from '../reconciliation/reconciliation.module';
 import { AgentModule } from '../agent/agent.module';
 
@@ -37,7 +37,7 @@ import { AgentModule } from '../agent/agent.module';
     CommonModule,
     FeeModule,
     MerchantModule,
-    SettlementModule,
+    SettlementSchedulerModule,
     ReconciliationModule,
     AgentModule,
   ],

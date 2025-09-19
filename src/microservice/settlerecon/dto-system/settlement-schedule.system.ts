@@ -1,8 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { DtoHelper } from 'src/shared/helper/dto.helper';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class SettlementInternalDto {
-  constructor(data: SettlementInternalDto) {
+export class SettlementScheduleSystemDto {
+  constructor(data: SettlementScheduleSystemDto) {
     DtoHelper.assign(this, data);
   }
 

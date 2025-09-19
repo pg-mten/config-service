@@ -3,28 +3,23 @@ import { PrismaService } from '../prisma/prisma.service';
 import { MerchantConfigDto } from './dto-response/merchant-config.dto';
 import { Decimal } from 'decimal.js';
 import { ResponseException } from 'src/exception/response.exception';
-import { firstValueFrom } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
-import { URL_AUTH } from 'src/shared/constant/url.constant';
-import { ResponseDto } from 'src/shared/response.dto';
-import { MerchantDto } from './dto-response/merchant.dto';
-import { AgentDto } from './dto-response/agent.dto';
 import { MerchantAgentDto } from './dto-response/merchant-agent.dto';
 import { MerchantBaseFeeConfigDto } from './dto-response/merchant-base-fee-config.dto';
 import { MerchantFeeDto } from './dto-response/merchant-fee.dto';
 import { BaseFeeDto } from './dto-response/base-fee.dto';
 import { DateHelper } from 'src/shared/helper/date.helper';
 import { AgentShareholderDto } from './dto-response/agent-shareholder.dto';
-import { CreateMerchantSystemDto } from './dto-request/create-merchant.system.dto';
 import { UpsertMerchantFeeDto } from './dto-request/upsert-merchant-fee.dto';
 import { UpsertMerchantAgentShareholderDto } from './dto-request/upsert-merchant-agent-shareholder.dto';
 import { ActionEnum } from 'src/shared/constant/merchant-fee.constant';
+import { CreateMerchantSystemDto } from 'src/microservice/config/dto-system/create-merchant.system.dto';
+import { UserAuthClient } from 'src/microservice/auth/user.auth.client';
 
 @Injectable()
 export class MerchantService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly httpService: HttpService,
+    private readonly userAuthClient: UserAuthClient,
   ) {}
 
   async findAll() {
@@ -62,15 +57,21 @@ export class MerchantService {
 
     console.log({ agentIds, merchantIds, result });
 
-    const res = await firstValueFrom(
-      this.httpService.get<
-        ResponseDto<{ merchants: MerchantDto[]; agents: AgentDto[] }>
-      >(`${URL_AUTH}/user/internal/merchants-and-agents-by-ids`, {
-        params: { merchantIds: merchantIds, agentIds: agentIds },
-      }),
-    );
+    // const res = await firstValueFrom(
+    //   this.httpService.get<
+    //     ResponseDto<{ merchants: MerchantDto[]; agents: AgentDto[] }>
+    //   >(`${URL_AUTH}/user/internal/merchants-and-agents-by-ids`, {
+    //     params: { merchantIds: merchantIds, agentIds: agentIds },
+    //   }),
+    // );
 
-    const { merchants, agents } = res.data.data!;
+    const res = await this.userAuthClient.findAllMerchantsAndAgentsByIdsTCP({
+      agentIds,
+      merchantIds,
+    });
+
+    const merchants = res.data?.merchants ?? [];
+    const agents = res.data?.agents ?? [];
 
     return result.map((data) => {
       return new MerchantAgentDto({
@@ -168,7 +169,7 @@ export class MerchantService {
     return this.prisma.merchant.create({
       data: {
         id,
-        settlementInterval,
+        settlementInterval: settlementInterval ?? undefined,
       },
     });
   }
