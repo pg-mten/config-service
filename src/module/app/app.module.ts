@@ -23,6 +23,7 @@ import { MerchantModule } from '../merchant/merchant.module';
 import { SettlementSchedulerModule } from '../settlement-scheduler/settlement-scheduler.module';
 import { ReconciliationModule } from '../reconciliation/reconciliation.module';
 import { AgentModule } from '../agent/agent.module';
+import { MicroserviceModule } from 'src/microservice/microservice.module';
 
 @Module({
   imports: [
@@ -40,6 +41,8 @@ import { AgentModule } from '../agent/agent.module';
     SettlementSchedulerModule,
     ReconciliationModule,
     AgentModule,
+
+    MicroserviceModule,
   ],
   controllers: [AppController],
   providers: [
