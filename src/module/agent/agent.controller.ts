@@ -10,7 +10,7 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AgentService } from './agent.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { SERVICES } from 'src/shared/constant/client.constant';
+import { SERVICES } from 'src/microservice/client.constant';
 import { ResponseInterceptor } from 'src/interceptor/response.interceptor';
 import { CustomValidationPipe } from 'src/pipe/custom-validation.pipe';
 import { CreateAgentSystemDto } from 'src/microservice/config/dto-system/create-agent.system.dto';
