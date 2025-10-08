@@ -5,7 +5,6 @@ import {
   APP_NAME,
   IS_DEVELOPMENT,
   PORT,
-  PORT_TCP,
   VERSION,
 } from './shared/constant/global.constant';
 import { useContainer } from 'class-validator';
