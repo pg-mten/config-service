@@ -44,7 +44,7 @@ export const SERVICES = {
   SETTLERECON: {
     name: process.env.CLIENT_SETTLERECON_NAME || 'SETTLERECON_SERVICE',
     host: process.env.CLIENT_SETTLERECON_HOST || '127.0.0.1',
-    port: parseInt(process.env.CLIENT_SETTLERECON_HOST || '4003'),
+    port: parseInt(process.env.CLIENT_SETTLERECON_PORT || '4003'),
     cmd: {
       settlement_schedule: 'settlement_schedule',
     },
