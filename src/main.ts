@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './module/app/app.module';
+import { AppModule } from './modules/app/app.module';
 import {
   API_PREFIX,
   APP_NAME,

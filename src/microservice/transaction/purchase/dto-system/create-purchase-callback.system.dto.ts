@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TransactionStatusEnum } from '@prisma/client';
+// import { TransactionStatusEnum } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsEnum,
@@ -42,9 +42,9 @@ export class CreatePurchaseCallbackSystemDto {
   @ApiProperty()
   paymentMethodName: string;
 
-  @IsEnum(TransactionStatusEnum)
-  @ApiProperty()
-  status: TransactionStatusEnum;
+  // @IsEnum(TransactionStatusEnum)
+  // @ApiProperty()
+  // status: TransactionStatusEnum;
 
   @ToDecimal()
   @Type(() => Decimal)

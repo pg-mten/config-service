@@ -6,7 +6,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { CommonService } from 'src/module/common/common.service';
+import { CommonService } from 'src/modules/common/common.service';
 import { CommonDiv } from 'src/shared/constant/fee.constant';
 
 @Injectable()
