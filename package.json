@@ -19,7 +19,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "prisma:seed": "npx prisma migrate reset --force --skip-seed --skip-generate && npx prisma db push && ts-node -r tsconfig-paths/register prisma/seed"
+    "prisma:seed": "npx prisma migrate reset --force --skip-seed --skip-generate && npx prisma db push && ts-node -r tsconfig-paths/register prisma/seed",
+    "prisma:seed:dev": "dotenv -e .env.development -- npx prisma migrate reset --force --skip-seed --skip-generate && dotenv -e .env.development -- npx prisma db push && dotenv -e .env.development -- ts-node -r tsconfig-paths/register prisma/seed"
   },
   "dependencies": {
     "@casl/ability": "^6.7.3",
@@ -45,6 +46,7 @@
     "luxon": "^3.7.1",
     "mustache": "^4.2.0",
     "nest-winston": "^1.10.2",
+    "nestjs-cls": "^6.0.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
@@ -71,6 +73,7 @@
     "@types/passport-local": "^1.0.38",
     "@types/supertest": "^6.0.3",
     "cross-env": "^10.0.0",
+    "dotenv-cli": "^10.0.0",
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
