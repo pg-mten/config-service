@@ -13,6 +13,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { WinstonModule } from 'nest-winston';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { logger } from './shared/constant/logger.constant';
+import { SERVICES } from './microservice/client.constant';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -45,11 +46,12 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,
     options: {
-      host: '127.0.0.1',
-      port: PORT_TCP,
+      host: SERVICES.CONFIG.host,
+      port: SERVICES.CONFIG.port,
     },
   });
   await app.startAllMicroservices();
+
   await app.listen(PORT, () => {
     console.log(`Config service started listening: ${PORT}`);
   });
