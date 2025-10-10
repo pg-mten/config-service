@@ -5,7 +5,7 @@ import {
   PipeTransform,
 } from '@nestjs/common';
 import { InvalidRequestException } from 'src/exception/invalid-request.exception';
-import { CommonService } from 'src/module/common/common.service';
+import { CommonService } from 'src/modules/common/common.service';
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
 
 @Injectable()
