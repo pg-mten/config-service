@@ -6,6 +6,10 @@ import { ToDateTime } from 'src/decorator/date.decorator';
 import { DtoHelper } from 'src/shared/helper/dto.helper';
 
 export class CreateSettlementScheduleSystemDto {
+  constructor(data: CreateSettlementScheduleSystemDto) {
+    DtoHelper.assign(this, data);
+  }
+
   @ApiProperty({
     type: [Number],
     description: 'List of IDs',
