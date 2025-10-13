@@ -61,6 +61,8 @@ export class SettlementSchedulerService {
       },
     });
 
+    console.log({ merchants });
+
     if (merchants.length === 0) {
       this.logger.debug(
         `Tidak ada merchant dengan interval ${intervalInMinutes} menit untuk disettlement`,
@@ -72,7 +74,6 @@ export class SettlementSchedulerService {
       `Menjalankan settlement untuk ${merchants.length} merchant (interval ${intervalInMinutes} menit)`,
     );
 
-    // eslint-disable-next-line no-useless-catch
     try {
       const merchantIdList: number[] = merchants.map((merchant) => merchant.id);
 
@@ -97,7 +98,7 @@ export class SettlementSchedulerService {
       });
       return;
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       // this.logger.error(error);
       throw error;
     }

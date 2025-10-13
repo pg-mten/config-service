@@ -65,7 +65,7 @@ export class FeeController {
    */
   @Get('/internal/withdraw')
   @ApiTags('Internal')
-  @ApiOperation({ summary: 'Calculate Withdraw  fee' })
+  @ApiOperation({ summary: 'Calculate Withdraw fee' })
   @ApiOkResponse({ type: WithdrawFeeSystemDto })
   async withdraw(@Query() filter: FilterWithdrawFeeSystemDto) {
     const feeDto = await this.withdrawFeeService.calculateWithdrawFee(filter);
