@@ -24,6 +24,7 @@ import { SettlementSchedulerModule } from '../settlement-scheduler/settlement-sc
 import { ReconciliationModule } from '../reconciliation/reconciliation.module';
 import { AgentModule } from '../agent/agent.module';
 import { MicroserviceModule } from 'src/microservice/microservice.module';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
 @Module({
   imports: [
@@ -43,6 +44,12 @@ import { MicroserviceModule } from 'src/microservice/microservice.module';
     AgentModule,
 
     MicroserviceModule,
+    PrometheusModule.register({
+      path: '/metrics',
+      defaultMetrics: {
+        enabled: true,
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [
