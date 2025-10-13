@@ -70,8 +70,8 @@ export class SettlementSchedulerService {
       return;
     }
 
-    this.logger.log(
-      `Menjalankan settlement untuk ${merchants.length} merchant (interval ${intervalInMinutes} menit)`,
+    console.log(
+      'Start Settlement Scheduler [' + merchants.length + '] merchant',
     );
 
     try {
