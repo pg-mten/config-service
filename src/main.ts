@@ -13,14 +13,18 @@ import { WinstonModule } from 'nest-winston';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { logger } from './shared/constant/logger.constant';
 import { SERVICES } from './microservice/client.constant';
+import { MetricsMiddleware } from './middlewares/metrics.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: WinstonModule.createLogger({ instance: logger }),
     bufferLogs: true,
   });
+  app.use(new MetricsMiddleware().use);
 
-  app.setGlobalPrefix(API_PREFIX);
+  app.setGlobalPrefix(API_PREFIX, {
+    exclude: ['/metrics'],
+  });
   useContainer(app.select(AppModule), { fallbackOnErrors: true }); // class-validator ngikut DI Nest
 
   // TODO jangan sampai production, origin set true demi development dan testing
