@@ -14,6 +14,7 @@ import { WinstonModule } from 'nest-winston';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { logger } from './shared/constant/logger.constant';
 import { MetricsMiddleware } from './middlewares/metrics.middleware';
+import { SERVICES } from './microservice/client.constant';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -36,21 +37,21 @@ async function bootstrap() {
   });
 
   // if (IS_DEVELOPMENT) {
-    const options = new DocumentBuilder()
-      .setTitle(`${APP_NAME} Service`)
-      .setDescription(`${APP_NAME} Service API Description`)
-      .setVersion(VERSION)
-      .addBearerAuth()
-      .build();
+  const options = new DocumentBuilder()
+    .setTitle(`${APP_NAME} Service`)
+    .setDescription(`${APP_NAME} Service API Description`)
+    .setVersion(VERSION)
+    .addBearerAuth()
+    .build();
 
-    const document = SwaggerModule.createDocument(app, options);
-    SwaggerModule.setup(API_PREFIX, app, document);
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup(API_PREFIX, app, document);
   // }
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,
     options: {
-      host: '127.0.0.1',
-      port: PORT_TCP,
+      host: SERVICES.CONFIG.host,
+      port: SERVICES.CONFIG.port,
     },
   });
   await app.startAllMicroservices();
