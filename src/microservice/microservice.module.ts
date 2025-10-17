@@ -67,13 +67,6 @@ import { InacashProviderClient } from './provider/inacash/inacash.provider.clien
       signOptions: { expiresIn: JWT.accessToken.expireIn },
     }),
 
-    // ClsModule.forRoot({
-    //   global: true,
-    //   middleware: {
-    //     mount: true,
-    //   },
-    // }),
-
     /// Register Client
     ClientsModule.register([
       {
