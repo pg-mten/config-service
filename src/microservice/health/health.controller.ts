@@ -9,7 +9,7 @@ import {
 } from '@nestjs/terminus';
 import { PrismaClient } from '@prisma/client';
 import { SERVICES } from '../client.constant';
-import { PRISMA_SERVICE } from 'src/modules/prisma/prisma.provider';
+import { PRISMA_SERVICE } from 'src/module/prisma/prisma.provider';
 
 @Controller('health')
 export class HealthController {
