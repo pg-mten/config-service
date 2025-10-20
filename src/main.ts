@@ -14,7 +14,6 @@ import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { logger } from './shared/constant/logger.constant';
 import { SERVICES } from './microservice/client.constant';
 import { MetricsMiddleware } from './middlewares/metrics.middleware';
-import { SERVICES } from './microservice/client.constant';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
