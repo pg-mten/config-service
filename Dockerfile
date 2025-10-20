@@ -1,10 +1,29 @@
-# Gunakan Node.js base image ringan
+# Use Node.js base image
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package.json & package-lock.json dulu (optimasi cache)
+# Copy package files
 COPY package*.json ./
+COPY prisma ./prisma/
+
+# Install all dependencies including dev dependencies for build
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Generate Prisma client and build project
+RUN npx prisma generate
+# RUN npm run prisma:seed
+RUN npm run build
+
+# Production stage
+FROM node:20-alpine AS production
+
+WORKDIR /app
+
+ENV NODE_ENV=production
 
 # Set build-time arguments for environment variables
 ARG APP_NAME
@@ -62,28 +81,28 @@ ENV CLIENT_SETTLERECON_NAME=$CLIENT_SETTLERECON_NAME
 ENV CLIENT_SETTLERECON_HOST=$CLIENT_SETTLERECON_HOST
 ENV CLIENT_SETTLERECON_PORT=$CLIENT_SETTLERECON_PORT
 
-# Install dependency
-RUN npm ci
-
-# Copy semua source code
-COPY . .
-
-RUN npx prisma generate
-
-# Build project (misalnya NestJS)
-RUN npm run build
-
-# Stage kedua untuk image lebih kecil
-FROM node:20-alpine AS runner
-WORKDIR /app
-
-ENV NODE_ENV=production
-
-# Copy hanya file yang dibutuhkan
+# Install only production dependencies
 COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy built application and Prisma client
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nestjs -u 1001
+
+# Change ownership to non-root user
+RUN chown -R nestjs:nodejs /app
+
+USER nestjs
 
 EXPOSE 3001
 
-CMD ["node", "dist/main.js"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node dist/health-check.js || exit 1
+
+CMD ["node", "dist/src/main.js"]
