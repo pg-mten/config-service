@@ -1,11 +1,10 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './module/app/app.module';
+import { AppModule } from './modules/app/app.module';
 import {
   API_PREFIX,
   APP_NAME,
   IS_DEVELOPMENT,
   PORT,
-  PORT_TCP,
   VERSION,
 } from './shared/constant/global.constant';
 import { useContainer } from 'class-validator';
@@ -13,8 +12,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { WinstonModule } from 'nest-winston';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { logger } from './shared/constant/logger.constant';
-import { MetricsMiddleware } from './middlewares/metrics.middleware';
 import { SERVICES } from './microservice/client.constant';
+import { MetricsMiddleware } from './middlewares/metrics.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -55,6 +54,7 @@ async function bootstrap() {
     },
   });
   await app.startAllMicroservices();
+
   await app.listen(PORT, () => {
     console.log(`Config service started listening: ${PORT}`);
   });

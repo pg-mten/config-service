@@ -63,6 +63,7 @@ ENV CLIENT_SETTLERECON_HOST=$CLIENT_SETTLERECON_HOST
 ENV CLIENT_SETTLERECON_PORT=$CLIENT_SETTLERECON_PORT
 
 # Install dependency
+RUN npm config set registry https://registry.npmjs.org/
 RUN npm ci
 
 # Copy semua source code

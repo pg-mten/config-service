@@ -38,6 +38,7 @@ async function main() {
       { name: 'NETZME', reconciliationTime: '02:00' },
       { name: 'DANA', reconciliationTime: '02:00' },
       { name: 'PAYHERE', reconciliationTime: '02:00' },
+      { name: 'INACASH', reconciliationTime: '02:00' },
     ],
     skipDuplicates: true,
   });
@@ -244,6 +245,29 @@ async function main() {
       feeProviderFixed: new Decimal(0),
       feeProviderPercentage: new Decimal(0.7),
     },
+
+    /**
+     * WITHDRAW INACASH
+     */
+    {
+      code: 'INACASH_TRANSFERBANK_WITHDRAW',
+      providerName: 'INACASH',
+      paymentMethodName: 'TRANSFERBANK',
+      transactionType: 'WITHDRAW',
+      feeProviderFixed: new Decimal(5000),
+      feeProviderPercentage: 0,
+    },
+    /**
+     * DISBURSEMENT INACASH
+     */
+    {
+      code: 'INACASH_TRANSFERBANK_DISBURSEMENT',
+      providerName: 'INACASH',
+      paymentMethodName: 'TRANSFERBANK',
+      transactionType: 'DISBURSEMENT',
+      feeProviderFixed: new Decimal(5000),
+      feeProviderPercentage: 0,
+    },
   ];
 
   console.log({ baseFeeConfigsData });
@@ -258,19 +282,19 @@ async function main() {
   const merchantA = await prisma.merchant.upsert({
     where: { id: 1 },
     update: {},
-    create: { settlementInterval: 1 },
+    create: { settlementInterval: 120 },
   });
 
   const merchantB = await prisma.merchant.upsert({
     where: { id: 2 },
     update: {},
-    create: { settlementInterval: 1 },
+    create: { settlementInterval: 120 },
   });
 
   const merchantC = await prisma.merchant.upsert({
     where: { id: 3 },
     update: {},
-    create: { settlementInterval: 1 },
+    create: { settlementInterval: 120 },
   });
 
   const merchantD = await prisma.merchant.upsert({
@@ -349,6 +373,24 @@ async function main() {
     }
   });
 
+  merchantFees.push({
+    merchantId: merchantD.id,
+    baseFeeId: 17, // INACASH_TRANSFERBANK_WITHDRAW
+    feeAgentFixed: new Decimal(5000),
+    feeAgentPercentage: new Decimal(0),
+    feeInternalFixed: new Decimal(5000),
+    feeInternalPercentage: new Decimal(0),
+  });
+
+  merchantFees.push({
+    merchantId: merchantD.id,
+    baseFeeId: 18, // INACASH_TRANSFERBANK_DISBURSEMENT
+    feeAgentFixed: new Decimal(2500),
+    feeAgentPercentage: new Decimal(0),
+    feeInternalFixed: new Decimal(2500),
+    feeInternalPercentage: new Decimal(0),
+  });
+
   const merchantFeeConfig = await prisma.merchantFee.createMany({
     data: merchantFees,
     skipDuplicates: true,
@@ -406,12 +448,12 @@ async function main() {
       {
         agentId: 2,
         merchantId: merchantD.id,
-        percentagePerAgent: new Decimal(20),
+        percentagePerAgent: new Decimal(50),
       },
       {
         agentId: 3,
         merchantId: merchantD.id,
-        percentagePerAgent: new Decimal(80),
+        percentagePerAgent: new Decimal(50),
       },
     ],
   );
