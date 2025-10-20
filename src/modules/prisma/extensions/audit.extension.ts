@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 
 import { Prisma } from '@prisma/client';
-import { ClsServiceManager } from 'nestjs-cls';
+// import { ClsServiceManager } from 'nestjs-cls';
 import { DateHelper } from 'src/shared/helper/date.helper';
 
 function hasData(args: any): args is { data: any } {
@@ -14,11 +14,11 @@ export const auditTrailExtension = Prisma.defineExtension({
       async $allOperations({ model, operation, args, query }) {
         console.log('AuditTrailExtension');
         // const getUserId = () => null; // Hardcoded for now
-        const cls = ClsServiceManager.getClsService();
-        const userId = cls.get('authInfo.userId');
+        // const cls = ClsServiceManager.getClsService();
+        // const userId = cls.get('authInfo.userId');
         const now = DateHelper.now().toJSDate(); // Convert to Date object
 
-        console.log({ userId });
+        // console.log({ userId });
 
         if (model) {
           // if (operation === 'create' && hasData(args)) {

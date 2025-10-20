@@ -71,7 +71,7 @@ COPY . .
 RUN npx prisma generate
 
 # Seeder Configuration Fee
-RUN npm run prisma:seed
+# RUN npm run prisma:seed
 
 # Build project (misalnya NestJS)
 RUN npm run build
