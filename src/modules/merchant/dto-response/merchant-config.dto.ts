@@ -9,7 +9,7 @@ export class MerchantConfigDto {
   }
 
   @ApiProperty()
-  settlementInternal: number;
+  settlementInterval: number;
 
   @ApiProperty({ required: false })
   lastSettlementAt: DateTime | null;

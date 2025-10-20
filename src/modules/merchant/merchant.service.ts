@@ -3,7 +3,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { MerchantConfigDto } from './dto-response/merchant-config.dto';
 import { Decimal } from 'decimal.js';
 import { ResponseException } from 'src/exception/response.exception';
-import { MerchantAgentDto } from './dto-response/merchant-agent.dto';
 import { MerchantBaseFeeConfigDto } from './dto-response/merchant-base-fee-config.dto';
 import { MerchantFeeDto } from './dto-response/merchant-fee.dto';
 import { BaseFeeDto } from './dto-response/base-fee.dto';
@@ -21,67 +20,6 @@ export class MerchantService {
     private readonly prisma: PrismaService,
     private readonly userAuthClient: UserAuthClient,
   ) {}
-
-  async findAll() {
-    const result = await this.prisma.$queryRawUnsafe<
-      {
-        merchantId: number;
-        agentIds: number[];
-      }[]
-    >(`
-  SELECT
-    "merchantId",
-    array_agg("agentId") AS "agentIds"
-  FROM "config"."AgentShareholder"
-  GROUP BY "merchantId"
-  ORDER BY "merchantId"
-`);
-
-    const agentIds = (
-      await this.prisma.agentShareholder.findMany({
-        distinct: ['agentId'],
-        select: { agentId: true },
-      })
-    )
-      .map((a) => a.agentId)
-      .join(',');
-
-    const merchantIds = (
-      await this.prisma.agentShareholder.findMany({
-        distinct: ['merchantId'],
-        select: { merchantId: true },
-      })
-    )
-      .map((a) => a.merchantId)
-      .join(',');
-
-    console.log({ agentIds, merchantIds, result });
-
-    // const res = await firstValueFrom(
-    //   this.httpService.get<
-    //     ResponseDto<{ merchants: MerchantDto[]; agents: AgentDto[] }>
-    //   >(`${URL_AUTH}/user/internal/merchants-and-agents-by-ids`, {
-    //     params: { merchantIds: merchantIds, agentIds: agentIds },
-    //   }),
-    // );
-
-    const res = await this.userAuthClient.findAllMerchantsAndAgentsByIdsTCP({
-      agentIds,
-      merchantIds,
-    });
-
-    const merchants = res.data?.merchants ?? [];
-    const agents = res.data?.agents ?? [];
-
-    return result.map((data) => {
-      return new MerchantAgentDto({
-        merchant: merchants.find((a) => a.merchantId === data.merchantId)!,
-        agents: data.agentIds.map((agentId) => {
-          return agents.find((a) => a.agentId === agentId)!;
-        }),
-      });
-    });
-  }
 
   findByIdThrow(merchantId: number) {
     return this.prisma.merchant.findUniqueOrThrow({
@@ -156,7 +94,7 @@ export class MerchantService {
       });
 
     return new MerchantConfigDto({
-      settlementInternal: merchant.settlementInterval,
+      settlementInterval: merchant.settlementInterval,
       lastSettlementAt: DateHelper.fromJsDate(merchant.lastSettlementAt),
       agentShareholders:
         agentShareholderDtos.length === 0 ? null : agentShareholderDtos,
@@ -164,13 +102,23 @@ export class MerchantService {
     });
   }
 
-  create(body: CreateMerchantSystemDto) {
-    const { id, settlementInterval } = body;
-    return this.prisma.merchant.create({
-      data: {
-        id,
-        settlementInterval: settlementInterval ?? undefined,
-      },
+  async create(body: CreateMerchantSystemDto) {
+    console.log({ body });
+    const { id, settlementInterval, agentId } = body;
+    return this.prisma.$transaction(async (tx) => {
+      await tx.merchant.create({
+        data: {
+          id,
+          settlementInterval: settlementInterval ?? 120, // 2 hours default
+        },
+      });
+      await tx.agentShareholder.create({
+        data: {
+          percentagePerAgent: new Decimal(0),
+          agentId: agentId,
+          merchantId: id,
+        },
+      });
     });
   }
 

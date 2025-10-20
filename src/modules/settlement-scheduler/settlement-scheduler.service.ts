@@ -13,10 +13,10 @@ export class SettlementSchedulerService {
     private readonly settlementClient: SettlementSettleReconClient,
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
-  async runEveryMinutes() {
-    await this.runForInterval(1);
-  }
+  // @Cron(CronExpression.EVERY_MINUTE)
+  // async runEveryMinutes() {
+  //   await this.runForInterval(1);
+  // }
 
   @Cron(CronExpression.EVERY_30_MINUTES)
   async runEvery30Minutes() {
