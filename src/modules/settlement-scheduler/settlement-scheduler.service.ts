@@ -13,10 +13,10 @@ export class SettlementSchedulerService {
     private readonly settlementClient: SettlementSettleReconClient,
   ) {}
 
-  // @Cron(CronExpression.EVERY_MINUTE)
-  // async runEveryMinutes() {
-  //   await this.runForInterval(1);
-  // }
+  @Cron(CronExpression.EVERY_MINUTE)
+  async runEveryMinutes() {
+    await this.runForInterval(1);
+  }
 
   @Cron(CronExpression.EVERY_30_MINUTES)
   async runEvery30Minutes() {
@@ -75,12 +75,14 @@ export class SettlementSchedulerService {
     );
 
     try {
-      const merchantIdList: number[] = merchants.map((merchant) => merchant.id);
+      const merchantIdStr: string = merchants
+        .map((merchant) => merchant.id)
+        .join(',');
 
       const res = await this.settlementClient.scheduleTCP({
         date: now,
         interval: intervalInMinutes,
-        merchantIds: merchantIdList,
+        merchantIds: merchantIdStr,
       });
 
       const { merchantIds, merchantIdsNoSettlement } = res.data!;
