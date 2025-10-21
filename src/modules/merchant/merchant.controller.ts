@@ -12,7 +12,6 @@ import { MerchantService } from './merchant.service';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MerchantConfigDto } from './dto-response/merchant-config.dto';
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
-import { MerchantAgentDto } from './dto-response/merchant-agent.dto';
 import { UpsertMerchantFeeDto } from './dto-request/upsert-merchant-fee.dto';
 import { UpsertMerchantAgentShareholderDto } from './dto-request/upsert-merchant-agent-shareholder.dto';
 import { MessagePattern, Payload } from '@nestjs/microservices';
@@ -25,13 +24,6 @@ import { SERVICES } from 'src/microservice/client.constant';
 @ApiTags('Merchant')
 export class MerchantController {
   constructor(private readonly merchantService: MerchantService) {}
-
-  @Get()
-  @ApiOperation({ summary: 'Merchant List with Agent Shareholder' })
-  @ApiOkResponse({ type: MerchantAgentDto, isArray: true })
-  findAll() {
-    return this.merchantService.findAll();
-  }
 
   @Get(':merchantId/config')
   @ApiOperation({ summary: 'Merchant config information' })
