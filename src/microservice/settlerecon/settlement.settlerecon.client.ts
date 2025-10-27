@@ -30,7 +30,6 @@ export class SettlementSettleReconClient {
   }
 
   async scheduleTCP(body: CreateSettlementScheduleSystemDto) {
-    console.log({ body });
     try {
       const res = await firstValueFrom(
         this.settleReconClient.send<ResponseDto<SettlementScheduleSystemDto>>(
