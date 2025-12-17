@@ -40,6 +40,7 @@ async function bootstrap() {
     .setTitle(`${APP_NAME} Service`)
     .setDescription(`${APP_NAME} Service API Description`)
     .setVersion(VERSION)
+    .addServer(IS_DEVELOPMENT ? '' : APP_NAME.toLowerCase())
     .addBearerAuth()
     .build();
 
