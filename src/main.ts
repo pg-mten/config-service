@@ -40,8 +40,8 @@ async function bootstrap() {
     .setTitle(`${APP_NAME} Service`)
     .setDescription(`${APP_NAME} Service API Description`)
     .setVersion(VERSION)
-    .addServer(`/config`, 'Production') // Adjust with Server Proxy
-    .addServer('/', 'Local')
+    .addServer('http://localhost:3001', 'Local')
+    .addServer(`https://api.manapay.id/config`, 'Production') // Adjust with Server Proxy
     .addBearerAuth()
     .build();
 
