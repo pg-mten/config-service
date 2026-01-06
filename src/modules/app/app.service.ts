@@ -4,6 +4,6 @@ import { APP_NAME } from 'src/shared/constant/global.constant';
 @Injectable()
 export class AppService {
   getHello(): string {
-    return APP_NAME + ' 01.5';
+    return APP_NAME + ' 01.6';
   }
 }
