@@ -39,6 +39,7 @@ async function main() {
       { name: 'DANA', reconciliationTime: '02:00' },
       { name: 'PAYHERE', reconciliationTime: '02:00' },
       { name: 'INACASH', reconciliationTime: '02:00' },
+      { name: 'PDN', reconciliationTime: '02:00' },
     ],
     skipDuplicates: true,
   });
@@ -268,6 +269,34 @@ async function main() {
       feeProviderFixed: new Decimal(5000),
       feeProviderPercentage: 0,
     },
+
+    /**
+     * PDN
+     */
+    {
+      code: 'PDN_QRIS_PURCHASE',
+      providerName: 'PDN',
+      paymentMethodName: 'QRIS',
+      transactionType: 'PURCHASE',
+      feeProviderFixed: new Decimal(0),
+      feeProviderPercentage: new Decimal(0.8),
+    },
+    {
+      code: 'PDN_TRANSFERBANK_DISBURSEMENT',
+      providerName: 'PDN',
+      paymentMethodName: 'TRANSFERBANK',
+      transactionType: 'DISBURSEMENT',
+      feeProviderFixed: new Decimal(2000),
+      feeProviderPercentage: new Decimal(0),
+    },
+    {
+      code: 'PDN_TRANSFERBANK_WITHDRAW',
+      providerName: 'PDN',
+      paymentMethodName: 'TRANSFERBANK',
+      transactionType: 'WITHDRAW',
+      feeProviderFixed: new Decimal(2000),
+      feeProviderPercentage: new Decimal(0),
+    },
   ];
 
   console.log({ baseFeeConfigsData });
@@ -389,6 +418,50 @@ async function main() {
     feeAgentPercentage: new Decimal(0),
     feeInternalFixed: new Decimal(2500),
     feeInternalPercentage: new Decimal(0),
+  });
+
+  /**
+   * PDN
+   */
+  const pdnPurchaseBaseFee = await prisma.baseFee.findUniqueOrThrow({
+    where: { code: 'PDN_QRIS_PURCHASE' },
+  });
+  const pdnDisbursementBaseFee = await prisma.baseFee.findUniqueOrThrow({
+    where: { code: 'PDN_TRANSFERBANK_DISBURSEMENT' },
+  });
+  const pdnWithdrawBaseFee = await prisma.baseFee.findUniqueOrThrow({
+    where: { code: 'PDN_TRANSFERBANK_WITHDRAW' },
+  });
+
+  console.log({
+    pdnPurchaseBaseFee,
+    pdnDisbursementBaseFee,
+    pdnWithdrawBaseFee,
+  });
+
+  merchantFees.push({
+    merchantId: merchantD.id,
+    baseFeeId: pdnPurchaseBaseFee.id,
+    feeAgentPercentage: new Decimal(0.1),
+    feeAgentFixed: new Decimal(0),
+    feeInternalPercentage: new Decimal(0.1),
+    feeInternalFixed: new Decimal(0),
+  });
+  merchantFees.push({
+    merchantId: merchantD.id,
+    baseFeeId: pdnDisbursementBaseFee.id,
+    feeAgentPercentage: new Decimal(0),
+    feeAgentFixed: new Decimal(0),
+    feeInternalPercentage: new Decimal(0),
+    feeInternalFixed: new Decimal(500),
+  });
+  merchantFees.push({
+    merchantId: merchantD.id,
+    baseFeeId: pdnWithdrawBaseFee.id,
+    feeAgentPercentage: new Decimal(0),
+    feeAgentFixed: new Decimal(0),
+    feeInternalPercentage: new Decimal(0),
+    feeInternalFixed: new Decimal(500),
   });
 
   const merchantFeeConfig = await prisma.merchantFee.createMany({
