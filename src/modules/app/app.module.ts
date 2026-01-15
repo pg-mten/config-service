@@ -25,6 +25,7 @@ import { ReconciliationModule } from '../reconciliation/reconciliation.module';
 import { AgentModule } from '../agent/agent.module';
 import { MicroserviceModule } from 'src/microservice/microservice.module';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { UserProviderModule } from '../user-provider/user-provider.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
     SettlementSchedulerModule,
     ReconciliationModule,
     AgentModule,
+    UserProviderModule,
 
     MicroserviceModule,
     PrometheusModule.register({

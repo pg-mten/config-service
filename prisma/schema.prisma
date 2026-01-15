@@ -16,8 +16,8 @@ datasource db {
 }
 
 model Bank {
-  code     String @id
-  name     String
+  code String @id
+  name String
 
   @@schema("config")
 }
@@ -34,7 +34,9 @@ model Merchant {
 }
 
 model Agent {
-  id Int @id
+  id                Int     @id
+  providerName      String?
+  paymentMethodName String?
 
   AgentShareholders AgentShareholder[]
 
