@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable, ValidationPipe } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
-import { InvalidRequestException } from 'src/exception/invalid-request.exception';
+import { InvalidRequestException } from 'src/shared/exception/invalid-request.exception';
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
 
 @Injectable()
@@ -8,10 +8,10 @@ export class CustomValidationPipe extends ValidationPipe {
   constructor() {
     super({
       whitelist: true,
-      forbidNonWhitelisted: true,
+      // forbidNonWhitelisted: true,
       transform: true,
-      transformOptions: { enableImplicitConversion: false },
       exceptionFactory: (validationErrors: ValidationError[]) => {
+        console.log('CustomValidationPipe');
         const error: Record<string, string> = {};
 
         validationErrors.forEach((validationError: ValidationError) => {
@@ -29,9 +29,6 @@ export class CustomValidationPipe extends ValidationPipe {
           message: 'Request Validation Failed',
           error: error,
         });
-
-        console.log('CustomValidationPipe');
-        console.log({ responseDto });
 
         throw new InvalidRequestException(responseDto);
       },

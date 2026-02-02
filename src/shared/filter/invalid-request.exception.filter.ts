@@ -6,13 +6,11 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 
-import { InvalidRequestException } from '../exception/invalid-request.exception';
+import { InvalidRequestException } from 'src/shared/exception';
 
 @Catch(InvalidRequestException)
 export class InvalidRequestExceptionFilter implements ExceptionFilter {
   catch(exception: InvalidRequestException, host: ArgumentsHost) {
-    console.log('InvalidRequestExceptionFilter');
-
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const responseDto = exception.getResponseDto();

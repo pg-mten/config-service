@@ -9,12 +9,15 @@ import {
   HttpAdapterHost,
   Reflector,
 } from '@nestjs/core';
-import { CustomValidationPipe } from 'src/pipe/custom-validation.pipe';
-import { PrismaClientKnownExceptionFilter } from 'src/filter/prisma-client-known.exception.filter';
-import { ResponseExceptionFilter } from 'src/filter/response.exception.filter';
-import { InvalidRequestExceptionFilter } from 'src/filter/invalid-request.exception.filter';
-import { ResponseInterceptor } from 'src/interceptor/response.interceptor';
-import { AllExceptionsFilter } from 'src/filter/all.exceptions.filter';
+import { CustomValidationPipe } from 'src/shared/pipe';
+import {
+  PrismaClientKnownExceptionFilter,
+  ResponseExceptionFilter,
+  InvalidRequestExceptionFilter,
+} from 'src/shared/filter';
+
+import { ResponseInterceptor } from 'src/shared/interceptor';
+import { AllExceptionsFilter } from 'src/shared/filter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PrismaModule } from '../prisma/prisma.module';
 import { CommonModule } from '../common/common.module';

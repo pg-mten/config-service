@@ -15,8 +15,8 @@ import { FilterTopupFeeSystemDto } from './dto-transaction-system/filter-topup-f
 import { FilterDisbursementFeeSystemDto } from './dto-transaction-system/filter-disbursement-fee.system.dto';
 import { TopupFeeSystemDto } from './dto-transaction-system/topup-fee.system.dto';
 import { DisbursementFeeSystemDto } from './dto-transaction-system/disbursement-fee.system.dto';
-import { CustomValidationPipe } from 'src/pipe/custom-validation.pipe';
-import { ResponseInterceptor } from 'src/interceptor/response.interceptor';
+import { CustomValidationPipe } from 'src/shared/pipe';
+import { ResponseInterceptor } from 'src/shared/interceptor';
 import { SERVICES } from 'src/microservice/client.constant';
 
 @Controller('fee')

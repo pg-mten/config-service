@@ -2,7 +2,7 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MerchantConfigDto } from './dto-response/merchant-config.dto';
 import { Decimal } from 'decimal.js';
-import { ResponseException } from 'src/exception/response.exception';
+import { ResponseException } from 'src/shared/exception';
 import { MerchantBaseFeeConfigDto } from './dto-response/merchant-base-fee-config.dto';
 import { MerchantFeeDto } from './dto-response/merchant-fee.dto';
 import { BaseFeeDto } from './dto-response/base-fee.dto';

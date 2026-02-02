@@ -15,8 +15,8 @@ import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
 import { UpsertMerchantFeeDto } from './dto-request/upsert-merchant-fee.dto';
 import { UpsertMerchantAgentShareholderDto } from './dto-request/upsert-merchant-agent-shareholder.dto';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { ResponseInterceptor } from 'src/interceptor/response.interceptor';
-import { CustomValidationPipe } from 'src/pipe/custom-validation.pipe';
+import { ResponseInterceptor } from 'src/shared/interceptor';
+import { CustomValidationPipe } from 'src/shared/pipe';
 import { CreateMerchantSystemDto } from 'src/microservice/config/dto-system/create-merchant.system.dto';
 import { SERVICES } from 'src/microservice/client.constant';
 

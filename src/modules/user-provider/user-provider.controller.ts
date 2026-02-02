@@ -5,8 +5,8 @@ import { FilterProfileProviderSystemDto } from 'src/microservice/config/dto-syst
 import { SystemApi } from 'src/microservice/auth/decorator/system.decorator';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { SERVICES } from 'src/microservice/client.constant';
-import { ResponseInterceptor } from 'src/interceptor/response.interceptor';
-import { CustomValidationPipe } from 'src/pipe/custom-validation.pipe';
+import { ResponseInterceptor } from 'src/shared/interceptor';
+import { CustomValidationPipe } from 'src/shared/pipe';
 
 @Controller('user-provider')
 @ApiTags('User Provider')

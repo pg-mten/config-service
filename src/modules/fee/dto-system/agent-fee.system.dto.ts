@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import Decimal from 'decimal.js';
-import { ToDecimalFixed } from 'src/decorator/decimal.decorator';
+import { ToDecimalFixed } from 'src/shared/decorator';
 import { AgentFeeEachSystemDto } from 'src/modules/fee/dto-system/agent-fee-each.system.dto';
 import { DtoHelper } from 'src/shared/helper/dto.helper';
 

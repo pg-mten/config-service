@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
 import Decimal from 'decimal.js';
-import { ToDecimal, ToDecimalNullable } from 'src/decorator/decimal.decorator';
+import { ToDecimal, ToDecimalNullable } from 'src/shared/decorator';
 import { ActionEnum } from 'src/shared/constant/merchant-fee.constant';
 
 export class UpsertMerchantFeeDto {
