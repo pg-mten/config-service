@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { FilterProfileProviderSystemDto } from 'src/microservice/config/dto-system/filter-profile-provider.system.dto';
-import { TransactionUserRole } from 'src/microservice/transaction.constant';
+import { TransactionUserRole } from 'src/shared/constant/transaction.constant';
 import { ProfileProviderSystemDto } from 'src/microservice/config/dto-system/profile-provider.system.dto';
 
 @Injectable()

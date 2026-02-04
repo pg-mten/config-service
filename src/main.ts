@@ -12,7 +12,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { WinstonModule } from 'nest-winston';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { logger } from './shared/constant/logger.constant';
-import { SERVICES } from './microservice/client.constant';
+import { SERVICES } from 'src/shared/constant/client.constant';
 import { MetricsMiddleware } from './middlewares/metrics.middleware';
 
 async function bootstrap() {
