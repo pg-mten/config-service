@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SERVICES, URL_CONFIG } from '../client.constant';
+import { SERVICES, URL_CONFIG } from '../../shared/constant/client.constant';
 import { ClientProxy } from '@nestjs/microservices';
-import { FilterProfileProviderSystemDto } from './dto-system/filter-profile-provider.system.dto';
 import axios from 'axios';
 import { ResponseDto } from 'src/shared/response.dto';
 import { ProfileProviderSystemDto } from './dto-system/profile-provider.system.dto';
 import { firstValueFrom } from 'rxjs';
+import { FilterProfileProviderSystemDto } from './dto-system/filter-profile-provider.system.dto';
 
 @Injectable()
 export class ProfileProviderConfigClient {

@@ -4,7 +4,7 @@ import { UserProviderService } from './user-provider.service';
 import { FilterProfileProviderSystemDto } from 'src/microservice/config/dto-system/filter-profile-provider.system.dto';
 import { SystemApi } from 'src/microservice/auth/decorator/system.decorator';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { SERVICES } from 'src/microservice/client.constant';
+import { SERVICES } from 'src/shared/constant';
 import { ResponseInterceptor } from 'src/shared/interceptor';
 import { CustomValidationPipe } from 'src/shared/pipe';
 
