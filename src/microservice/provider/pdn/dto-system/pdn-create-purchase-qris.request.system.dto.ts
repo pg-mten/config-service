@@ -19,4 +19,9 @@ export class PdnCreatePurchaseQrisRequestSystemDto {
   @IsString()
   @ApiProperty()
   code: string;
+
+  @IsNumber()
+  @Type(() => Number)
+  @ApiProperty()
+  expireSecond: number;
 }
