@@ -9,7 +9,7 @@ export class UserProviderService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findProfileProvider(dto: FilterProfileProviderSystemDto) {
-    const { userId, userRole, profileId, transactionType } = dto;
+    const { userId, userRole, transactionType } = dto;
 
     if (userRole === TransactionUserRole.ADMIN) {
       return new ProfileProviderSystemDto({
@@ -20,7 +20,7 @@ export class UserProviderService {
       });
     } else if (userRole === TransactionUserRole.AGENT) {
       const agent = await this.prisma.agent.findUniqueOrThrow({
-        where: { id: profileId },
+        where: { id: userId },
       });
 
       return new ProfileProviderSystemDto({
@@ -32,7 +32,7 @@ export class UserProviderService {
     }
 
     const merchantFees = await this.prisma.merchantFee.findMany({
-      where: { merchantId: profileId },
+      where: { merchantId: userId },
       include: { baseFee: true },
     });
 
