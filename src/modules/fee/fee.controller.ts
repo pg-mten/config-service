@@ -18,6 +18,7 @@ import { DisbursementFeeSystemDto } from './dto-transaction-system/disbursement-
 import { CustomValidationPipe } from 'src/shared/pipe';
 import { ResponseInterceptor } from 'src/shared/interceptor';
 import { SERVICES } from 'src/shared/constant/client.constant';
+import { SystemApi } from 'src/microservice/auth/decorator/system.decorator';
 
 @Controller('fee')
 export class FeeController {
@@ -39,6 +40,7 @@ export class FeeController {
   /**
    * Purchase Calculate
    */
+  @SystemApi()
   @Get('/internal/purchase')
   @ApiTags('Internal')
   @ApiOperation({ summary: 'Calculate Purchase fee' })
@@ -63,6 +65,7 @@ export class FeeController {
   /**
    * Withdraw Calculate
    */
+  @SystemApi()
   @Get('/internal/withdraw')
   @ApiTags('Internal')
   @ApiOperation({ summary: 'Calculate Withdraw fee' })
@@ -85,6 +88,7 @@ export class FeeController {
   /**
    * Topup Calculate
    */
+  @SystemApi()
   @Get('/internal/topup')
   @ApiTags('Internal')
   @ApiOperation({ summary: 'Calculate Top Up fee' })
@@ -107,6 +111,7 @@ export class FeeController {
   /**
    * Disbursement Calculate
    */
+  @SystemApi()
   @Get('/internal/disbursement')
   @ApiTags('Internal')
   @ApiOperation({ summary: 'Calculate Disbursement fee' })

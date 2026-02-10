@@ -15,13 +15,14 @@ import { ResponseInterceptor } from 'src/shared/interceptor';
 import { CustomValidationPipe } from 'src/shared/pipe';
 import { CreateAgentSystemDto } from 'src/microservice/config/dto-system/create-agent.system.dto';
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
+import { SystemApi } from 'src/microservice/auth/decorator/system.decorator';
 
 @Controller('agent')
 @ApiTags('Agent')
 export class AgentController {
   constructor(private readonly agentService: AgentService) {}
 
-  // Harusnya bakal jadi internal
+  @SystemApi()
   @Post('/internal')
   @ApiTags('Internal')
   @ApiOperation({ summary: 'Create Agent System' })

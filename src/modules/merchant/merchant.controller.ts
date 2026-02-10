@@ -19,6 +19,7 @@ import { ResponseInterceptor } from 'src/shared/interceptor';
 import { CustomValidationPipe } from 'src/shared/pipe';
 import { CreateMerchantSystemDto } from 'src/microservice/config/dto-system/create-merchant.system.dto';
 import { SERVICES } from 'src/shared/constant/client.constant';
+import { SystemApi } from 'src/microservice/auth/decorator/system.decorator';
 
 @Controller('merchant')
 @ApiTags('Merchant')
@@ -34,6 +35,7 @@ export class MerchantController {
     return this.merchantService.findAllConfigByMerchantId(merchantId);
   }
 
+  @SystemApi()
   @Post('/internal')
   @ApiTags('Internal')
   @ApiOperation({ summary: 'Create Merchant System' })
