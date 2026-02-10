@@ -18,7 +18,7 @@ import { DisbursementFeeSystemDto } from './dto-transaction-system/disbursement-
 import { CustomValidationPipe } from 'src/shared/pipe';
 import { ResponseInterceptor } from 'src/shared/interceptor';
 import { SERVICES } from 'src/shared/constant/client.constant';
-import { SystemApi } from 'src/microservice/auth/decorator/system.decorator';
+import { SystemApi } from 'src/microservice/auth/decorator';
 
 @Controller('fee')
 export class FeeController {

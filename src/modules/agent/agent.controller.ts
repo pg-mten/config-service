@@ -15,7 +15,7 @@ import { ResponseInterceptor } from 'src/shared/interceptor';
 import { CustomValidationPipe } from 'src/shared/pipe';
 import { CreateAgentSystemDto } from 'src/microservice/config/dto-system/create-agent.system.dto';
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
-import { SystemApi } from 'src/microservice/auth/decorator/system.decorator';
+import { SystemApi } from 'src/microservice/auth/decorator';
 
 @Controller('agent')
 @ApiTags('Agent')

@@ -2,7 +2,7 @@ import { Controller, Get, Query, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UserProviderService } from './user-provider.service';
 import { FilterProfileProviderSystemDto } from 'src/microservice/config/dto-system/filter-profile-provider.system.dto';
-import { SystemApi } from 'src/microservice/auth/decorator/system.decorator';
+import { SystemApi } from 'src/microservice/auth/decorator';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { SERVICES } from 'src/shared/constant/client.constant';
 import { ResponseInterceptor } from 'src/shared/interceptor';
