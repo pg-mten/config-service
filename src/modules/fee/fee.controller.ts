@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { FeeService } from './fee.service';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PurchaseFeeSystemDto } from './dto-transaction-system/purchase-fee.system.dto';
@@ -16,7 +16,6 @@ import { FilterDisbursementFeeSystemDto } from './dto-transaction-system/filter-
 import { TopupFeeSystemDto } from './dto-transaction-system/topup-fee.system.dto';
 import { DisbursementFeeSystemDto } from './dto-transaction-system/disbursement-fee.system.dto';
 import { CustomValidationPipe } from 'src/shared/pipe';
-import { ResponseInterceptor } from 'src/shared/interceptor';
 import { SERVICES } from 'src/shared/constant/client.constant';
 import { SystemApi } from 'src/microservice/auth/decorator';
 
@@ -52,7 +51,6 @@ export class FeeController {
   }
 
   @MessagePattern({ cmd: SERVICES.CONFIG.cmd.calculate_fee_purchase })
-  @UseInterceptors(ResponseInterceptor)
   async purchaseTCP(
     @Payload(CustomValidationPipe)
     payload: FilterPurchaseFeeSystemDto,
@@ -76,7 +74,6 @@ export class FeeController {
   }
 
   @MessagePattern({ cmd: SERVICES.CONFIG.cmd.calculate_fee_withdraw })
-  @UseInterceptors(ResponseInterceptor)
   async withdrawTCP(
     @Payload(CustomValidationPipe)
     payload: FilterWithdrawFeeSystemDto,
@@ -99,7 +96,6 @@ export class FeeController {
   }
 
   @MessagePattern({ cmd: SERVICES.CONFIG.cmd.calculate_fee_topup })
-  @UseInterceptors(ResponseInterceptor)
   async topupTCP(
     @Payload(CustomValidationPipe)
     payload: FilterTopupFeeSystemDto,
@@ -123,7 +119,6 @@ export class FeeController {
   }
 
   @MessagePattern({ cmd: SERVICES.CONFIG.cmd.calculate_fee_disbursement })
-  @UseInterceptors(ResponseInterceptor)
   async disbursementTCP(
     @Payload(CustomValidationPipe)
     payload: FilterDisbursementFeeSystemDto,

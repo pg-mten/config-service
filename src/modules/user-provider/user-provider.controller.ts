@@ -1,11 +1,10 @@
-import { Controller, Get, Query, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UserProviderService } from './user-provider.service';
 import { FilterProfileProviderSystemDto } from 'src/microservice/config/dto-system/filter-profile-provider.system.dto';
 import { SystemApi } from 'src/microservice/auth/decorator';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { SERVICES } from 'src/shared/constant/client.constant';
-import { ResponseInterceptor } from 'src/shared/interceptor';
 import { CustomValidationPipe } from 'src/shared/pipe';
 
 @Controller('user-provider')
@@ -22,7 +21,6 @@ export class UserProviderController {
   }
 
   @MessagePattern({ cmd: SERVICES.CONFIG.cmd.find_profile_provider })
-  @UseInterceptors(ResponseInterceptor)
   async findProfileProviderTCP(
     @Payload(CustomValidationPipe) payload: FilterProfileProviderSystemDto,
   ) {

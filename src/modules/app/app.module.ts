@@ -94,7 +94,13 @@ import { UserProviderModule } from '../user-provider/user-provider.module';
       },
       inject: [Reflector],
     },
-    { provide: APP_INTERCEPTOR, useClass: ResponseInterceptor },
+    {
+      provide: APP_INTERCEPTOR,
+      useFactory: (reflector: Reflector) => {
+        return new ResponseInterceptor(reflector);
+      },
+      inject: [Reflector],
+    },
 
     /// GUARD
   ],

@@ -6,7 +6,6 @@ import {
   ParseArrayPipe,
   ParseIntPipe,
   Post,
-  UseInterceptors,
 } from '@nestjs/common';
 import { MerchantService } from './merchant.service';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -15,7 +14,6 @@ import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
 import { UpsertMerchantFeeDto } from './dto-request/upsert-merchant-fee.dto';
 import { UpsertMerchantAgentShareholderDto } from './dto-request/upsert-merchant-agent-shareholder.dto';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { ResponseInterceptor } from 'src/shared/interceptor';
 import { CustomValidationPipe } from 'src/shared/pipe';
 import { CreateMerchantSystemDto } from 'src/microservice/config/dto-system/create-merchant.system.dto';
 import { SERVICES } from 'src/shared/constant/client.constant';
@@ -47,7 +45,6 @@ export class MerchantController {
   }
 
   @MessagePattern({ cmd: SERVICES.CONFIG.cmd.create_merchant_config })
-  @UseInterceptors(ResponseInterceptor)
   async createTCP(
     @Payload(CustomValidationPipe)
     body: CreateMerchantSystemDto,

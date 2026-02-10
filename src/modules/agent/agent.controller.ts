@@ -5,13 +5,11 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AgentService } from './agent.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { SERVICES } from 'src/shared/constant/client.constant';
-import { ResponseInterceptor } from 'src/shared/interceptor';
 import { CustomValidationPipe } from 'src/shared/pipe';
 import { CreateAgentSystemDto } from 'src/microservice/config/dto-system/create-agent.system.dto';
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
@@ -33,7 +31,6 @@ export class AgentController {
   }
 
   @MessagePattern({ cmd: SERVICES.CONFIG.cmd.create_agent_config })
-  @UseInterceptors(ResponseInterceptor)
   async createTCP(
     @Payload(CustomValidationPipe)
     payload: CreateAgentSystemDto,
