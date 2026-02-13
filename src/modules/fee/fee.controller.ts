@@ -19,7 +19,7 @@ import { CustomValidationPipe } from 'src/shared/pipe';
 import { SERVICES } from 'src/shared/constant/client.constant';
 import { SystemApi } from 'src/microservice/auth/decorator';
 
-@Controller('fee')
+@Controller()
 export class FeeController {
   constructor(
     private readonly feeService: FeeService,
@@ -29,7 +29,7 @@ export class FeeController {
     private readonly disbursementService: DisbursementFeeService,
   ) {}
 
-  @Get('config')
+  @Get('fee/config')
   @ApiOperation({ summary: 'List All Provider fee configuration' })
   @ApiOkResponse({ type: BaseFeeDto, isArray: true })
   async config() {
@@ -40,7 +40,7 @@ export class FeeController {
    * Purchase Calculate
    */
   @SystemApi()
-  @Get('/internal/purchase')
+  @Get(SERVICES.CONFIG.point.calculate_fee_purchase.path)
   @ApiTags('Internal')
   @ApiOperation({ summary: 'Calculate Purchase fee' })
   @ApiOkResponse({ type: PurchaseFeeSystemDto })
@@ -50,7 +50,7 @@ export class FeeController {
     return feeDto;
   }
 
-  @MessagePattern({ cmd: SERVICES.CONFIG.cmd.calculate_fee_purchase })
+  @MessagePattern({ cmd: SERVICES.CONFIG.point.calculate_fee_purchase.cmd })
   async purchaseTCP(
     @Payload(CustomValidationPipe)
     payload: FilterPurchaseFeeSystemDto,
@@ -64,7 +64,7 @@ export class FeeController {
    * Withdraw Calculate
    */
   @SystemApi()
-  @Get('/internal/withdraw')
+  @Get(SERVICES.CONFIG.point.calculate_fee_withdraw.path)
   @ApiTags('Internal')
   @ApiOperation({ summary: 'Calculate Withdraw fee' })
   @ApiOkResponse({ type: WithdrawFeeSystemDto })
@@ -73,7 +73,7 @@ export class FeeController {
     return feeDto;
   }
 
-  @MessagePattern({ cmd: SERVICES.CONFIG.cmd.calculate_fee_withdraw })
+  @MessagePattern({ cmd: SERVICES.CONFIG.point.calculate_fee_withdraw.cmd })
   async withdrawTCP(
     @Payload(CustomValidationPipe)
     payload: FilterWithdrawFeeSystemDto,
@@ -86,7 +86,7 @@ export class FeeController {
    * Topup Calculate
    */
   @SystemApi()
-  @Get('/internal/topup')
+  @Get(SERVICES.CONFIG.point.calculate_fee_topup.path)
   @ApiTags('Internal')
   @ApiOperation({ summary: 'Calculate Top Up fee' })
   @ApiOkResponse({ type: TopupFeeSystemDto })
@@ -95,7 +95,7 @@ export class FeeController {
     return feeDto;
   }
 
-  @MessagePattern({ cmd: SERVICES.CONFIG.cmd.calculate_fee_topup })
+  @MessagePattern({ cmd: SERVICES.CONFIG.point.calculate_fee_topup.cmd })
   async topupTCP(
     @Payload(CustomValidationPipe)
     payload: FilterTopupFeeSystemDto,
@@ -108,7 +108,7 @@ export class FeeController {
    * Disbursement Calculate
    */
   @SystemApi()
-  @Get('/internal/disbursement')
+  @Get(SERVICES.CONFIG.point.calculate_fee_disbursement.path)
   @ApiTags('Internal')
   @ApiOperation({ summary: 'Calculate Disbursement fee' })
   @ApiOkResponse({ type: DisbursementFeeSystemDto })
@@ -118,7 +118,7 @@ export class FeeController {
     return feeDto;
   }
 
-  @MessagePattern({ cmd: SERVICES.CONFIG.cmd.calculate_fee_disbursement })
+  @MessagePattern({ cmd: SERVICES.CONFIG.point.calculate_fee_disbursement.cmd })
   async disbursementTCP(
     @Payload(CustomValidationPipe)
     payload: FilterDisbursementFeeSystemDto,

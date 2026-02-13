@@ -19,12 +19,12 @@ import { CreateMerchantSystemDto } from 'src/microservice/config/dto-system/crea
 import { SERVICES } from 'src/shared/constant/client.constant';
 import { SystemApi } from 'src/microservice/auth/decorator';
 
-@Controller('merchant')
+@Controller()
 @ApiTags('Merchant')
 export class MerchantController {
   constructor(private readonly merchantService: MerchantService) {}
 
-  @Get(':merchantId/config')
+  @Get('merchant/:merchantId/config')
   @ApiOperation({ summary: 'Merchant config information' })
   @ApiOkResponse({ type: MerchantConfigDto, isArray: true })
   findAllConfigByMerchantId(
@@ -34,7 +34,7 @@ export class MerchantController {
   }
 
   @SystemApi()
-  @Post('/internal')
+  @Post(SERVICES.CONFIG.point.create_merchant_config.path)
   @ApiTags('Internal')
   @ApiOperation({ summary: 'Create Merchant System' })
   @ApiBody({ type: CreateMerchantSystemDto })
@@ -44,7 +44,7 @@ export class MerchantController {
     return new ResponseDto({ status: ResponseStatus.CREATED });
   }
 
-  @MessagePattern({ cmd: SERVICES.CONFIG.cmd.create_merchant_config })
+  @MessagePattern({ cmd: SERVICES.CONFIG.point.create_merchant_config.cmd })
   async createTCP(
     @Payload(CustomValidationPipe)
     body: CreateMerchantSystemDto,
@@ -54,7 +54,7 @@ export class MerchantController {
     return new ResponseDto({ status: ResponseStatus.CREATED });
   }
 
-  @Post(':merchantId/provider')
+  @Post('merchant/:merchantId/provider')
   @ApiOperation({
     summary: 'Upsert Merchant Fee Configuration',
   })
@@ -69,7 +69,7 @@ export class MerchantController {
     return new ResponseDto({ status: ResponseStatus.CREATED });
   }
 
-  @Post(':merchantId/agent-shareholder')
+  @Post('merchant/:merchantId/agent-shareholder')
   @ApiOperation({ summary: 'Upsert Agent Shareholder Configuration' })
   @ApiBody({ type: UpsertMerchantAgentShareholderDto, isArray: true })
   async upsertAgentShareholder(

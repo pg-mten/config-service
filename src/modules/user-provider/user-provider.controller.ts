@@ -7,20 +7,20 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { SERVICES } from 'src/shared/constant/client.constant';
 import { CustomValidationPipe } from 'src/shared/pipe';
 
-@Controller('user-provider')
+@Controller()
 @ApiTags('User Provider')
 export class UserProviderController {
   constructor(private readonly userProviderService: UserProviderService) {}
 
   @SystemApi()
   @ApiTags('Internal')
-  @Get('internal/profile-provider')
+  @Get(SERVICES.CONFIG.point.find_profile_provider.path)
   async findProfileProvider(@Query() filter: FilterProfileProviderSystemDto) {
     console.log({ filter });
     return this.userProviderService.findProfileProvider(filter);
   }
 
-  @MessagePattern({ cmd: SERVICES.CONFIG.cmd.find_profile_provider })
+  @MessagePattern({ cmd: SERVICES.CONFIG.point.find_profile_provider.cmd })
   async findProfileProviderTCP(
     @Payload(CustomValidationPipe) payload: FilterProfileProviderSystemDto,
   ) {

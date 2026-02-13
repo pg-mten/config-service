@@ -15,13 +15,13 @@ import { CreateAgentSystemDto } from 'src/microservice/config/dto-system/create-
 import { ResponseDto, ResponseStatus } from 'src/shared/response.dto';
 import { SystemApi } from 'src/microservice/auth/decorator';
 
-@Controller('agent')
+@Controller()
 @ApiTags('Agent')
 export class AgentController {
   constructor(private readonly agentService: AgentService) {}
 
   @SystemApi()
-  @Post('/internal')
+  @Post(SERVICES.CONFIG.point.create_agent_config.path)
   @ApiTags('Internal')
   @ApiOperation({ summary: 'Create Agent System' })
   async create(@Body() body: CreateAgentSystemDto) {
@@ -30,7 +30,7 @@ export class AgentController {
     return new ResponseDto({ status: ResponseStatus.CREATED });
   }
 
-  @MessagePattern({ cmd: SERVICES.CONFIG.cmd.create_agent_config })
+  @MessagePattern({ cmd: SERVICES.CONFIG.point.create_agent_config.cmd })
   async createTCP(
     @Payload(CustomValidationPipe)
     payload: CreateAgentSystemDto,
@@ -40,7 +40,7 @@ export class AgentController {
     return new ResponseDto({ status: ResponseStatus.CREATED });
   }
 
-  @Get(':agentId/merchants')
+  @Get('agent/:agentId/merchants')
   @ApiOperation({ summary: 'Merchant List with Agent Shareholder by Agent Id' })
   findMerchantByAgentId(@Param('agentId', ParseIntPipe) agentId: number) {
     console.log({ agentId });
