@@ -55,6 +55,7 @@ async function bootstrap() {
       port: SERVICES.CONFIG.port,
     },
   });
+  app.enableShutdownHooks();
   await app.startAllMicroservices();
 
   await app.listen(PORT, () => {

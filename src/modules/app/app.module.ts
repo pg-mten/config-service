@@ -30,6 +30,8 @@ import { MicroserviceModule } from 'src/microservice/microservice.module';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { UserProviderModule } from '../user-provider/user-provider.module';
 
+const IS_TEST = process.env.NODE_ENV === 'test';
+
 @Module({
   imports: [
     /// System Configuration
@@ -38,7 +40,7 @@ import { UserProviderModule } from '../user-provider/user-provider.module';
       isGlobal: true,
       envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
     }),
-    ScheduleModule.forRoot(),
+    ...(!IS_TEST ? [ScheduleModule.forRoot()] : []),
 
     CommonModule,
     FeeModule,
