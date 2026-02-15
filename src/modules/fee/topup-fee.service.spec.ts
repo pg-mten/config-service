@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TopupFeeService } from './topup-fee.service';
 import { PrismaService } from '../prisma/prisma.service';
-import Decimal from 'decimal.js';
+import { Decimal } from 'decimal.js';
 import { TransactionTypeEnum } from '@prisma/client';
 
 describe('TopupFeeService', () => {
